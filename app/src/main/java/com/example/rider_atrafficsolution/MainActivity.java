@@ -9,7 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Switch;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity  {
 
     Switch userTypeSwitch;
     Button getStartedButton;
@@ -27,11 +27,13 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 isuserTypeSwitchChecked=userTypeSwitch.isChecked();
-                finish();
+                //finish();
                 Intent intent=new Intent(getApplicationContext(),LoginActivity.class);
                 startActivity(intent);
 
             }
         });
     }
+
+
 }
