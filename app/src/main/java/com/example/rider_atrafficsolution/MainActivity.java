@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         this.setTitle("Rider A Traffic Solution");
-       // getSupportActionBar().hide();
+        getSupportActionBar().hide();
         userTypeSwitch=findViewById(R.id.userTypeSwitch);
         getStartedButton=findViewById(R.id.Get_Started_Button);
         getStartedButton.setOnClickListener(new View.OnClickListener() {

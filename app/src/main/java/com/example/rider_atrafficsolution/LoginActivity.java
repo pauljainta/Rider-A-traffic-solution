@@ -19,6 +19,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         this.setTitle("Log In");
+        getSupportActionBar().hide();
         LogIn=findViewById(R.id.loginLogInButton);
         SignUp=findViewById(R.id.loginSignUpButton);
         Email=findViewById(R.id.logInEmail);
