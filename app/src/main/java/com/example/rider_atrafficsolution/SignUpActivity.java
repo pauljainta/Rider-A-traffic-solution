@@ -174,8 +174,8 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         }
 
 
-      //  if(isInputCorrect)
-    //        verifyPhoneNumber();
+        if(isInputCorrect)
+            verifyPhoneNumber();
 
 
 
@@ -184,9 +184,9 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
     private void verifyPhoneNumber()
     {
-       // Intent intent=new Intent(getApplicationContext(),PhoneAuthActivity.class);
-      //  intent.putExtra("PhoneNumber",phone_number);
-  //      startActivity(intent);
+        Intent intent=new Intent(getApplicationContext(),PhoneAuthActivity.class);
+        intent.putExtra("PhoneNumber",phone_number);
+        startActivity(intent);
 
 
 
