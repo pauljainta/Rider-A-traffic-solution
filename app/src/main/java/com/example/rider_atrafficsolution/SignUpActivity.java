@@ -31,12 +31,11 @@ import java.util.regex.Pattern;
 
 public class SignUpActivity extends AppCompatActivity implements View.OnClickListener {
 
-    Pattern phone_number_pattern;//useless
+
     Button LogInButton, SignUpButton;
     EditText signupEmailEditText, signupPasswordEditText, signupNameEditText, signupPhoneNumberEditText, signupConfirmPasswordEditText;
     String email,name,password,confirm_password,phone_number;
 
-    String mVerificationId;
 
     private FirebaseAuth mAuth;
 
@@ -55,7 +54,6 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         signupConfirmPasswordEditText =findViewById(R.id.signUpConfirmPassword);
         signupNameEditText =findViewById(R.id.signUpName);
         signupPhoneNumberEditText =findViewById(R.id.signUpPhoneNo);
-        phone_number_pattern=Pattern.compile("(\\+8801)[356789]\\d{6}");
 
         signupPhoneNumberEditText.setText("+88");
         Selection.setSelection(signupPhoneNumberEditText.getText(), signupPhoneNumberEditText.getText().length());
@@ -115,7 +113,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         password= signupPasswordEditText.getText().toString().trim();
         phone_number=signupPhoneNumberEditText.getText().toString().trim();
         confirm_password=signupConfirmPasswordEditText.getText().toString().trim();
-       Matcher phone_number_matcher=phone_number_pattern.matcher(phone_number);
+
 
 
         if(email.isEmpty())
@@ -159,8 +157,8 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
             isInputCorrect=false;
         }
 
-        if(phone_number.charAt(5)!='3'||phone_number.charAt(5)!='5'||
-                phone_number.charAt(5)!='6'||phone_number.charAt(5)!='7'||phone_number.charAt(5)!='8'||phone_number.charAt(5)!='9')
+        if(phone_number.charAt(5)=='1'||phone_number.charAt(5)=='2'||
+                phone_number.charAt(5)=='0'||phone_number.charAt(5)=='4')
         {
             signupPhoneNumberEditText.setError("Enter a valid phone number");
             signupPhoneNumberEditText.requestFocus();
@@ -176,84 +174,24 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         }
 
 
-        if(isInputCorrect)
-            verifyPhoneNumber();
+      //  if(isInputCorrect)
+    //        verifyPhoneNumber();
 
 
 
 
     }
 
-    private void verifyPhoneNumber() {
-
-        Intent intent=new Intent(getApplicationContext(),PhoneAuthActivity.class);
-        intent.putExtra("PhoneNumber",phone_number);
-        startActivity(intent);
-
-//        com.google.firebase.auth.PhoneAuthProvider.OnVerificationStateChangedCallbacks
-//                mCallbacks = new PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-//
-//            @Override
-//            public void onVerificationCompleted(PhoneAuthCredential credential) {
-//
-//                signInWithPhoneAuthCredential(credential);
-//            }
+    private void verifyPhoneNumber()
+    {
+       // Intent intent=new Intent(getApplicationContext(),PhoneAuthActivity.class);
+      //  intent.putExtra("PhoneNumber",phone_number);
+  //      startActivity(intent);
 
 
-//            @Override
-//            public void onVerificationFailed(FirebaseException e) {
-//
-//
-//                if (e instanceof FirebaseAuthInvalidCredentialsException) {
-//
-//                } else if (e instanceof FirebaseTooManyRequestsException) {
-//
-//                }
-//
-//                // Show a message and update the UI
-//            }
-//
-//            @Override
-//            public void onCodeSent(@NonNull String verificationId,
-//                                   @NonNull PhoneAuthProvider.ForceResendingToken token) {
-//                mVerificationId = verificationId;
-//              //  mResendToken = token;
-//            }
-//        };
 
-//        PhoneAuthOptions options =
-//                PhoneAuthOptions.newBuilder(mAuth)
-//                        .setPhoneNumber(phone_number)       // Phone number to verify
-//                        .setTimeout(60L, TimeUnit.SECONDS) // Timeout and unit
-//                        .setActivity(this)                 // Activity (for callback binding)
-//                        .setCallbacks(mCallbacks)          // OnVerificationStateChangedCallbacks
-//                        .build();
-
-            // PhoneAuthProvider.verifyPhoneNumber(options);
-
-//        }
-
-
-//    private void signInWithPhoneAuthCredential(PhoneAuthCredential credential) {
-//        mAuth.signInWithCredential(credential)
-//                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-//                    @Override
-//                    public void onComplete(@NonNull Task<AuthResult> task) {
-//                        if (task.isSuccessful()) {
-//                            // Sign in success, update UI with the signed-in user's information
-//                        //    Log.d(TAG, "signInWithCredential:success");
-//
-//                            FirebaseUser user = task.getResult().getUser();
-//                            // Update UI
-//                        } else {
-//                            // Sign in failed, display a message and update the UI
-//                     //       Log.w(TAG, "signInWithCredential:failure", task.getException());
-//                            if (task.getException() instanceof FirebaseAuthInvalidCredentialsException) {
-//                                // The verification code entered was invalid
-//                            }
-//                        }
-//                    }
-//                });
-//
     }
+
+
+
 }
