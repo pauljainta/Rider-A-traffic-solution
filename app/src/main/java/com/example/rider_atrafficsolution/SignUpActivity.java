@@ -186,6 +186,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     {
         Intent intent=new Intent(getApplicationContext(),PhoneAuthActivity.class);
         intent.putExtra("PhoneNumber",phone_number);
+        intent.putExtra("email",email);
         startActivity(intent);
 
 
