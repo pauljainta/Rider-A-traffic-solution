@@ -32,12 +32,14 @@ import java.util.regex.Pattern;
 public class SignUpActivity extends AppCompatActivity implements View.OnClickListener {
 
 
+   // private static FirebaseAuth mAuth;
     Button LogInButton, SignUpButton;
     EditText signupEmailEditText, signupPasswordEditText, signupNameEditText, signupPhoneNumberEditText, signupConfirmPasswordEditText;
     String email,name,password,confirm_password,phone_number;
 
 
     private FirebaseAuth mAuth;
+    //private Fire
 
     boolean isInputCorrect;
 
@@ -187,11 +189,19 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         Intent intent=new Intent(getApplicationContext(),PhoneAuthActivity.class);
         intent.putExtra("PhoneNumber",phone_number);
         intent.putExtra("email",email);
+        intent.putExtra("name",name);
+        intent.putExtra("password",password);
         startActivity(intent);
 
 
 
     }
+
+//    public static void SaveUserData()
+//    {
+//
+//       // mAuth.createUserWithEmailAndPassword()
+//    }
 
 
 

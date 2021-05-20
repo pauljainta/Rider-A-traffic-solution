@@ -1,8 +1,10 @@
 package com.example.rider_atrafficsolution;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -13,7 +15,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.PhoneAuthCredential;
@@ -24,13 +29,15 @@ import java.util.concurrent.TimeUnit;
 
 public class PhoneAuthActivity extends AppCompatActivity implements View.OnClickListener {
 
+
     EditText phoneNumberOTP;
     Button resendOTPButton,verifyOTPButton;
-    TextView phoneVerifiedTextview;
-    String phone_number,email;
+ //   TextView phoneVerifiedTextview;
+    String name,phone_number,email,password;
     private FirebaseAuth mAuth;
     String mVerificationID;
     private PhoneAuthProvider.ForceResendingToken mResendToken;
+    private AlertDialog.Builder builder;
 
 
     CountDownTimer countDownTimer;
@@ -44,20 +51,47 @@ public class PhoneAuthActivity extends AppCompatActivity implements View.OnClick
         resendOTPButton=findViewById(R.id.resendOTPButton);
         verifyOTPButton=findViewById(R.id.otpVerifyButton);
         phoneNumberOTP=findViewById(R.id.phoneNumberOTP);
-        phoneVerifiedTextview =findViewById(R.id.phoneVerifiedTextview);
+      //  phoneVerifiedTextview =findViewById(R.id.phoneVerifiedTextview);
         Intent intent=getIntent();
         phone_number=intent.getStringExtra("PhoneNumber");
         email=intent.getStringExtra("email");
+        name=intent.getStringExtra("name");
+        password =intent.getStringExtra("password");
         phoneNumberOTP.setHint("Enter OTP sent to "+phone_number);
         mAuth=FirebaseAuth.getInstance();
+       // databaseReference= FirebaseDatabase.getInstance().getReference("users");
 
         verifyOTPButton.setOnClickListener(this);
         resendOTPButton.setOnClickListener(this);
         resendOTPButton.setEnabled(false);
 
+        //alert
+
+        builder = new AlertDialog.Builder(this);
+
+        builder.setMessage("Click Ok to Continue")
+                .setCancelable(false)
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        finish();
+                        mAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                SaveUserData();
+                            }
+                        });
+                        Intent intent=new Intent(getApplicationContext(),LoginActivity.class);
+                        startActivity(intent);
+                    }
+                });
+
         initiateOTP();
 
+    }
 
+    private void SaveUserData()
+    {
+        Passenger passenger=new Passenger(name,email,phone_number);
 
     }
 
@@ -125,8 +159,12 @@ public class PhoneAuthActivity extends AppCompatActivity implements View.OnClick
                         phoneNumberOTP.setVisibility(View.GONE);
                         resendOTPButton.setVisibility(View.GONE);
                         verifyOTPButton.setVisibility(View.GONE);
-                        phoneVerifiedTextview.setText("Phone Number Verification Successful.CLick on the link sent to "+email+" to verify.");
-                        phoneVerifiedTextview.setVisibility(View.VISIBLE);
+
+                        AlertDialog alert = builder.create();
+                        //Setting the title manually
+                        alert.setTitle("PHONE NUMBER VERIFIED");
+                        alert.show();
+
 
 
                     } else {
@@ -145,7 +183,7 @@ public class PhoneAuthActivity extends AppCompatActivity implements View.OnClick
         switch (v.getId())
         {
             case R.id.otpVerifyButton:
-                Log.d("Bal","Bal");
+              //  Log.d("Bal","Bal");
                 PhoneAuthCredential phoneAuthCredential=PhoneAuthProvider.getCredential(mVerificationID,phoneNumberOTP.getText().toString().trim());
                 signInWithPhoneAuthCredential(phoneAuthCredential);
                 break;
