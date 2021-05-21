@@ -38,7 +38,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     String email,name,password,confirm_password,phone_number;
 
 
-    private FirebaseAuth mAuth;
+   // private FirebaseAuth mAuth;
     //private Fire
 
     boolean isInputCorrect;
@@ -59,7 +59,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
         signupPhoneNumberEditText.setText("+88");
         Selection.setSelection(signupPhoneNumberEditText.getText(), signupPhoneNumberEditText.getText().length());
-        mAuth = FirebaseAuth.getInstance();
+        //mAuth = FirebaseAuth.getInstance();
 
         isInputCorrect=true;
 

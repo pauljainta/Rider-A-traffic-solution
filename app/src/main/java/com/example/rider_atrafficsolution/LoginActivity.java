@@ -9,6 +9,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.google.firebase.auth.FirebaseUser;
+
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
     Button LogIn,SignUp;
@@ -27,6 +29,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         LogIn.setOnClickListener(this);
         SignUp.setOnClickListener(this);
+        
 
     }
 

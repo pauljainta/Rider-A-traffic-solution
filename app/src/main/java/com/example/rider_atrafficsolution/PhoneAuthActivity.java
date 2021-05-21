@@ -18,12 +18,18 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseException;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthOptions;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.concurrent.TimeUnit;
 
@@ -32,12 +38,13 @@ public class PhoneAuthActivity extends AppCompatActivity implements View.OnClick
 
     EditText phoneNumberOTP;
     Button resendOTPButton,verifyOTPButton;
- //   TextView phoneVerifiedTextview;
     String name,phone_number,email,password;
     private FirebaseAuth mAuth;
+    private DatabaseReference databaseReference;
     String mVerificationID;
     private PhoneAuthProvider.ForceResendingToken mResendToken;
     private AlertDialog.Builder builder;
+    
 
 
     CountDownTimer countDownTimer;
@@ -51,7 +58,6 @@ public class PhoneAuthActivity extends AppCompatActivity implements View.OnClick
         resendOTPButton=findViewById(R.id.resendOTPButton);
         verifyOTPButton=findViewById(R.id.otpVerifyButton);
         phoneNumberOTP=findViewById(R.id.phoneNumberOTP);
-      //  phoneVerifiedTextview =findViewById(R.id.phoneVerifiedTextview);
         Intent intent=getIntent();
         phone_number=intent.getStringExtra("PhoneNumber");
         email=intent.getStringExtra("email");
@@ -59,7 +65,8 @@ public class PhoneAuthActivity extends AppCompatActivity implements View.OnClick
         password =intent.getStringExtra("password");
         phoneNumberOTP.setHint("Enter OTP sent to "+phone_number);
         mAuth=FirebaseAuth.getInstance();
-       // databaseReference= FirebaseDatabase.getInstance().getReference("users");
+        databaseReference= FirebaseDatabase.getInstance().getReference("users");
+        //SaveUserData();
 
         verifyOTPButton.setOnClickListener(this);
         resendOTPButton.setOnClickListener(this);
@@ -74,14 +81,33 @@ public class PhoneAuthActivity extends AppCompatActivity implements View.OnClick
                 .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         finish();
-                        mAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                SaveUserData();
-                            }
-                        });
-                        Intent intent=new Intent(getApplicationContext(),LoginActivity.class);
-                        startActivity(intent);
+                        AuthCredential credential = EmailAuthProvider.getCredential(email, password);
+                       // mAuth.getCurrentUser().sendEmailVerification();
+
+                        mAuth.getCurrentUser().linkWithCredential(credential)
+                                .addOnCompleteListener( new OnCompleteListener<AuthResult>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<AuthResult> task) {
+                                        if (task.isSuccessful()) {
+                                        //    SaveUserData();
+                                            Intent intent=new Intent(getApplicationContext(),LoginActivity.class);
+                                            startActivity(intent);
+
+                                        } else {
+                                            if(task.getException() instanceof FirebaseAuthUserCollisionException)
+                                            {
+                                                Toast.makeText(getApplicationContext(),"Already Registered",Toast.LENGTH_SHORT).show();
+                                                Intent intent=new Intent(getApplicationContext(),SignUpActivity.class);
+                                                startActivity(intent);
+                                            }
+                                            else
+                                            {
+                                                Toast.makeText(getApplicationContext(),"Error"+task.getException().getMessage(),Toast.LENGTH_SHORT).show();
+                                            }
+
+                                        }
+                                    }
+                                });
                     }
                 });
 
@@ -91,7 +117,14 @@ public class PhoneAuthActivity extends AppCompatActivity implements View.OnClick
 
     private void SaveUserData()
     {
-        Passenger passenger=new Passenger(name,email,phone_number);
+        //User user=null;
+       // if(MainActivity.isuserTypeSwitchChecked)
+       // mAuth.getCurrentUser().sendEmailVerification();
+        String key=databaseReference.push().getKey();
+        Passenger user=new Passenger(email,name,phone_number);
+        databaseReference.child(key).setValue(user);
+        Log.d("database",user.toString());
+
 
     }
 
@@ -159,6 +192,7 @@ public class PhoneAuthActivity extends AppCompatActivity implements View.OnClick
                         phoneNumberOTP.setVisibility(View.GONE);
                         resendOTPButton.setVisibility(View.GONE);
                         verifyOTPButton.setVisibility(View.GONE);
+                    //    SaveUserData();
 
                         AlertDialog alert = builder.create();
                         //Setting the title manually
