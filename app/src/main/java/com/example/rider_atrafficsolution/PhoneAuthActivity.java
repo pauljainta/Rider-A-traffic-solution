@@ -89,7 +89,7 @@ public class PhoneAuthActivity extends AppCompatActivity implements View.OnClick
                                     @Override
                                     public void onComplete(@NonNull Task<AuthResult> task) {
                                         if (task.isSuccessful()) {
-                                        //    SaveUserData();
+                                            SaveUserData();
                                             Intent intent=new Intent(getApplicationContext(),LoginActivity.class);
                                             startActivity(intent);
 
@@ -118,9 +118,10 @@ public class PhoneAuthActivity extends AppCompatActivity implements View.OnClick
     private void SaveUserData()
     {
         //User user=null;
-       // if(MainActivity.isuserTypeSwitchChecked)
-       // mAuth.getCurrentUser().sendEmailVerification();
-        String key=databaseReference.push().getKey();
+      //  if(MainActivity.isuserTypeSwitchChecked)
+        mAuth.getCurrentUser().sendEmailVerification();
+       // String key=databaseReference.push().getKey();
+        String key=mAuth.getCurrentUser().getUid();
         Passenger user=new Passenger(email,name,phone_number);
         databaseReference.child(key).setValue(user);
         Log.d("database",user.toString());

@@ -33,12 +33,18 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     }
 
+//    public void LoginUser()
+//    {
+//
+//    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId())
         {
             case R.id.loginLogInButton:
-                Log.d("b","Dhkse2");
+                //LoginUser();
+              //  Log.d("b","Dhkse2");
                 break;
 
             case R.id.loginSignUpButton:
