@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "278483547062",
+    "firebase_url": "https://rider-a-traffic-solution-default-rtdb.firebaseio.com",
     "project_id": "rider-a-traffic-solution",
     "storage_bucket": "rider-a-traffic-solution.appspot.com"
   },
@@ -13,6 +14,14 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "278483547062-3i2jcrmiresujufl0nrhjo3aca9f1soi.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.rider_atrafficsolution",
+            "certificate_hash": "38c9c5d4a97c94c649fc40fcf4f11a3ecc2cb13c"
+          }
+        },
         {
           "client_id": "278483547062-5v202tfc8k8vil3p6rd3qe0if3i6dech.apps.googleusercontent.com",
           "client_type": 3

@@ -63,6 +63,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         //   intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                         //  startActivity(intent);
                         Log.i("log in","hoise");
+                        Intent intent = new Intent(getApplicationContext(), ChooseVehicleActivity.class);
+                        startActivity(intent);
                     }
                     else
                     {

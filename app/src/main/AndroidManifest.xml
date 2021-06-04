@@ -11,7 +11,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.RiderATrafficSolution">
-        <activity android:name=".EmailAuthActivity"></activity>
+        <activity android:name=".ChooseVehicleActivity"></activity>
+        <activity android:name=".EmailAuthActivity" />
         <activity android:name=".PhoneAuthActivity" />
         <activity android:name=".SignUpActivity" />
         <activity android:name=".LoginActivity" />
