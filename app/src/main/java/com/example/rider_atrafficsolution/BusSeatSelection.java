@@ -11,7 +11,7 @@ import java.util.List;
 
 public class BusSeatSelection extends AppCompatActivity
 {
-    Spinner busfromSpinner,bustoSpinner,whichbuSpinner,whichCounterSpinner;
+    Spinner busfromSpinner,bustoSpinner,whichbuSpinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -22,7 +22,7 @@ public class BusSeatSelection extends AppCompatActivity
         busfromSpinner=findViewById(R.id.busfFromSpinner);
         bustoSpinner=findViewById(R.id.busToSpinner);
         whichbuSpinner=findViewById(R.id.whichBusSpinner);
-        whichCounterSpinner=findViewById(R.id.whichCounterSpinner);
+
 
 
 
@@ -59,6 +59,5 @@ public class BusSeatSelection extends AppCompatActivity
         busfromSpinner.setAdapter(locationAdapter);
         bustoSpinner.setAdapter(locationAdapter);
         whichbuSpinner.setAdapter(busAdapter);
-        whichCounterSpinner.setAdapter(busAdapter);
     }
 }
