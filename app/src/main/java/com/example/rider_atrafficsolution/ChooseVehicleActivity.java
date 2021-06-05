@@ -33,7 +33,8 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
         switch (v.getId())
         {
             case R.id.busChooseButton:
-
+                Intent intent=new Intent(getApplicationContext(),BusSeatSelection.class);
+                startActivity(intent);
                 break;
 
             case R.id.bikeChooseButton:
