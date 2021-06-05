@@ -65,6 +65,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         Log.i("log in","hoise");
                         Intent intent = new Intent(getApplicationContext(), ChooseVehicleActivity.class);
                         startActivity(intent);
+
+                        Info.currentEmail = email;
+
+                        Log.i("email", Info.currentEmail);
                     }
                     else
                     {

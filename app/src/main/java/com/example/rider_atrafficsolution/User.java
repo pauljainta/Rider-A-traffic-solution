@@ -32,6 +32,13 @@ class Passenger implements User{
         this.phone_number = phone_number;
     }
 
+    public Passenger()
+    {
+        this.name = "name";
+        this.email = "email";
+        this.phone_number = "phone_number";
+    }
+
     public Passenger(String name, String email, String phone_number) {
         this.name = name;
         this.email = email;
