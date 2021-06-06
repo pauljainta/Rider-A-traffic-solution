@@ -39,10 +39,10 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
 
     LocationManager locationManager;
     LocationListener locationListener;
-    double fromLat;
-    double fromLong;
-    double toLat;
-    double toLong;
+//    double fromLat;
+//    double fromLong;
+//    double toLat;
+//    double toLong;
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -67,17 +67,17 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
 
 
 
-        Log.i("val", String.valueOf(fromLat));
-        Log.i("val", String.valueOf(fromLong));
-        Log.i("val", String.valueOf(toLat));
-        Log.i("val", String.valueOf(toLong));
+        Log.i("val", String.valueOf(BusSeatSelection.fromLat));
+        Log.i("val", String.valueOf(BusSeatSelection.fromLong));
+        Log.i("val", String.valueOf(BusSeatSelection.toLat));
+        Log.i("val", String.valueOf(BusSeatSelection.toLong));
     }
 
 
-    public void showLocation(LatLng latLng)
+    public void showLocation(LatLng latLng,String comment)
     {
 
-        mMap.addMarker(new MarkerOptions().position(latLng).title("Marker"));
+        mMap.addMarker(new MarkerOptions().position(latLng).title(comment));
 
     }
 
@@ -97,14 +97,16 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
 
       //  LatLng startCounter = null,endCounter=null;
 
+//        Log.i("bal","bal");
 
-        fromLat = getIntent().getDoubleExtra("fromLat", 23.732972);
-        fromLong = getIntent().getDoubleExtra("fromLong", 23.732972);
-        toLat = getIntent().getDoubleExtra("toLat", 23.732972);
-        toLong = getIntent().getDoubleExtra("toLong", 23.732972);
 
-        LatLng startCounter = new LatLng(fromLat, fromLong);
-        LatLng endCounter = new LatLng(toLat, toLong);
+//        fromLat = getIntent().getDoubleExtra("fromLat", 23.732972);
+//        fromLong = getIntent().getDoubleExtra("fromLong", 23.732972);
+//        toLat = getIntent().getDoubleExtra("toLat", 23.732972);
+//        toLong = getIntent().getDoubleExtra("toLong", 23.732972);
+
+        LatLng startCounter = new LatLng(BusSeatSelection.fromLat, BusSeatSelection.fromLong);
+        LatLng endCounter = new LatLng(BusSeatSelection.toLat, BusSeatSelection.toLong);
 
 
 
@@ -116,8 +118,8 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
 
                 //    Log.i("Location:",location.toString());
                 mMap.clear();
-                showLocation(startCounter);
-                showLocation(endCounter);
+                showLocation(startCounter,"Start");
+                showLocation(endCounter,"End");
                 LatLng latLng=new LatLng(location.getLatitude(),location.getLongitude());
                 mMap.addMarker(new MarkerOptions().position(latLng).title("Bus Location")
                         // below line is use to add custom marker on our map.

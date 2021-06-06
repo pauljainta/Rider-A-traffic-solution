@@ -34,13 +34,11 @@ public class BusSeatSelection extends AppCompatActivity
     private String from;
     private String to;
     private double fare;
-    double fromLat;
-    double fromLong;
-    double toLat;
-    double toLong;
     List<String> buses;
     private Button confirmButton;
     TextView fareShowTextView;
+
+    public static double fromLat,fromLong,toLat,toLong;
 
     ArrayAdapter<String> busAdapter;
     @Override
@@ -161,10 +159,10 @@ public class BusSeatSelection extends AppCompatActivity
                 GetMethodForCoOrdinates();
 
                 Intent intent = new Intent(getApplicationContext(),ShowBusLoationActivity.class);
-                intent.putExtra("fromLat", fromLat);
-                intent.putExtra("fromLong", fromLong);
-                intent.putExtra("toLat", toLat);
-                intent.putExtra("toLong", toLong);
+//                intent.putExtra("fromLat", fromLat);
+//                intent.putExtra("fromLong", fromLong);
+//                intent.putExtra("toLat", toLat);
+//                intent.putExtra("toLong", toLong);
 
                 Log.i("val", String.valueOf(fromLat));
                 Log.i("val", String.valueOf(fromLong));
