@@ -62,38 +62,10 @@ public class MainActivity extends AppCompatActivity  {
         });
 
 
-        RequestQueue requestQueue = Volley.newRequestQueue(this);
+        Info.currentEmail = "aaatowsif16@gmail.com";
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/users.json", null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response)
-            {
-                //try
-                {
-                    JSONArray array = response.names();
-                    for(int i=0;i<array.length();i++)
-                    {
-                        try
-                        {
-                            Log.i("names", response.getJSONObject(array.getString(i)).getString("email"));
-                        }
-                        catch (JSONException e)
-                        {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error)
-            {
-                Log.d("error: " , error.getMessage());
-            }
-        });
-
-        requestQueue.add(jsonObjectRequest);
-
+        Intent intent=new Intent(getApplicationContext(),BusSeatSelection.class);
+        startActivity(intent);
 
 
 
