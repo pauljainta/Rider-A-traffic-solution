@@ -71,6 +71,7 @@ public class MainActivity extends AppCompatActivity  {
 
         context = getBaseContext();
         Intent intent=new Intent(getApplicationContext(),BusSeatSelection.class);
+//        Intent intent=new Intent(getApplicationContext(),ShowBusLoationActivity.class);
         startActivity(intent);
 
         Info.currentEmail = "aaatowsif16@gmail.com";

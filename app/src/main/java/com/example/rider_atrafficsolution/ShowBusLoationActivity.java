@@ -39,6 +39,10 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
 
     LocationManager locationManager;
     LocationListener locationListener;
+    double fromLat;
+    double fromLong;
+    double toLat;
+    double toLong;
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -60,6 +64,13 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+
+
+        Log.i("val", String.valueOf(fromLat));
+        Log.i("val", String.valueOf(fromLong));
+        Log.i("val", String.valueOf(toLat));
+        Log.i("val", String.valueOf(toLong));
     }
 
 
@@ -86,8 +97,14 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
 
       //  LatLng startCounter = null,endCounter=null;
 
-        LatLng startCounter = new LatLng(23.732972, 90.417231);
-        LatLng endCounter = new LatLng(23.757716874081, 90.389516452358);
+
+        fromLat = getIntent().getDoubleExtra("fromLat", 23.732972);
+        fromLong = getIntent().getDoubleExtra("fromLong", 23.732972);
+        toLat = getIntent().getDoubleExtra("toLat", 23.732972);
+        toLong = getIntent().getDoubleExtra("toLong", 23.732972);
+
+        LatLng startCounter = new LatLng(fromLat, fromLong);
+        LatLng endCounter = new LatLng(toLat, toLong);
 
 
 

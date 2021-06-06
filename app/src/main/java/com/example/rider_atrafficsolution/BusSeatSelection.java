@@ -3,11 +3,13 @@ package com.example.rider_atrafficsolution;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -32,7 +34,12 @@ public class BusSeatSelection extends AppCompatActivity
     private String from;
     private String to;
     private double fare;
+    double fromLat;
+    double fromLong;
+    double toLat;
+    double toLong;
     List<String> buses;
+    private Button confirmButton;
     TextView fareShowTextView;
 
     ArrayAdapter<String> busAdapter;
@@ -47,6 +54,7 @@ public class BusSeatSelection extends AppCompatActivity
         whichbuSpinner=findViewById(R.id.whichBusSpinner);
         seatCountSpinner = findViewById(R.id.seatCountSpinner);
         fareShowTextView = findViewById(R.id.fareShowTextView);
+        confirmButton = findViewById(R.id.confirmButton);
 
         context = getBaseContext();
 
@@ -129,20 +137,46 @@ public class BusSeatSelection extends AppCompatActivity
         });
 
 
+        seatCountSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+        {
+
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
+            {
+                GetMethodForFare();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent)
+            {
+
+            }
+        });
+
+        confirmButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                GetMethodForCoOrdinates();
+
+                Intent intent = new Intent(getApplicationContext(),ShowBusLoationActivity.class);
+                intent.putExtra("fromLat", fromLat);
+                intent.putExtra("fromLong", fromLong);
+                intent.putExtra("toLat", toLat);
+                intent.putExtra("toLong", toLong);
+
+                Log.i("val", String.valueOf(fromLat));
+                Log.i("val", String.valueOf(fromLong));
+                Log.i("val", String.valueOf(toLat));
+                Log.i("val", String.valueOf(toLong));
+
+                startActivity(intent);
+            }
+        });
     }
 
 
-
-    public void confirm(View view)
-    {
-        Log.i("from", busfromSpinner.getSelectedItem().toString());
-        Log.i("to", bustoSpinner.getSelectedItem().toString());
-
-        from = busfromSpinner.getSelectedItem().toString();
-        to = bustoSpinner.getSelectedItem().toString();
-
-        GetMethodForBusRoute();
-    }
 
     public void GetMethodForFare()
     {
@@ -155,7 +189,7 @@ public class BusSeatSelection extends AppCompatActivity
                 {
                     JSONArray array = response.names();
 
-                    buses.clear();
+                    //buses.clear();
 
                     for(int i=0;i<array.length();i++)
                     {
@@ -169,7 +203,9 @@ public class BusSeatSelection extends AppCompatActivity
 
                             if((location1.equalsIgnoreCase(from) && location2.equalsIgnoreCase(to)) || (location2.equalsIgnoreCase(from) && location1.equalsIgnoreCase(to)) )
                             {
+                                double count = Double.parseDouble(seatCountSpinner.getSelectedItem().toString());
                                 fare = Double.parseDouble(response.getJSONObject(key).getString("fare"));
+                                fare = fare * count;
                                 Log.i("fare", String.valueOf(fare));
                                 fareShowTextView.setText(String.valueOf(fare));
                                 break;
@@ -183,9 +219,7 @@ public class BusSeatSelection extends AppCompatActivity
                     }
 
 
-                    busAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, buses);
 
-                    whichbuSpinner.setAdapter(busAdapter);
                 }
             }
         }, new Response.ErrorListener() {
@@ -257,6 +291,58 @@ public class BusSeatSelection extends AppCompatActivity
                     busAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, buses);
 
                     whichbuSpinner.setAdapter(busAdapter);
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
+                Log.d("error: " , error.getMessage());
+            }
+        });
+
+        requestQueue.add(jsonObjectRequest);
+    }
+
+    public void GetMethodForCoOrdinates()
+    {
+        RequestQueue requestQueue = Volley.newRequestQueue(context);
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/CoOrdinates.json", null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response)
+            {
+                //try
+                {
+                    JSONArray array = response.names();
+
+
+                    for(int i=0;i<array.length();i++)
+                    {
+                        try
+                        {
+                            String key = array.getString(i);
+                            String location = response.getJSONObject(key).getString("location");
+
+                            if(from.equalsIgnoreCase(location))
+                            {
+                                fromLat = Double.parseDouble(response.getJSONObject(key).getString("lat"));
+                                fromLong = Double.parseDouble(response.getJSONObject(key).getString("long"));
+                            }
+
+                            if(to.equalsIgnoreCase(location))
+                            {
+                                toLat = Double.parseDouble(response.getJSONObject(key).getString("lat"));
+                                toLong = Double.parseDouble(response.getJSONObject(key).getString("long"));
+                            }
+
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+
+
                 }
             }
         }, new Response.ErrorListener() {
