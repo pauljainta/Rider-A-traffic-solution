@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Rider-A Traffic Solution</string>
     <string name="select_one">Select One</string>
+    <string name="title_activity_show_bus_loation">Map</string>
 </resources>
