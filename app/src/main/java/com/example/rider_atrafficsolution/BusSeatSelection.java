@@ -97,6 +97,13 @@ public class BusSeatSelection extends AppCompatActivity
         whichbuSpinner.setAdapter(busAdapter);
         seatCountSpinner.setAdapter(countsAdapter);
 
+//        fromLat = 23.7561;
+//        fromLong = 90.3872;
+//        toLat = 23.733;
+//        toLong = 90.4172;
+
+        double d = getDistanceFromLatLonInKm(fromLat, fromLong, toLat, toLong);
+        System.out.println("dist = " + d);
 
         busfromSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
         {
@@ -151,28 +158,29 @@ public class BusSeatSelection extends AppCompatActivity
             }
         });
 
-        confirmButton.setOnClickListener(new View.OnClickListener()
+        confirmButton.setOnClickListener(v ->
         {
-            @Override
-            public void onClick(View v)
-            {
-                GetMethodForCoOrdinates();
+            GetMethodForCoOrdinates();
 
-                Intent intent = new Intent(getApplicationContext(),ShowBusLoationActivity.class);
+            double dist = getDistanceFromLatLonInKm(fromLat, fromLong, toLat, toLong);
+            System.out.println("dist = " + dist);
+
+
+            Intent intent = new Intent(getApplicationContext(),ShowBusLoationActivity.class);
 //                intent.putExtra("fromLat", fromLat);
 //                intent.putExtra("fromLong", fromLong);
 //                intent.putExtra("toLat", toLat);
 //                intent.putExtra("toLong", toLong);
 
-                Log.i("val", String.valueOf(fromLat));
-                Log.i("val", String.valueOf(fromLong));
-                Log.i("val", String.valueOf(toLat));
-                Log.i("val", String.valueOf(toLong));
+//            Log.i("val", String.valueOf(fromLat));
+//            Log.i("val", String.valueOf(fromLong));
+//            Log.i("val", String.valueOf(toLat));
+//            Log.i("val", String.valueOf(toLong));
 
-                startActivity(intent);
-            }
+            startActivity(intent);
         });
     }
+
 
 
 
@@ -340,7 +348,13 @@ public class BusSeatSelection extends AppCompatActivity
                         }
                     }
 
+                    Log.i("val", String.valueOf(fromLat));
+                    Log.i("val", String.valueOf(fromLong));
+                    Log.i("val", String.valueOf(toLat));
+                    Log.i("val", String.valueOf(toLong));
 
+                    double dist = getDistanceFromLatLonInKm(fromLat, fromLong, toLat, toLong);
+                    Log.i("dist = " , String.valueOf(dist));
                 }
             }
         }, new Response.ErrorListener() {
@@ -352,5 +366,24 @@ public class BusSeatSelection extends AppCompatActivity
         });
 
         requestQueue.add(jsonObjectRequest);
+    }
+
+    double getDistanceFromLatLonInKm(double lat1, double lon1, double lat2, double lon2)
+    {
+        double R = 6371; // Radius of the earth in km
+        double dLat = deg2rad(lat2-lat1);  // deg2rad below
+        double dLon = deg2rad(lon2-lon1);
+        double a =
+                Math.sin(dLat/2) * Math.sin(dLat/2) +
+                        Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+                                Math.sin(dLon/2) * Math.sin(dLon/2);
+
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        return R * c;
+    }
+
+    double deg2rad(double deg)
+    {
+        return deg * (Math.PI/180);
     }
 }
