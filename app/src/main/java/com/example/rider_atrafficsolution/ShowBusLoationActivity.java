@@ -38,6 +38,10 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
 
     LocationManager locationManager;
     LocationListener locationListener;
+
+    double minDistLat;
+    double minDistLong;
+
 //    double fromLat;
 //    double fromLong;
 //    double toLat;
@@ -59,11 +63,19 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_bus_loation);
+
+        minDistLat = getIntent().getDoubleExtra("minDistLat", 1);
+        minDistLong = getIntent().getDoubleExtra("minDistLong", 1);
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+
+
+        Log.i("v", String.valueOf(minDistLat));
+        Log.i("v", String.valueOf(minDistLong));
 
 
 //        Log.i("map", String.valueOf(BusSeatSelection.fromLat));

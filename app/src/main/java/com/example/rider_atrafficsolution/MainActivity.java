@@ -82,15 +82,16 @@ public class MainActivity extends AppCompatActivity  {
     }
 
 
-    public void postData(String src, String dst, double fare)
+    public void postData(double no, double dst, double lat, double longt)
     {
         try {
             RequestQueue requestQueue = Volley.newRequestQueue(context);
-            String URL = "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/fare.json";
+            String URL = "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/BusTable.json";
             JSONObject jsonBody = new JSONObject();
-            jsonBody.put("location1", src);
-            jsonBody.put("location2", dst);
-            jsonBody.put("fare", fare);
+            jsonBody.put("busNo", no);
+            jsonBody.put("busID", dst);
+            jsonBody.put("lat", lat);
+            jsonBody.put("long", longt);
 
 
             final String requestBody = jsonBody.toString();

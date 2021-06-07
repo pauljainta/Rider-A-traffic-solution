@@ -41,12 +41,16 @@ public class BusSeatSelection extends AppCompatActivity
     List<String> buses;
     private Button confirmButton;
     TextView fareShowTextView;
+    List<Double> distanceList;
+    List<Double> currentLats;
+    List<Double> currentLongs;
 
 
     public List<Double> latlong;
     public static double fromLat = 0, fromLong = 0 ,toLat = 0, toLong = 0;
 
-    public double h1, h2, h3, h4;
+    public double minDistLat;
+    public double minDistLong;
 
     ArrayAdapter<String> busAdapter;
     @Override
@@ -71,7 +75,6 @@ public class BusSeatSelection extends AppCompatActivity
         locations.add("Farmgate");
         locations.add("Malibag");
         locations.add("Mirpur");
-        locations.add("Mohdpur");
 
 
         buses = new ArrayList<String>();
@@ -85,6 +88,10 @@ public class BusSeatSelection extends AppCompatActivity
         counts.add("4");
 
         latlong = new ArrayList<>();
+        distanceList = new ArrayList<>();
+        currentLats = new ArrayList<>();
+        currentLongs = new ArrayList<>();
+
         // Creating adapter for spinner
         ArrayAdapter<String> locationAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, locations);
 
@@ -176,7 +183,31 @@ public class BusSeatSelection extends AppCompatActivity
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
             {
+                GetMethodForCurrentDistance();
 
+                if(!distanceList.isEmpty())
+                {
+                    double min = distanceList.get(0);
+                    minDistLat = currentLats.get(0);
+                    minDistLong = currentLongs.get(0);
+
+                    for(int i=0;i<distanceList.size();i++)
+                    {
+                        Double d = distanceList.get(i);
+                        Log.i("dst", String.valueOf(d));
+                        if (min > d)
+                        {
+                            min = d;
+                            minDistLat = currentLats.get(i);
+                            minDistLong = currentLongs.get(i);
+                        }
+                    }
+                    Log.i("min", String.valueOf(min));
+                    Log.i("minLat", String.valueOf(minDistLat));
+                    Log.i("minLong", String.valueOf(minDistLong));
+                }
+
+                hudai();
             }
 
             @Override
@@ -199,7 +230,8 @@ public class BusSeatSelection extends AppCompatActivity
 
             Intent intent = new Intent(getApplicationContext(),ShowBusLoationActivity.class);
 
-
+            intent.putExtra("minDistLat", minDistLat);
+            intent.putExtra("minDistLong", minDistLong);
 
             startActivity(intent);
         });
@@ -224,8 +256,20 @@ public class BusSeatSelection extends AppCompatActivity
             Log.i("d", String.valueOf(d));
         }
 
-        double dist = getDistanceFromLatLonInKm(fromLat, fromLong, toLat, toLong);
-        Log.i("dist in hudai = " , String.valueOf(dist));
+//        double dist = getDistanceFromLatLonInKm(fromLat, fromLong, toLat, toLong);
+//        Log.i("dist in hudai = " , String.valueOf(dist));
+
+
+
+        for(Double d : currentLats)
+        {
+            Log.i("lat", String.valueOf(d));
+        }
+
+        for(Double d : currentLongs)
+        {
+            Log.i("long", String.valueOf(d));
+        }
     }
 
     public void GetMethodForFare()
@@ -387,8 +431,6 @@ public class BusSeatSelection extends AppCompatActivity
 //                                h1 = Double.parseDouble(response.getJSONObject(key).getString("lat"));
 //                                h2 = Double.parseDouble(response.getJSONObject(key).getString("long"));
 
-
-                                h1 = 100;
                             }
 
                             else if(to.equalsIgnoreCase(location))
@@ -425,7 +467,7 @@ public class BusSeatSelection extends AppCompatActivity
         {
             Log.i("d", String.valueOf(d));
         }
-        Log.i("h1", String.valueOf(h1));
+
 //        Log.i("get", String.valueOf(h2));
 //        Log.i("get", String.valueOf(h3));
 //        Log.i("get", String.valueOf(h4));
@@ -436,6 +478,60 @@ public class BusSeatSelection extends AppCompatActivity
 
 
 
+    public void GetMethodForCurrentDistance()
+    {
+        RequestQueue requestQueue = Volley.newRequestQueue(context);
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/BusTable.json", null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response)
+            {
+                //try
+                {
+                    JSONArray array = response.names();
+                    int busno = Integer.parseInt(whichbuSpinner.getSelectedItem().toString());
+
+                    distanceList.clear();
+                    currentLats.clear();
+                    currentLongs.clear();
+
+                    for(int i=0;i<array.length();i++)
+                    {
+                        try
+                        {
+                            String key = array.getString(i);
+
+                            int busnoFromJson = response.getJSONObject(key).getInt("busNo");
+
+                            if(busno == busnoFromJson)
+                            {
+                                double lat = response.getJSONObject(key).getDouble("lat");
+                                double longt = response.getJSONObject(key).getDouble("long");
+
+                                double dist = getDistanceFromLatLonInKm(latlong.get(0), latlong.get(1), lat, longt);
+
+                                distanceList.add(dist);
+                                currentLats.add(lat);
+                                currentLongs.add(longt);
+                            }
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
+                Log.d("error: " , error.getMessage());
+            }
+        });
+
+        requestQueue.add(jsonObjectRequest);
+    }
 
 
 
