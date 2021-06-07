@@ -36,7 +36,6 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
 
     private GoogleMap mMap;
 
-
     LocationManager locationManager;
     LocationListener locationListener;
 //    double fromLat;
@@ -67,10 +66,10 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
 
 
 
-        Log.i("val", String.valueOf(BusSeatSelection.fromLat));
-        Log.i("val", String.valueOf(BusSeatSelection.fromLong));
-        Log.i("val", String.valueOf(BusSeatSelection.toLat));
-        Log.i("val", String.valueOf(BusSeatSelection.toLong));
+//        Log.i("map", String.valueOf(BusSeatSelection.fromLat));
+//        Log.i("map", String.valueOf(BusSeatSelection.fromLong));
+//        Log.i("map", String.valueOf(BusSeatSelection.toLat));
+//        Log.i("map", String.valueOf(BusSeatSelection.toLong));
     }
 
 
@@ -104,6 +103,13 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
 //        fromLong = getIntent().getDoubleExtra("fromLong", 23.732972);
 //        toLat = getIntent().getDoubleExtra("toLat", 23.732972);
 //        toLong = getIntent().getDoubleExtra("toLong", 23.732972);
+
+        Log.i("map", String.valueOf(BusSeatSelection.fromLat));
+        Log.i("map", String.valueOf(BusSeatSelection.fromLong));
+        Log.i("map", String.valueOf(BusSeatSelection.toLat));
+        Log.i("map", String.valueOf(BusSeatSelection.toLong));
+
+
 
         LatLng startCounter = new LatLng(BusSeatSelection.fromLat, BusSeatSelection.fromLong);
         LatLng endCounter = new LatLng(BusSeatSelection.toLat, BusSeatSelection.toLong);

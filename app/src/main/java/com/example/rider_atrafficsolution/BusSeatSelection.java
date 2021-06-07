@@ -24,6 +24,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,7 +42,11 @@ public class BusSeatSelection extends AppCompatActivity
     private Button confirmButton;
     TextView fareShowTextView;
 
-    public static double fromLat,fromLong,toLat,toLong;
+
+    public List<Double> latlong;
+    public static double fromLat = 0, fromLong = 0 ,toLat = 0, toLong = 0;
+
+    public double h1, h2, h3, h4;
 
     ArrayAdapter<String> busAdapter;
     @Override
@@ -76,6 +84,7 @@ public class BusSeatSelection extends AppCompatActivity
         counts.add("3");
         counts.add("4");
 
+        latlong = new ArrayList<>();
         // Creating adapter for spinner
         ArrayAdapter<String> locationAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, locations);
 
@@ -102,8 +111,7 @@ public class BusSeatSelection extends AppCompatActivity
 //        toLat = 23.733;
 //        toLong = 90.4172;
 
-        double d = getDistanceFromLatLonInKm(fromLat, fromLong, toLat, toLong);
-        System.out.println("dist = " + d);
+
 
         busfromSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
         {
@@ -114,6 +122,8 @@ public class BusSeatSelection extends AppCompatActivity
                 from = busfromSpinner.getSelectedItem().toString();
                 GetMethodForBusRoute();
                 GetMethodForFare();
+                GetMethodForCoOrdinates();
+                hudai();
             }
 
             @Override
@@ -132,6 +142,8 @@ public class BusSeatSelection extends AppCompatActivity
                 to = bustoSpinner.getSelectedItem().toString();
                 GetMethodForBusRoute();
                 GetMethodForFare();
+                GetMethodForCoOrdinates();
+                hudai();
             }
 
             @Override
@@ -149,6 +161,22 @@ public class BusSeatSelection extends AppCompatActivity
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
             {
                 GetMethodForFare();
+                hudai();
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent)
+            {
+
+            }
+        });
+
+        whichbuSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+        {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
+            {
+
             }
 
             @Override
@@ -160,29 +188,45 @@ public class BusSeatSelection extends AppCompatActivity
 
         confirmButton.setOnClickListener(v ->
         {
-            GetMethodForCoOrdinates();
+            //GetMethodForCoOrdinates();
 
-            double dist = getDistanceFromLatLonInKm(fromLat, fromLong, toLat, toLong);
-            System.out.println("dist = " + dist);
+
+//            double dist = getDistanceFromLatLonInKm(fromLat, fromLong, toLat, toLong);
+//            System.out.println("dist = " + dist);
+
+            hudai();
 
 
             Intent intent = new Intent(getApplicationContext(),ShowBusLoationActivity.class);
-//                intent.putExtra("fromLat", fromLat);
-//                intent.putExtra("fromLong", fromLong);
-//                intent.putExtra("toLat", toLat);
-//                intent.putExtra("toLong", toLong);
 
-//            Log.i("val", String.valueOf(fromLat));
-//            Log.i("val", String.valueOf(fromLong));
-//            Log.i("val", String.valueOf(toLat));
-//            Log.i("val", String.valueOf(toLong));
+
 
             startActivity(intent);
         });
     }
 
 
+    public void hudai()
+    {
+//        Log.i("hudai", String.valueOf(fromLat));
+//        Log.i("hudai", String.valueOf(fromLong));
+//        Log.i("hudai", String.valueOf(toLat));
+//        Log.i("hudai", String.valueOf(toLong));
+//        Log.i("hudai", String.valueOf(h1));
 
+        for (String b : buses)
+        {
+            Log.i("b", b);
+        }
+
+        for (Double d : latlong)
+        {
+            Log.i("d", String.valueOf(d));
+        }
+
+        double dist = getDistanceFromLatLonInKm(fromLat, fromLong, toLat, toLong);
+        Log.i("dist in hudai = " , String.valueOf(dist));
+    }
 
     public void GetMethodForFare()
     {
@@ -289,10 +333,7 @@ public class BusSeatSelection extends AppCompatActivity
                         }
                     }
 
-                    for (String b : buses)
-                    {
-                        Log.i("bus", b);
-                    }
+
 
                     busAdapter = new ArrayAdapter<String>(context, android.R.layout.simple_spinner_item, buses);
 
@@ -308,6 +349,11 @@ public class BusSeatSelection extends AppCompatActivity
         });
 
         requestQueue.add(jsonObjectRequest);
+
+//        for (String b : buses)
+//        {
+//            Log.i("b", b);
+//        }
     }
 
     public void GetMethodForCoOrdinates()
@@ -321,6 +367,7 @@ public class BusSeatSelection extends AppCompatActivity
                 {
                     JSONArray array = response.names();
 
+                    latlong.clear();
 
                     for(int i=0;i<array.length();i++)
                     {
@@ -333,12 +380,26 @@ public class BusSeatSelection extends AppCompatActivity
                             {
                                 fromLat = Double.parseDouble(response.getJSONObject(key).getString("lat"));
                                 fromLong = Double.parseDouble(response.getJSONObject(key).getString("long"));
+
+                                latlong.add(fromLat);
+                                latlong.add(fromLong);
+
+//                                h1 = Double.parseDouble(response.getJSONObject(key).getString("lat"));
+//                                h2 = Double.parseDouble(response.getJSONObject(key).getString("long"));
+
+
+                                h1 = 100;
                             }
 
-                            if(to.equalsIgnoreCase(location))
+                            else if(to.equalsIgnoreCase(location))
                             {
                                 toLat = Double.parseDouble(response.getJSONObject(key).getString("lat"));
                                 toLong = Double.parseDouble(response.getJSONObject(key).getString("long"));
+
+                                latlong.add(toLat);
+                                latlong.add(toLong);
+//                                h3 = Double.parseDouble(response.getJSONObject(key).getString("lat"));
+//                                h4 = Double.parseDouble(response.getJSONObject(key).getString("long"));
                             }
 
                         }
@@ -348,13 +409,6 @@ public class BusSeatSelection extends AppCompatActivity
                         }
                     }
 
-                    Log.i("val", String.valueOf(fromLat));
-                    Log.i("val", String.valueOf(fromLong));
-                    Log.i("val", String.valueOf(toLat));
-                    Log.i("val", String.valueOf(toLong));
-
-                    double dist = getDistanceFromLatLonInKm(fromLat, fromLong, toLat, toLong);
-                    Log.i("dist = " , String.valueOf(dist));
                 }
             }
         }, new Response.ErrorListener() {
@@ -366,7 +420,25 @@ public class BusSeatSelection extends AppCompatActivity
         });
 
         requestQueue.add(jsonObjectRequest);
+
+        for (Double d : latlong)
+        {
+            Log.i("d", String.valueOf(d));
+        }
+        Log.i("h1", String.valueOf(h1));
+//        Log.i("get", String.valueOf(h2));
+//        Log.i("get", String.valueOf(h3));
+//        Log.i("get", String.valueOf(h4));
+//
+//        double dist = getDistanceFromLatLonInKm(h1, h2, h3, h4);
+//        Log.i("dist = " , String.valueOf(dist));
     }
+
+
+
+
+
+
 
     double getDistanceFromLatLonInKm(double lat1, double lon1, double lat2, double lon2)
     {
@@ -386,4 +458,6 @@ public class BusSeatSelection extends AppCompatActivity
     {
         return deg * (Math.PI/180);
     }
+
+
 }
