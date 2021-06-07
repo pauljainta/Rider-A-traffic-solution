@@ -39,20 +39,28 @@ public class BusSeatSelection extends AppCompatActivity
     private String to;
     private double fare;
     List<String> buses;
+    List<String> locations;
+    List<String> counts;
+
     private Button confirmButton;
     TextView fareShowTextView;
     List<Double> distanceList;
     List<Double> currentLats;
     List<Double> currentLongs;
-
+    TextView timeTextView;
 
     public List<Double> latlong;
-    public static double fromLat = 0, fromLong = 0 ,toLat = 0, toLong = 0;
+    //public static double fromLat = 0, fromLong = 0 ,toLat = 0, toLong = 0;
 
     public double minDistLat;
     public double minDistLong;
 
     ArrayAdapter<String> busAdapter;
+    ArrayAdapter<String> locationAdapter;
+    ArrayAdapter<String > countsAdapter;
+
+    private RequestQueue requestQueue;
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -65,11 +73,13 @@ public class BusSeatSelection extends AppCompatActivity
         seatCountSpinner = findViewById(R.id.seatCountSpinner);
         fareShowTextView = findViewById(R.id.fareShowTextView);
         confirmButton = findViewById(R.id.confirmButton);
+        timeTextView = findViewById(R.id.timeTextView);
 
         context = getBaseContext();
 
 
-        List<String> locations = new ArrayList<String>();
+        locations = new ArrayList<String>();
+        locations.add(".");
         locations.add("Motijheel");
         locations.add("Shahbag");
         locations.add("Farmgate");
@@ -81,7 +91,9 @@ public class BusSeatSelection extends AppCompatActivity
         from = "";
         to = "";
 
-        List<String> counts = new ArrayList<>();
+        buses.add(".");
+
+        counts = new ArrayList<>();
         counts.add("1");
         counts.add("2");
         counts.add("3");
@@ -93,11 +105,11 @@ public class BusSeatSelection extends AppCompatActivity
         currentLongs = new ArrayList<>();
 
         // Creating adapter for spinner
-        ArrayAdapter<String> locationAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, locations);
+        locationAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, locations);
 
         busAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, buses);
 
-        ArrayAdapter<String > countsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, counts);
+        countsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, counts);
 
 
         // Drop down layout style - list view with radio button
@@ -113,11 +125,7 @@ public class BusSeatSelection extends AppCompatActivity
         whichbuSpinner.setAdapter(busAdapter);
         seatCountSpinner.setAdapter(countsAdapter);
 
-//        fromLat = 23.7561;
-//        fromLong = 90.3872;
-//        toLat = 23.733;
-//        toLong = 90.4172;
-
+        requestQueue = Volley.newRequestQueue(context);
 
 
         busfromSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
@@ -126,10 +134,17 @@ public class BusSeatSelection extends AppCompatActivity
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
             {
+                if (position == 0)
+                {
+                    return;
+                }
                 from = busfromSpinner.getSelectedItem().toString();
                 GetMethodForBusRoute();
                 GetMethodForFare();
                 GetMethodForCoOrdinates();
+
+                timeTextView.setText("");
+                //updateTime();
                 hudai();
             }
 
@@ -146,10 +161,17 @@ public class BusSeatSelection extends AppCompatActivity
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
             {
+                if (position == 0)
+                {
+                    return;
+                }
                 to = bustoSpinner.getSelectedItem().toString();
                 GetMethodForBusRoute();
                 GetMethodForFare();
                 GetMethodForCoOrdinates();
+
+                timeTextView.setText("");
+                //updateTime();
                 hudai();
             }
 
@@ -183,29 +205,14 @@ public class BusSeatSelection extends AppCompatActivity
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
             {
+                if(position == 0)
+                    return;
+
                 GetMethodForCurrentDistance();
 
-                if(!distanceList.isEmpty())
-                {
-                    double min = distanceList.get(0);
-                    minDistLat = currentLats.get(0);
-                    minDistLong = currentLongs.get(0);
+                //timeTextView.setText("");
 
-                    for(int i=0;i<distanceList.size();i++)
-                    {
-                        Double d = distanceList.get(i);
-                        Log.i("dst", String.valueOf(d));
-                        if (min > d)
-                        {
-                            min = d;
-                            minDistLat = currentLats.get(i);
-                            minDistLong = currentLongs.get(i);
-                        }
-                    }
-                    Log.i("min", String.valueOf(min));
-                    Log.i("minLat", String.valueOf(minDistLat));
-                    Log.i("minLong", String.valueOf(minDistLong));
-                }
+                //updateTime();
 
                 hudai();
             }
@@ -219,8 +226,6 @@ public class BusSeatSelection extends AppCompatActivity
 
         confirmButton.setOnClickListener(v ->
         {
-            //GetMethodForCoOrdinates();
-
 
 //            double dist = getDistanceFromLatLonInKm(fromLat, fromLong, toLat, toLong);
 //            System.out.println("dist = " + dist);
@@ -232,6 +237,11 @@ public class BusSeatSelection extends AppCompatActivity
 
             intent.putExtra("minDistLat", minDistLat);
             intent.putExtra("minDistLong", minDistLong);
+
+            intent.putExtra("fromLat", latlong.get(0));
+            intent.putExtra("fromLong", latlong.get(1));
+            intent.putExtra("toLat", latlong.get(2));
+            intent.putExtra("toLong", latlong.get(3));
 
             startActivity(intent);
         });
@@ -272,9 +282,39 @@ public class BusSeatSelection extends AppCompatActivity
         }
     }
 
+    public void updateTime()
+    {
+        if(!distanceList.isEmpty())
+        {
+            double min = distanceList.get(0);
+            minDistLat = currentLats.get(0);
+            minDistLong = currentLongs.get(0);
+
+            for(int i=0;i<distanceList.size();i++)
+            {
+                Double d = distanceList.get(i);
+                Log.i("dst", String.valueOf(d));
+                if (min > d)
+                {
+                    min = d;
+                    minDistLat = currentLats.get(i);
+                    minDistLong = currentLongs.get(i);
+                }
+            }
+            Log.i("min", String.valueOf(min));
+            Log.i("minLat", String.valueOf(minDistLat));
+            Log.i("minLong", String.valueOf(minDistLong));
+
+            int time = (int) Math.ceil(min/15 * 60);
+            Log.i("time", String.valueOf(time) + " mins");
+
+            timeTextView.setText(String.format("%s mins", String.valueOf(time)));
+        }
+    }
+
     public void GetMethodForFare()
     {
-        RequestQueue requestQueue = Volley.newRequestQueue(context);
+        //RequestQueue requestQueue = Volley.newRequestQueue(context);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/fare.json", null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response)
@@ -329,7 +369,7 @@ public class BusSeatSelection extends AppCompatActivity
 
     public void GetMethodForBusRoute()
     {
-        RequestQueue requestQueue = Volley.newRequestQueue(context);
+        //RequestQueue requestQueue = Volley.newRequestQueue(context);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/BusRoute.json", null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response)
@@ -339,6 +379,7 @@ public class BusSeatSelection extends AppCompatActivity
                     JSONArray array = response.names();
 
                     buses.clear();
+                    buses.add(".");
 
                     for(int i=0;i<array.length();i++)
                     {
@@ -402,8 +443,9 @@ public class BusSeatSelection extends AppCompatActivity
 
     public void GetMethodForCoOrdinates()
     {
-        RequestQueue requestQueue = Volley.newRequestQueue(context);
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/CoOrdinates.json", null, new Response.Listener<JSONObject>() {
+        //RequestQueue requestQueue = Volley.newRequestQueue(context);
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/CoOrdinates.json", null, new Response.Listener<JSONObject>()
+        {
             @Override
             public void onResponse(JSONObject response)
             {
@@ -413,35 +455,40 @@ public class BusSeatSelection extends AppCompatActivity
 
                     latlong.clear();
 
-                    for(int i=0;i<array.length();i++)
+                    for (int i = 0; i < array.length(); i++)
                     {
                         try
                         {
                             String key = array.getString(i);
                             String location = response.getJSONObject(key).getString("location");
 
-                            if(from.equalsIgnoreCase(location))
+                            if (from.equalsIgnoreCase(location))
                             {
-                                fromLat = Double.parseDouble(response.getJSONObject(key).getString("lat"));
-                                fromLong = Double.parseDouble(response.getJSONObject(key).getString("long"));
+//                                fromLat = Double.parseDouble(response.getJSONObject(key).getString("lat"));
+//                                fromLong = Double.parseDouble(response.getJSONObject(key).getString("long"));
 
-                                latlong.add(fromLat);
-                                latlong.add(fromLong);
+//                                latlong.add(fromLat);
+//                                latlong.add(fromLong);
 
-//                                h1 = Double.parseDouble(response.getJSONObject(key).getString("lat"));
-//                                h2 = Double.parseDouble(response.getJSONObject(key).getString("long"));
+                                double h1 = Double.parseDouble(response.getJSONObject(key).getString("lat"));
+                                double h2 = Double.parseDouble(response.getJSONObject(key).getString("long"));
 
-                            }
+                                latlong.add(h1);
+                                latlong.add(h2);
 
-                            else if(to.equalsIgnoreCase(location))
+                            } else if (to.equalsIgnoreCase(location))
                             {
-                                toLat = Double.parseDouble(response.getJSONObject(key).getString("lat"));
-                                toLong = Double.parseDouble(response.getJSONObject(key).getString("long"));
+//                                toLat = Double.parseDouble(response.getJSONObject(key).getString("lat"));
+//                                toLong = Double.parseDouble(response.getJSONObject(key).getString("long"));
 
-                                latlong.add(toLat);
-                                latlong.add(toLong);
-//                                h3 = Double.parseDouble(response.getJSONObject(key).getString("lat"));
-//                                h4 = Double.parseDouble(response.getJSONObject(key).getString("long"));
+//                                latlong.add(toLat);
+//                                latlong.add(toLong);
+
+                                double h3 = Double.parseDouble(response.getJSONObject(key).getString("lat"));
+                                double h4 = Double.parseDouble(response.getJSONObject(key).getString("long"));
+
+                                latlong.add(h3);
+                                latlong.add(h4);
                             }
 
                         }
@@ -453,11 +500,12 @@ public class BusSeatSelection extends AppCompatActivity
 
                 }
             }
-        }, new Response.ErrorListener() {
+        }, new Response.ErrorListener()
+        {
             @Override
             public void onErrorResponse(VolleyError error)
             {
-                Log.d("error: " , error.getMessage());
+                Log.d("error: ", error.getMessage());
             }
         });
 
@@ -480,7 +528,7 @@ public class BusSeatSelection extends AppCompatActivity
 
     public void GetMethodForCurrentDistance()
     {
-        RequestQueue requestQueue = Volley.newRequestQueue(context);
+        //RequestQueue requestQueue = Volley.newRequestQueue(context);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/BusTable.json", null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response)
@@ -488,6 +536,7 @@ public class BusSeatSelection extends AppCompatActivity
                 //try
                 {
                     JSONArray array = response.names();
+
                     int busno = Integer.parseInt(whichbuSpinner.getSelectedItem().toString());
 
                     distanceList.clear();
@@ -507,6 +556,9 @@ public class BusSeatSelection extends AppCompatActivity
                                 double lat = response.getJSONObject(key).getDouble("lat");
                                 double longt = response.getJSONObject(key).getDouble("long");
 
+//                                double lat = 23.7234;
+//                                double longt = 90.4234;
+
                                 double dist = getDistanceFromLatLonInKm(latlong.get(0), latlong.get(1), lat, longt);
 
                                 distanceList.add(dist);
@@ -519,6 +571,8 @@ public class BusSeatSelection extends AppCompatActivity
                             e.printStackTrace();
                         }
                     }
+
+                    updateTime();
 
                 }
             }

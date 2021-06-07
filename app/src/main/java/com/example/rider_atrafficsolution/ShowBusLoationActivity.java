@@ -42,10 +42,10 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
     double minDistLat;
     double minDistLong;
 
-//    double fromLat;
-//    double fromLong;
-//    double toLat;
-//    double toLong;
+    double fromLat;
+    double fromLong;
+    double toLat;
+    double toLong;
 
 //    @Override
 //    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -66,6 +66,11 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
 
         minDistLat = getIntent().getDoubleExtra("minDistLat", 1);
         minDistLong = getIntent().getDoubleExtra("minDistLong", 1);
+
+        fromLat = getIntent().getDoubleExtra("fromLat", 1);
+        fromLong = getIntent().getDoubleExtra("fromLong", 1);
+        toLat = getIntent().getDoubleExtra("toLat", 1);
+        toLong = getIntent().getDoubleExtra("toLong", 1);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -126,15 +131,18 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
 //        toLat = getIntent().getDoubleExtra("toLat", 23.732972);
 //        toLong = getIntent().getDoubleExtra("toLong", 23.732972);
 
-        Log.i("map", String.valueOf(BusSeatSelection.fromLat));
-        Log.i("map", String.valueOf(BusSeatSelection.fromLong));
-        Log.i("map", String.valueOf(BusSeatSelection.toLat));
-        Log.i("map", String.valueOf(BusSeatSelection.toLong));
+//        Log.i("map", String.valueOf(BusSeatSelection.fromLat));
+//        Log.i("map", String.valueOf(BusSeatSelection.fromLong));
+//        Log.i("map", String.valueOf(BusSeatSelection.toLat));
+//        Log.i("map", String.valueOf(BusSeatSelection.toLong));
 
 
 
-        LatLng startCounter = new LatLng(BusSeatSelection.fromLat, BusSeatSelection.fromLong);
-        LatLng endCounter = new LatLng(BusSeatSelection.toLat, BusSeatSelection.toLong);
+//        LatLng startCounter = new LatLng(BusSeatSelection.fromLat, BusSeatSelection.fromLong);
+//        LatLng endCounter = new LatLng(BusSeatSelection.toLat, BusSeatSelection.toLong);
+
+        LatLng startCounter = new LatLng(fromLat, fromLong);
+        LatLng endCounter = new LatLng(toLat, toLong);
         LatLng busLocation=new LatLng(minDistLat,minDistLong);
 
         showLocation(startCounter,"Start");
