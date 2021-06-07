@@ -47,17 +47,17 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
 //    double toLat;
 //    double toLong;
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-        if(grantResults.length>0 && grantResults[0]== PackageManager.PERMISSION_GRANTED)
-        {
-
-            if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_GRANTED)
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,locationListener);
-        }
-    }
+//    @Override
+//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+//
+//        if(grantResults.length>0 && grantResults[0]== PackageManager.PERMISSION_GRANTED)
+//        {
+//
+//            if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_GRANTED)
+//                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,locationListener);
+//        }
+//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,7 +88,17 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
     public void showLocation(LatLng latLng,String comment)
     {
 
-        mMap.addMarker(new MarkerOptions().position(latLng).title(comment));
+        if(comment.equalsIgnoreCase("Bus"))
+        {
+            mMap.addMarker(new MarkerOptions().position(latLng).title("Bus Location")
+                    // below line is use to add custom marker on our map.
+                    .icon(BitmapFromVector(getApplicationContext(), R.drawable.bus)));                //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latLng.latitude, latLng.longitude), 12.0f));
+        }
+
+        else {
+            mMap.addMarker(new MarkerOptions().position(latLng).title(comment));
+        }
 
     }
 
@@ -125,37 +135,42 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
 
         LatLng startCounter = new LatLng(BusSeatSelection.fromLat, BusSeatSelection.fromLong);
         LatLng endCounter = new LatLng(BusSeatSelection.toLat, BusSeatSelection.toLong);
+        LatLng busLocation=new LatLng(minDistLat,minDistLong);
+
+        showLocation(startCounter,"Start");
+        showLocation(endCounter,"End");
+        showLocation(busLocation,"Bus");
 
 
 
-        locationManager=(LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-
-        locationListener=new LocationListener() {
-            @Override
-            public void onLocationChanged(@NonNull Location location) {
-
-                //    Log.i("Location:",location.toString());
-                mMap.clear();
-                showLocation(startCounter,"Start");
-                showLocation(endCounter,"End");
-                LatLng latLng=new LatLng(location.getLatitude(),location.getLongitude());
-                mMap.addMarker(new MarkerOptions().position(latLng).title("Bus Location")
-                        // below line is use to add custom marker on our map.
-                        .icon(BitmapFromVector(getApplicationContext(), R.drawable.bus)));                //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 12.0f));
-
-
-            }
-        };
-        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED)
-        {
-            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},1);
-        }
-        else
-        {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,locationListener);
-
-        }
+//        locationManager=(LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+//
+//        locationListener=new LocationListener() {
+//            @Override
+//            public void onLocationChanged(@NonNull Location location) {
+//
+//                //    Log.i("Location:",location.toString());
+//                mMap.clear();
+//                showLocation(startCounter,"Start");
+//                showLocation(endCounter,"End");
+//                LatLng latLng=new LatLng(location.getLatitude(),location.getLongitude());
+//                mMap.addMarker(new MarkerOptions().position(latLng).title("Bus Location")
+//                        // below line is use to add custom marker on our map.
+//                        .icon(BitmapFromVector(getApplicationContext(), R.drawable.bus)));                //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+//                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 12.0f));
+//
+//
+//            }
+//        };
+//        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED)
+//        {
+//            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},1);
+//        }
+//        else
+//        {
+//            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,locationListener);
+//
+//        }
 
 
 
