@@ -76,6 +76,8 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
     private Util util;
     private AlertDialog.Builder builder;
 
+    Boolean isBusAlertShown;
+
     LatLng startCounter,endCounter,busLocation;
 
 
@@ -109,6 +111,7 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
 //        Log.i("v", String.valueOf(minDistLong));
         Log.i("id", String.valueOf(busId));
 
+        isBusAlertShown=false;
         util=new Util();
         builder = new AlertDialog.Builder(this);
 
@@ -120,6 +123,7 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
                         showLocation(startCounter,"Start");
                         showLocation(endCounter,"End");
                         showLocation(new LatLng(minDistLat, minDistLong), "Bus");
+
 
                     }});
 
@@ -152,14 +156,19 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
 
     public void updateUI()
     {
+        Log.i("bal","bal update");
         mMap.clear();
         showLocation(startCounter,"Start");
         showLocation(endCounter,"End");
         showLocation(new LatLng(minDistLat, minDistLong), "Bus");
 
-        if(util.getDistanceFromLatLonInKm(startCounter.latitude,startCounter.longitude,busLocation.latitude,busLocation.longitude)<=0.5)
+        Log.i("distance",util.getDistanceFromLatLonInKm(startCounter.latitude,startCounter.longitude,busLocation.latitude,busLocation.longitude)+"");
+
+        if(util.getDistanceFromLatLonInKm(startCounter.latitude,startCounter.longitude,busLocation.latitude,busLocation.longitude)<=3 && !isBusAlertShown)
         {
 
+            isBusAlertShown=true;
+            Log.i("bal","bal update 2");
             AlertDialog alert = builder.create();
             alert.setTitle("Bus has Arrived");
             alert.show();
