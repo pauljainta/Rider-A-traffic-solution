@@ -1,6 +1,7 @@
 package com.example.rider_atrafficsolution;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
@@ -51,9 +52,6 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
 
     Context context;
 
-    LocationManager locationManager;
-    LocationListener locationListener;
-
     RequestQueue requestQueue;
 
     double minDistLat;
@@ -65,18 +63,8 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
     double toLong;
 
     int busId;
+    private AlertDialog.Builder builder;
 
-//    @Override
-//    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//
-//        if(grantResults.length>0 && grantResults[0]== PackageManager.PERMISSION_GRANTED)
-//        {
-//
-//            if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_GRANTED)
-//                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,locationListener);
-//        }
-//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,6 +95,8 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
 //        Log.i("v", String.valueOf(minDistLat));
 //        Log.i("v", String.valueOf(minDistLong));
         Log.i("id", String.valueOf(busId));
+
+        builder = new AlertDialog.Builder(this);
 
 
 //        Log.i("map", String.valueOf(BusSeatSelection.fromLat));
@@ -147,25 +137,7 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-      //  LatLng startCounter = null,endCounter=null;
 
-//        Log.i("bal","bal");
-
-
-//        fromLat = getIntent().getDoubleExtra("fromLat", 23.732972);
-//        fromLong = getIntent().getDoubleExtra("fromLong", 23.732972);
-//        toLat = getIntent().getDoubleExtra("toLat", 23.732972);
-//        toLong = getIntent().getDoubleExtra("toLong", 23.732972);
-
-//        Log.i("map", String.valueOf(BusSeatSelection.fromLat));
-//        Log.i("map", String.valueOf(BusSeatSelection.fromLong));
-//        Log.i("map", String.valueOf(BusSeatSelection.toLat));
-//        Log.i("map", String.valueOf(BusSeatSelection.toLong));
-
-
-
-//        LatLng startCounter = new LatLng(BusSeatSelection.fromLat, BusSeatSelection.fromLong);
-//        LatLng endCounter = new LatLng(BusSeatSelection.toLat, BusSeatSelection.toLong);
 
         LatLng startCounter = new LatLng(fromLat, fromLong);
         LatLng endCounter = new LatLng(toLat, toLong);
@@ -191,34 +163,7 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
         };
         handler.postDelayed(r, 0000);
 
-//        locationManager=(LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
-//
-//        locationListener=new LocationListener() {
-//            @Override
-//            public void onLocationChanged(@NonNull Location location) {
-//
-//                //    Log.i("Location:",location.toString());
-//                mMap.clear();
-//                showLocation(startCounter,"Start");
-//                showLocation(endCounter,"End");
-//                LatLng latLng=new LatLng(location.getLatitude(),location.getLongitude());
-//                mMap.addMarker(new MarkerOptions().position(latLng).title("Bus Location")
-//                        // below line is use to add custom marker on our map.
-//                        .icon(BitmapFromVector(getApplicationContext(), R.drawable.bus)));                //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-//                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 12.0f));
-//
-//
-//            }
-//        };
-//        if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED)
-//        {
-//            ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},1);
-//        }
-//        else
-//        {
-//            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,locationListener);
-//
-//        }
+
 
 
 
