@@ -29,6 +29,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
@@ -174,7 +175,6 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
         showLocation(startCounter,"Start");
         showLocation(endCounter,"End");
         showLocation(busLocation,"Bus");
-
 
         Handler handler =new Handler();
         final Runnable r = new Runnable() {
