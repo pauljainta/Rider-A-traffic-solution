@@ -17,8 +17,16 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
+import android.widget.ArrayAdapter;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -28,6 +36,11 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -36,8 +49,12 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
 
     private GoogleMap mMap;
 
+    Context context;
+
     LocationManager locationManager;
     LocationListener locationListener;
+
+    RequestQueue requestQueue;
 
     double minDistLat;
     double minDistLong;
@@ -46,6 +63,8 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
     double fromLong;
     double toLat;
     double toLong;
+
+    int busId;
 
 //    @Override
 //    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -64,6 +83,10 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_bus_loation);
 
+        context = getBaseContext();
+
+        requestQueue = Volley.newRequestQueue(context);
+
         minDistLat = getIntent().getDoubleExtra("minDistLat", 1);
         minDistLong = getIntent().getDoubleExtra("minDistLong", 1);
 
@@ -72,6 +95,8 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
         toLat = getIntent().getDoubleExtra("toLat", 1);
         toLong = getIntent().getDoubleExtra("toLong", 1);
 
+        busId = getIntent().getIntExtra("busId", 1);
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -79,8 +104,9 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
 
 
 
-        Log.i("v", String.valueOf(minDistLat));
-        Log.i("v", String.valueOf(minDistLong));
+//        Log.i("v", String.valueOf(minDistLat));
+//        Log.i("v", String.valueOf(minDistLong));
+        Log.i("id", String.valueOf(busId));
 
 
 //        Log.i("map", String.valueOf(BusSeatSelection.fromLat));
@@ -150,6 +176,15 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
         showLocation(busLocation,"Bus");
 
 
+        Handler handler =new Handler();
+        final Runnable r = new Runnable() {
+            public void run() {
+                handler.postDelayed(this, 30000);
+                Log.i("timer", "updated after 30 seconds");
+
+            }
+        };
+        handler.postDelayed(r, 0000);
 
 //        locationManager=(LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 //
@@ -184,6 +219,54 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
 
     }
 
+    public void GetCurrentLocation()
+    {
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/BusRoute.json", null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response)
+            {
+                //try
+                {
+                    JSONArray array = response.names();
+
+                    for(int i=0;i<array.length();i++)
+                    {
+                        List<String> locations = new ArrayList<>();
+                        try
+                        {
+                            String key = array.getString(i);
+                            locations.add(response.getJSONObject(key).getString("from"));
+                            //Log.i("names", response.getJSONObject(array.getString(i)).getString("from"));
+                            String[] splitted = response.getJSONObject(key).getString("intermediate").split(",");
+                            for(String s : splitted)
+                            {
+                                //Log.i("route", s);
+                                locations.add(s);
+                            }
+                            locations.add(response.getJSONObject(key).getString("to"));
+//                            Log.i("names", array.getString(i));
+
+
+
+
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
+                Log.d("error: " , error.getMessage());
+            }
+        });
+
+        requestQueue.add(jsonObjectRequest);
+    }
 
     private BitmapDescriptor BitmapFromVector(Context context, int vectorResId) {
         // below line is use to generate a drawable.

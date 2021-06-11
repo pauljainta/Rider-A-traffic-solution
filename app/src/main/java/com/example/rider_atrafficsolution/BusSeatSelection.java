@@ -41,6 +41,7 @@ public class BusSeatSelection extends AppCompatActivity
     List<String> buses;
     List<String> locations;
     List<String> counts;
+    List<Integer> busId;
 
     private Button confirmButton;
     TextView fareShowTextView;
@@ -54,6 +55,7 @@ public class BusSeatSelection extends AppCompatActivity
 
     public double minDistLat;
     public double minDistLong;
+    public int nearestBusId;
 
     ArrayAdapter<String> busAdapter;
     ArrayAdapter<String> locationAdapter;
@@ -103,6 +105,7 @@ public class BusSeatSelection extends AppCompatActivity
         distanceList = new ArrayList<>();
         currentLats = new ArrayList<>();
         currentLongs = new ArrayList<>();
+        busId = new ArrayList<>();
 
         // Creating adapter for spinner
         locationAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, locations);
@@ -243,6 +246,9 @@ public class BusSeatSelection extends AppCompatActivity
             intent.putExtra("toLat", latlong.get(2));
             intent.putExtra("toLong", latlong.get(3));
 
+            Log.i("nearest", String.valueOf(nearestBusId));
+            intent.putExtra("busId", nearestBusId);
+
             startActivity(intent);
         });
     }
@@ -289,6 +295,7 @@ public class BusSeatSelection extends AppCompatActivity
             double min = distanceList.get(0);
             minDistLat = currentLats.get(0);
             minDistLong = currentLongs.get(0);
+            nearestBusId = busId.get(0);
 
             for(int i=0;i<distanceList.size();i++)
             {
@@ -299,11 +306,13 @@ public class BusSeatSelection extends AppCompatActivity
                     min = d;
                     minDistLat = currentLats.get(i);
                     minDistLong = currentLongs.get(i);
+                    nearestBusId = busId.get(i);
                 }
             }
             Log.i("min", String.valueOf(min));
             Log.i("minLat", String.valueOf(minDistLat));
             Log.i("minLong", String.valueOf(minDistLong));
+            Log.i("id", String.valueOf(nearestBusId));
 
             int time = (int) Math.ceil(min/15 * 60);
             Log.i("time", String.valueOf(time) + " mins");
@@ -542,6 +551,7 @@ public class BusSeatSelection extends AppCompatActivity
                     distanceList.clear();
                     currentLats.clear();
                     currentLongs.clear();
+                    busId.clear();
 
                     for(int i=0;i<array.length();i++)
                     {
@@ -555,6 +565,7 @@ public class BusSeatSelection extends AppCompatActivity
                             {
                                 double lat = response.getJSONObject(key).getDouble("lat");
                                 double longt = response.getJSONObject(key).getDouble("long");
+                                Integer id = response.getJSONObject(key).getInt("busID");
 
 //                                double lat = 23.7234;
 //                                double longt = 90.4234;
@@ -564,6 +575,7 @@ public class BusSeatSelection extends AppCompatActivity
                                 distanceList.add(dist);
                                 currentLats.add(lat);
                                 currentLongs.add(longt);
+                                busId.add(id);
                             }
                         }
                         catch (JSONException e)
