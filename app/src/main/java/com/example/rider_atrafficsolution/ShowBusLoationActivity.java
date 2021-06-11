@@ -237,7 +237,7 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
                         {
                             String key = array.getString(i);
 
-                            int id = response.getJSONObject(key).getInt("busId");
+                            int id = response.getJSONObject(key).getInt("busID");
 
                             if(id == busId)
                             {
