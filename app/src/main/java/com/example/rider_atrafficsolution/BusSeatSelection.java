@@ -249,6 +249,9 @@ public class BusSeatSelection extends AppCompatActivity
             Log.i("nearest", String.valueOf(nearestBusId));
             intent.putExtra("busId", nearestBusId);
 
+            double f = Double.parseDouble(fareShowTextView.getText().toString());
+            intent.putExtra("fare", f);
+
             startActivity(intent);
         });
     }

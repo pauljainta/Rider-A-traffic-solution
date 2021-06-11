@@ -48,6 +48,7 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
     double fromLong;
     double toLat;
     double toLong;
+    double fare;
 
     int busId;
     private Util util;
@@ -76,6 +77,7 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
         fromLong = getIntent().getDoubleExtra("fromLong", 1);
         toLat = getIntent().getDoubleExtra("toLat", 1);
         toLong = getIntent().getDoubleExtra("toLong", 1);
+        fare = getIntent().getDoubleExtra("fare", 1);
 
         Log.i("map", String.valueOf(fromLat));
         Log.i("map", String.valueOf(fromLong));
@@ -124,6 +126,7 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
                     public void onClick(DialogInterface dialog, int which)
                     {
                         Intent intent = new Intent(getApplicationContext(), BusJourneyCompleteActivity.class);
+                        intent.putExtra("fare", fare);
                         startActivity(intent);
                     }
                 });
