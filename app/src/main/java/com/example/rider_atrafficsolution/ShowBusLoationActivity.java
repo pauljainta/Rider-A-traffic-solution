@@ -157,8 +157,9 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
         showLocation(endCounter,"End");
         showLocation(new LatLng(minDistLat, minDistLong), "Bus");
 
-        if(util.getDistanceFromLatLonInKm(startCounter.latitude,startCounter.longitude,busLocation.latitude,busLocation.longitude)<=0.3)
+        if(util.getDistanceFromLatLonInKm(startCounter.latitude,startCounter.longitude,busLocation.latitude,busLocation.longitude)<=0.5)
         {
+
             AlertDialog alert = builder.create();
             alert.setTitle("Bus has Arrived");
             alert.show();
