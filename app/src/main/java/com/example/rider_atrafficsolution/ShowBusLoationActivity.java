@@ -182,6 +182,9 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
                 handler.postDelayed(this, 30000);
                 Log.i("timer", "updated after 30 seconds");
                 GetCurrentLocation();
+                mMap.clear();
+                showLocation(startCounter,"Start");
+                showLocation(endCounter,"End");
                 showLocation(new LatLng(minDistLat, minDistLong), "Bus");
 
             }
