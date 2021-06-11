@@ -181,6 +181,8 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
             public void run() {
                 handler.postDelayed(this, 30000);
                 Log.i("timer", "updated after 30 seconds");
+                GetCurrentLocation();
+                showLocation(new LatLng(minDistLat, minDistLong), "Bus");
 
             }
         };
@@ -221,7 +223,7 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
 
     public void GetCurrentLocation()
     {
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/BusRoute.json", null, new Response.Listener<JSONObject>() {
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/BusTable.json", null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response)
             {
@@ -231,24 +233,19 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
 
                     for(int i=0;i<array.length();i++)
                     {
-                        List<String> locations = new ArrayList<>();
                         try
                         {
                             String key = array.getString(i);
-                            locations.add(response.getJSONObject(key).getString("from"));
-                            //Log.i("names", response.getJSONObject(array.getString(i)).getString("from"));
-                            String[] splitted = response.getJSONObject(key).getString("intermediate").split(",");
-                            for(String s : splitted)
+
+                            int id = response.getJSONObject(key).getInt("busId");
+
+                            if(id == busId)
                             {
-                                //Log.i("route", s);
-                                locations.add(s);
+                                minDistLat = response.getJSONObject(key).getDouble("lat");
+                                minDistLong = response.getJSONObject(key).getDouble("long");
+
+                                break;
                             }
-                            locations.add(response.getJSONObject(key).getString("to"));
-//                            Log.i("names", array.getString(i));
-
-
-
-
                         }
                         catch (JSONException e)
                         {
