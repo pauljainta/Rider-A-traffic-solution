@@ -112,6 +112,17 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
         util=new Util();
         builder = new AlertDialog.Builder(this);
 
+        builder.setMessage("Get On The Bus")
+                .setCancelable(false)
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        mMap.clear();
+                        showLocation(startCounter,"Start");
+                        showLocation(endCounter,"End");
+                        showLocation(new LatLng(minDistLat, minDistLong), "Bus");
+
+                    }});
+
 
 
 //        Log.i("map", String.valueOf(BusSeatSelection.fromLat));
@@ -148,16 +159,9 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
 
         if(util.getDistanceFromLatLonInKm(startCounter.latitude,startCounter.longitude,busLocation.latitude,busLocation.longitude)<=0.3)
         {
-            builder.setMessage("Bus has arrived")
-                    .setCancelable(false)
-                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            mMap.clear();
-                            showLocation(startCounter,"Start");
-                            showLocation(endCounter,"End");
-                            showLocation(new LatLng(minDistLat, minDistLong), "Bus");
-
-                        }});
+            AlertDialog alert = builder.create();
+            alert.setTitle("Bus has Arrived");
+            alert.show();
         }
 
     }
