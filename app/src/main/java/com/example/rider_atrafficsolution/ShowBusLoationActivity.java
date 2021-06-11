@@ -8,6 +8,8 @@ import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -21,6 +23,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.ArrayAdapter;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -37,6 +40,12 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.EmailAuthProvider;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -64,7 +73,10 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
     double toLong;
 
     int busId;
+    private Util util;
     private AlertDialog.Builder builder;
+
+    LatLng startCounter,endCounter,busLocation;
 
 
     @Override
@@ -97,7 +109,9 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
 //        Log.i("v", String.valueOf(minDistLong));
         Log.i("id", String.valueOf(busId));
 
+        util=new Util();
         builder = new AlertDialog.Builder(this);
+
 
 
 //        Log.i("map", String.valueOf(BusSeatSelection.fromLat));
@@ -125,6 +139,31 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
     }
 
 
+    public void updateUI()
+    {
+        mMap.clear();
+        showLocation(startCounter,"Start");
+        showLocation(endCounter,"End");
+        showLocation(new LatLng(minDistLat, minDistLong), "Bus");
+
+        if(util.getDistanceFromLatLonInKm(startCounter.latitude,startCounter.longitude,busLocation.latitude,busLocation.longitude)<=0.3)
+        {
+            builder.setMessage("Bus has arrived")
+                    .setCancelable(false)
+                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            mMap.clear();
+                            showLocation(startCounter,"Start");
+                            showLocation(endCounter,"End");
+                            showLocation(new LatLng(minDistLat, minDistLong), "Bus");
+
+                        }});
+        }
+
+    }
+
+
+
     /**
      * Manipulates the map once available.
      * This callback is triggered when the map is ready to be used.
@@ -140,9 +179,9 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
 
 
 
-        LatLng startCounter = new LatLng(fromLat, fromLong);
-        LatLng endCounter = new LatLng(toLat, toLong);
-        LatLng busLocation=new LatLng(minDistLat,minDistLong);
+         startCounter = new LatLng(fromLat, fromLong);
+         endCounter = new LatLng(toLat, toLong);
+         busLocation=new LatLng(minDistLat,minDistLong);
 
         showLocation(startCounter,"Start");
         showLocation(endCounter,"End");
@@ -154,10 +193,7 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
                 handler.postDelayed(this, 30000);
                 Log.i("timer", "updated after 30 seconds");
                 GetCurrentLocation();
-                mMap.clear();
-                showLocation(startCounter,"Start");
-                showLocation(endCounter,"End");
-                showLocation(new LatLng(minDistLat, minDistLong), "Bus");
+                updateUI();
 
             }
         };
