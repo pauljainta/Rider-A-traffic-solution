@@ -1,29 +1,18 @@
 package com.example.rider_atrafficsolution;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
-import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
-import android.location.Address;
-import android.location.Geocoder;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
-import android.widget.ArrayAdapter;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -33,28 +22,16 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.EmailAuthProvider;
-import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 public class ShowBusLoationActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -74,9 +51,11 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
 
     int busId;
     private Util util;
-    private AlertDialog.Builder builder;
+    private AlertDialog.Builder sourceAlertBuilder;
+    private AlertDialog.Builder destinationAlertBuilder;
 
     Boolean isBusAlertShown;
+    Boolean isDestinationAlertShown;
 
     LatLng startCounter,endCounter,busLocation;
 
@@ -112,10 +91,12 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
         Log.i("id", String.valueOf(busId));
 
         isBusAlertShown=false;
+        isDestinationAlertShown = false;
         util=new Util();
-        builder = new AlertDialog.Builder(this);
 
-        builder.setMessage("Get On The Bus")
+        sourceAlertBuilder = new AlertDialog.Builder(this);
+
+        sourceAlertBuilder.setMessage("Get On The Bus")
                 .setCancelable(false)
                 .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
@@ -128,11 +109,24 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
                     }});
 
 
+        destinationAlertBuilder = new AlertDialog.Builder(this);
 
-//        Log.i("map", String.valueOf(BusSeatSelection.fromLat));
-//        Log.i("map", String.valueOf(BusSeatSelection.fromLong));
-//        Log.i("map", String.valueOf(BusSeatSelection.toLat));
-//        Log.i("map", String.valueOf(BusSeatSelection.toLong));
+        destinationAlertBuilder.setMessage("You have reached the destination")
+                .setCancelable(false)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        Intent intent = new Intent(getApplicationContext(), BusJourneyCompleteActivity.class);
+                        startActivity(intent);
+                    }
+                });
+
+        Log.i("map", String.valueOf(fromLat));
+        Log.i("map", String.valueOf(fromLong));
+        Log.i("map", String.valueOf(toLat));
+        Log.i("map", String.valueOf(toLong));
     }
 
 
@@ -169,11 +163,20 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
 
             isBusAlertShown=true;
             Log.i("bal","bal update 2");
-            AlertDialog alert = builder.create();
+            AlertDialog alert = sourceAlertBuilder.create();
             alert.setTitle("Bus has Arrived");
             alert.show();
         }
 
+        if(util.getDistanceFromLatLonInKm(endCounter.latitude, endCounter.longitude, minDistLat, minDistLong)<=3 && !isDestinationAlertShown && isBusAlertShown)
+        {
+
+            isDestinationAlertShown=true;
+            Log.i("bal","chole asche");
+            AlertDialog alert = destinationAlertBuilder.create();
+            alert.setTitle("Bus has reached");
+            alert.show();
+        }
     }
 
 

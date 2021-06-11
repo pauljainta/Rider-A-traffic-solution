@@ -1,0 +1,16 @@
+package com.example.rider_atrafficsolution;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.os.Bundle;
+
+public class BusJourneyCompleteActivity extends AppCompatActivity
+{
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_bus_journey_complete);
+    }
+}
