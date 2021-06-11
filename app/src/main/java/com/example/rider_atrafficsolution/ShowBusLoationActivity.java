@@ -194,7 +194,7 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
         Handler handler =new Handler();
         final Runnable r = new Runnable() {
             public void run() {
-                handler.postDelayed(this, 30000);
+                handler.postDelayed(this, 5000);
                 Log.i("timer", "updated after 30 seconds");
                 GetCurrentLocation();
                 updateUI();
