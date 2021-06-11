@@ -24,10 +24,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +39,7 @@ public class BusSeatSelection extends AppCompatActivity
     List<String> counts;
     List<Integer> busId;
 
+
     private Button confirmButton;
     TextView fareShowTextView;
     List<Double> distanceList;
@@ -50,7 +47,9 @@ public class BusSeatSelection extends AppCompatActivity
     List<Double> currentLongs;
     TextView timeTextView;
 
-    public List<Double> latlong;
+    public List<Double> fromLatLong;
+    public List<Double> toLatLong;
+
     //public static double fromLat = 0, fromLong = 0 ,toLat = 0, toLong = 0;
 
     public double minDistLat;
@@ -79,7 +78,6 @@ public class BusSeatSelection extends AppCompatActivity
 
         context = getBaseContext();
 
-
         locations = new ArrayList<String>();
         locations.add(".");
         locations.add("Motijheel");
@@ -101,7 +99,8 @@ public class BusSeatSelection extends AppCompatActivity
         counts.add("3");
         counts.add("4");
 
-        latlong = new ArrayList<>();
+        fromLatLong = new ArrayList<>();
+        toLatLong = new ArrayList<>();
         distanceList = new ArrayList<>();
         currentLats = new ArrayList<>();
         currentLongs = new ArrayList<>();
@@ -241,10 +240,11 @@ public class BusSeatSelection extends AppCompatActivity
             intent.putExtra("minDistLat", minDistLat);
             intent.putExtra("minDistLong", minDistLong);
 
-            intent.putExtra("fromLat", latlong.get(0));
-            intent.putExtra("fromLong", latlong.get(1));
-            intent.putExtra("toLat", latlong.get(2));
-            intent.putExtra("toLong", latlong.get(3));
+            intent.putExtra("fromLat", fromLatLong.get(0));
+            intent.putExtra("fromLong", fromLatLong.get(1));
+
+            intent.putExtra("toLat", toLatLong.get(0));
+            intent.putExtra("toLong", toLatLong.get(1));
 
             Log.i("nearest", String.valueOf(nearestBusId));
             intent.putExtra("busId", nearestBusId);
@@ -267,7 +267,7 @@ public class BusSeatSelection extends AppCompatActivity
             Log.i("b", b);
         }
 
-        for (Double d : latlong)
+        for (Double d : fromLatLong)
         {
             Log.i("d", String.valueOf(d));
         }
@@ -462,7 +462,8 @@ public class BusSeatSelection extends AppCompatActivity
                 {
                     JSONArray array = response.names();
 
-                    latlong.clear();
+                    fromLatLong.clear();
+                    toLatLong.clear();
 
                     for (int i = 0; i < array.length(); i++)
                     {
@@ -482,8 +483,8 @@ public class BusSeatSelection extends AppCompatActivity
                                 double h1 = Double.parseDouble(response.getJSONObject(key).getString("lat"));
                                 double h2 = Double.parseDouble(response.getJSONObject(key).getString("long"));
 
-                                latlong.add(h1);
-                                latlong.add(h2);
+                                fromLatLong.add(h1);
+                                fromLatLong.add(h2);
 
                             } else if (to.equalsIgnoreCase(location))
                             {
@@ -496,8 +497,8 @@ public class BusSeatSelection extends AppCompatActivity
                                 double h3 = Double.parseDouble(response.getJSONObject(key).getString("lat"));
                                 double h4 = Double.parseDouble(response.getJSONObject(key).getString("long"));
 
-                                latlong.add(h3);
-                                latlong.add(h4);
+                                toLatLong.add(h3);
+                                toLatLong.add(h4);
                             }
 
                         }
@@ -520,7 +521,7 @@ public class BusSeatSelection extends AppCompatActivity
 
         requestQueue.add(jsonObjectRequest);
 
-        for (Double d : latlong)
+        for (Double d : fromLatLong)
         {
             Log.i("d", String.valueOf(d));
         }
@@ -570,7 +571,7 @@ public class BusSeatSelection extends AppCompatActivity
 //                                double lat = 23.7234;
 //                                double longt = 90.4234;
 
-                                double dist = getDistanceFromLatLonInKm(latlong.get(0), latlong.get(1), lat, longt);
+                                double dist = getDistanceFromLatLonInKm(fromLatLong.get(0), fromLatLong.get(1), lat, longt);
 
                                 distanceList.add(dist);
                                 currentLats.add(lat);

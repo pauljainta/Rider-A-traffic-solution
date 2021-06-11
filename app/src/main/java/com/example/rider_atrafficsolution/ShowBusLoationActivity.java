@@ -77,6 +77,11 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
         toLat = getIntent().getDoubleExtra("toLat", 1);
         toLong = getIntent().getDoubleExtra("toLong", 1);
 
+        Log.i("map", String.valueOf(fromLat));
+        Log.i("map", String.valueOf(fromLong));
+        Log.i("map", String.valueOf(toLat));
+        Log.i("map", String.valueOf(toLong));
+
         busId = getIntent().getIntExtra("busId", 1);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -123,10 +128,7 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
                     }
                 });
 
-        Log.i("map", String.valueOf(fromLat));
-        Log.i("map", String.valueOf(fromLong));
-        Log.i("map", String.valueOf(toLat));
-        Log.i("map", String.valueOf(toLong));
+
     }
 
 
