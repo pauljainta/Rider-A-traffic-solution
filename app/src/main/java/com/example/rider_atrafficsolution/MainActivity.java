@@ -62,9 +62,19 @@ public class MainActivity extends AppCompatActivity  {
             @Override
             public void onClick(View v) {
                 isuserTypeSwitchChecked=userTypeSwitch.isChecked();
+                if(isuserTypeSwitchChecked==true)
+                {
+                    Intent intent=new Intent(getApplicationContext(),DriverVehicleTypeSelection.class);
+                    startActivity(intent);
+                }
                 //finish();
-                Intent intent=new Intent(getApplicationContext(),LoginActivity.class);
-                startActivity(intent);
+                else
+                {
+                    Intent intent=new Intent(getApplicationContext(),LoginActivity.class);
+                    startActivity(intent);
+
+                }
+
 
             }
         });
