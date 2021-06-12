@@ -39,6 +39,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         mAuth=FirebaseAuth.getInstance();
 
+
+
         
 
     }
@@ -50,46 +52,52 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         String email=Email.getText().toString();
         String password=Password.getText().toString();
 
-        mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-            @Override
-            public void onComplete(@NonNull Task<AuthResult> task) {
+        if(MainActivity.isuserTypeSwitchChecked)
+        {
+            Intent intent=new Intent(getApplicationContext(),DriverLocationUpdate.class);
+            intent.putExtra("drivermail",email);
+            startActivity(intent);
+        }
 
-                if (task.isSuccessful()) {
-                    FirebaseUser user=FirebaseAuth.getInstance().getCurrentUser();
-                    if(user.isEmailVerified())
-                    {
-                      //  finish();
-                        // Intent intent=new Intent(getApplicationContext(),Random.class);
-                        //   intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        //  startActivity(intent);
-                        Log.i("log in","hoise");
-                        Intent intent = new Intent(getApplicationContext(), ChooseVehicleActivity.class);
-                        startActivity(intent);
 
-                        Info.currentEmail = email;
 
-                        Log.i("email", Info.currentEmail);
+
+        else {
+            mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+
+                    if (task.isSuccessful()) {
+                        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                        if (user.isEmailVerified()) {
+                            //  finish();
+                            // Intent intent=new Intent(getApplicationContext(),Random.class);
+                            //   intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            //  startActivity(intent);
+                            Log.i("log in", "hoise");
+                            Intent intent = new Intent(getApplicationContext(), ChooseVehicleActivity.class);
+                            startActivity(intent);
+
+                            Info.currentEmail = email;
+
+                            Log.i("email", Info.currentEmail);
+                        } else {
+                            Log.i("log in", "hoinai");
+                            Email.setError("Emaiil not verified");
+                            // user.sendEmailVerification();
+                            // Toast.makeText(getApplicationContext(), "Check Email for verification", Toast.LENGTH_SHORT).show();
+                        }
+
+
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Error" + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+
                     }
-                    else
-                    {
-                        Log.i("log in","hoinai");
-                        Email.setError("Emaiil not verified");
-                       // user.sendEmailVerification();
-                       // Toast.makeText(getApplicationContext(), "Check Email for verification", Toast.LENGTH_SHORT).show();
-                    }
-
-
-                } else {
-                    Toast.makeText(getApplicationContext(), "Error" + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-
                 }
-            }
-        });
+            });
 
 
-
-
-
+        }
     }
 
     @Override

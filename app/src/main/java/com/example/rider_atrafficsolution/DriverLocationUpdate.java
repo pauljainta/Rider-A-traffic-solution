@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -32,7 +33,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
 
     LocationManager locationManager;
     LocationListener locationListener;
-
+    String drivermail;
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -53,6 +54,10 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        Intent intent=getIntent();
+        drivermail=intent.getStringExtra("drivermail");
+        Log.i("drivermail",drivermail);
     }
 
     /**
