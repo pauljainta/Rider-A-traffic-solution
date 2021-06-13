@@ -30,14 +30,18 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
 
     @Override
     public void onClick(View v) {
+        Intent intent = null;
+
         switch (v.getId())
         {
             case R.id.busChooseButton:
-                Intent intent=new Intent(getApplicationContext(),BusSeatSelection.class);
+                intent=new Intent(getApplicationContext(),BusSeatSelection.class);
                 startActivity(intent);
                 break;
 
             case R.id.bikeChooseButton:
+                intent=new Intent(getApplicationContext(),CarBikeSearchActivity.class);
+                startActivity(intent);
                 break;
 
             case R.id.carChooseButton:

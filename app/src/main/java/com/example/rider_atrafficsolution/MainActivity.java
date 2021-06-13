@@ -87,21 +87,20 @@ public class MainActivity extends AppCompatActivity  {
         //Info.currentEmail = "aaatowsif16@gmail.com";
 
 
-
-
     }
 
 
-    public void postData(double no, double dst, double lat, double longt)
+    public void postData(int id, boolean busy, double lat, double longt, String type)
     {
         try {
             RequestQueue requestQueue = Volley.newRequestQueue(context);
-            String URL = "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/BusTable.json";
+            String URL = "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/Driver.json";
             JSONObject jsonBody = new JSONObject();
-            jsonBody.put("busNo", no);
-            jsonBody.put("busID", dst);
+            jsonBody.put("driverID", id);
+            jsonBody.put("busy", busy);
             jsonBody.put("lat", lat);
             jsonBody.put("long", longt);
+            jsonBody.put("type", type);
 
 
             final String requestBody = jsonBody.toString();

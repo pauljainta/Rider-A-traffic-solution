@@ -155,7 +155,7 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
 
     public void updateUI()
     {
-        Log.i("bal","bal update");
+        Log.i("bus map","bus update");
         mMap.clear();
         showLocation(startCounter,"Start");
         showLocation(endCounter,"End");
@@ -163,21 +163,21 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
 
         Log.i("distance",util.getDistanceFromLatLonInKm(startCounter.latitude,startCounter.longitude,busLocation.latitude,busLocation.longitude)+"");
 
-        if(util.getDistanceFromLatLonInKm(startCounter.latitude,startCounter.longitude,busLocation.latitude,busLocation.longitude)<=3 && !isBusAlertShown)
+        if(util.getDistanceFromLatLonInKm(startCounter.latitude,startCounter.longitude, minDistLat, minDistLong)<=0.5 && !isBusAlertShown)
         {
 
             isBusAlertShown=true;
-            Log.i("bal","bal update 2");
+            Log.i("src","bus arrived");
             AlertDialog alert = sourceAlertBuilder.create();
             alert.setTitle("Bus has Arrived");
             alert.show();
         }
 
-        if(util.getDistanceFromLatLonInKm(endCounter.latitude, endCounter.longitude, minDistLat, minDistLong)<=3 && !isDestinationAlertShown && isBusAlertShown)
+        if(util.getDistanceFromLatLonInKm(endCounter.latitude, endCounter.longitude, minDistLat, minDistLong)<=0.5 && !isDestinationAlertShown && isBusAlertShown)
         {
 
             isDestinationAlertShown=true;
-            Log.i("bal","chole asche");
+            Log.i("dest","chole asche");
             AlertDialog alert = destinationAlertBuilder.create();
             alert.setTitle("Bus has reached");
             alert.show();

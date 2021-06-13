@@ -17,7 +17,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.RiderATrafficSolution">
-        <activity android:name=".DriverVehicleTypeSelection"></activity>
+        <activity android:name=".RequestConfirmActivity"></activity>
+        <activity android:name=".CarBikeSearchActivity" />
+        <activity android:name=".DriverVehicleTypeSelection" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
