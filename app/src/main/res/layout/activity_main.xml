@@ -8,73 +8,63 @@
 
     <ImageView
         android:id="@+id/App_Logo_ImageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="77dp"
-        android:layout_marginLeft="77dp"
-        android:layout_marginTop="84dp"
-        android:layout_marginEnd="77dp"
-        android:layout_marginRight="77dp"
-        android:layout_marginBottom="437dp"
+        android:layout_width="193dp"
+        android:layout_height="197dp"
         android:foregroundGravity="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.218"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
+        app:layout_constraintVertical_bias="0.147"
         app:srcCompat="@drawable/app_logo" />
 
     <Switch
         android:id="@+id/userTypeSwitch"
-        android:layout_width="165dp"
-        android:layout_height="73dp"
-        android:layout_marginStart="104dp"
-        android:layout_marginLeft="104dp"
-        android:layout_marginTop="300dp"
-        android:text="@string/select_one"
+        android:layout_width="71dp"
+        android:layout_height="61dp"
         android:textSize="24sp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.505"
         tools:ignore="UseSwitchCompatOrMaterialXml" />
 
     <TextView
         android:id="@+id/driver_selection_textview"
         android:layout_width="102dp"
         android:layout_height="70dp"
-        android:layout_marginTop="300dp"
-        android:layout_marginEnd="25dp"
-        android:layout_marginRight="25dp"
         android:gravity="center"
         android:text="Driver"
         android:textSize="24sp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintHorizontal_bias="0.948"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.499" />
 
     <TextView
         android:id="@+id/rider_selection_textview"
-        android:layout_width="102dp"
-        android:layout_height="70dp"
-        android:layout_marginTop="300dp"
-        android:layout_marginEnd="312dp"
-        android:layout_marginRight="312dp"
+        android:layout_width="138dp"
+        android:layout_height="62dp"
         android:gravity="center"
-        android:text="Rider"
+        android:text="Passenger"
         android:textSize="24sp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintHorizontal_bias="0.051"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.499" />
 
     <Button
         android:id="@+id/Get_Started_Button"
         android:layout_width="151dp"
         android:layout_height="43dp"
-        android:layout_marginStart="108dp"
-        android:layout_marginLeft="108dp"
-        android:layout_marginEnd="152dp"
-        android:layout_marginRight="152dp"
         android:foregroundGravity="clip_horizontal|center_horizontal"
         android:gravity="center"
         android:text="Get Started"
@@ -82,5 +72,5 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.622" />
+        app:layout_constraintVertical_bias="0.64" />
 </androidx.constraintlayout.widget.ConstraintLayout>

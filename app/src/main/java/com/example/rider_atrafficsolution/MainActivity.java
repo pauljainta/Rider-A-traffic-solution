@@ -60,8 +60,10 @@ public class MainActivity extends AppCompatActivity  {
         Log.i("start","Start");
         getStartedButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
                 isuserTypeSwitchChecked=userTypeSwitch.isChecked();
+
                // if(isuserTypeSwitchChecked==true)
                 //{
                   //  Intent intent=new Intent(getApplicationContext(),DriverVehicleTypeSelection.class);
@@ -80,6 +82,7 @@ public class MainActivity extends AppCompatActivity  {
         });
 
         context = getBaseContext();
+
 //        Intent intent=new Intent(getApplicationContext(),BusSeatSelection.class);
 ////        Intent intent=new Intent(getApplicationContext(),ShowBusLoationActivity.class);
 //        startActivity(intent);
