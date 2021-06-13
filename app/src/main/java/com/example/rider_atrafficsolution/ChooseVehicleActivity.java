@@ -45,6 +45,8 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
                 break;
 
             case R.id.carChooseButton:
+                intent=new Intent(getApplicationContext(),RequestConfirmActivity.class);
+                startActivity(intent);
                 break;
         }
     }

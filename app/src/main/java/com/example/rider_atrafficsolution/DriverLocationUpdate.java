@@ -9,8 +9,6 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -23,9 +21,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-
-import java.util.List;
-import java.util.Locale;
 
 public class DriverLocationUpdate extends FragmentActivity implements OnMapReadyCallback {
 
@@ -52,7 +47,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
         setContentView(R.layout.activity_driver_location_update);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+                .findFragmentById(R.id.car_request_confirm);
         mapFragment.getMapAsync(this);
 
         Intent intent=getIntent();
