@@ -30,7 +30,7 @@ public class CarBikeSearchActivity extends AppCompatActivity
                 getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
 
         if (!Places.isInitialized()) {
-            Places.initialize(getApplicationContext(), "AIzaSyBFUeHFnRP9PT7wi7LfBmrN9O-Al0vvliM", Locale.US);
+            Places.initialize(getApplicationContext(), "AIzaSyCLCunrI2NjePZpCnEtLE0J6UQNfNN4Cg4", Locale.US);
         }
 
         autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
