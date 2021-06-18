@@ -3,8 +3,8 @@ package com.example.rider_atrafficsolution;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
-import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -12,15 +12,29 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.material.navigation.NavigationView;
-import com.google.firebase.auth.FirebaseAuth;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ChooseVehicleActivity extends AppCompatActivity implements View.OnClickListener
 {
     ImageButton busChooseButton,bikeChooseButton,carChooseButton;
     NavigationView naview;
     TextView username,rating;
-
+    List<String > name;
+    private RequestQueue requestQueue;
+    private static Context context;
 
 
     @Override
@@ -31,14 +45,29 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
         busChooseButton=findViewById(R.id.busChooseButton);
         bikeChooseButton=findViewById(R.id.bikeChooseButton);
         carChooseButton=findViewById(R.id.carChooseButton);
+
         naview = findViewById(R.id.nav_view);
-        username=findViewById(R.id.nav_header_title);
-        rating=findViewById(R.id.nav_header_subtitle);
+        View headerView = naview.getHeaderView(0);
+        username = headerView.findViewById(R.id.nav_header_title);
+        rating = headerView.findViewById(R.id.nav_header_subtitle);
+
+
+        context = getBaseContext();
+
+        requestQueue = Volley.newRequestQueue(context);
+
+        name = new ArrayList<>();
+
+        naview.setEnabled(true);
+
+        GetMethodForName();
+
+
+        //username.setText(name.get(0));
+
         busChooseButton.setOnClickListener(this);
         carChooseButton.setOnClickListener(this);
         bikeChooseButton.setOnClickListener(this);
-
-
 
         naview.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -83,5 +112,51 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
                 startActivity(intent);
                 break;
         }
+    }
+
+    public void GetMethodForName()
+    {
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/users.json", null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response)
+            {
+                //try
+                {
+                    JSONArray array = response.names();
+
+                    for(int i=0;i<array.length();i++)
+                    {
+                        try
+                        {
+                            String key = array.getString(i);
+
+                            String email = response.getJSONObject(key).getString("email");
+                            if(email.equalsIgnoreCase(Info.currentEmail))
+                            {
+                                String n = response.getJSONObject(key).getString("name");
+                                //username.setText(n);
+                                Log.i("name", n);
+                                username.setText(n);
+
+                                break;
+                            }
+
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
+                Log.d("error: " , error.getMessage());
+            }
+        });
+
+        requestQueue.add(jsonObjectRequest);
     }
 }
