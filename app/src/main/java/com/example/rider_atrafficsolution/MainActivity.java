@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity  {
         userTypeSwitch=findViewById(R.id.userTypeSwitch);
         getStartedButton=findViewById(R.id.Get_Started_Button);
         Log.i("start","Start");
+
         getStartedButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v)
@@ -83,11 +84,14 @@ public class MainActivity extends AppCompatActivity  {
 
         context = getBaseContext();
 
+        Intent intent = new Intent(getApplicationContext(), CarBikeSearchActivity.class);
+
+
 //        Intent intent=new Intent(getApplicationContext(),BusSeatSelection.class);
 ////        Intent intent=new Intent(getApplicationContext(),ShowBusLoationActivity.class);
-//        startActivity(intent);
+        startActivity(intent);
 
-        //Info.currentEmail = "aaatowsif16@gmail.com";
+        Info.currentEmail = "aaatowsif16@gmail.com";
 
 
     }
