@@ -54,7 +54,7 @@
             android:background="#359c5e"
 
             android:padding="8dp"
-            android:text="Confirm"
+            android:text="Send Request"
             android:textColor="#ffffff"
             android:textSize="30sp" />
 
