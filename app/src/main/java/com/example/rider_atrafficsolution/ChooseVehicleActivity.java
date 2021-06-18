@@ -18,7 +18,7 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_choose_vehicle);
+        setContentView(R.layout.nav_vehicle_choose);
         busChooseButton=findViewById(R.id.busChooseButton);
         bikeChooseButton=findViewById(R.id.bikeChooseButton);
         carChooseButton=findViewById(R.id.carChooseButton);
