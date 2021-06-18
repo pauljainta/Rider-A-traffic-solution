@@ -1,6 +1,5 @@
 package com.example.rider_atrafficsolution;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
@@ -26,20 +25,40 @@ public class CarBikeSearchActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_car_bike_search);
 
-        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
-                getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+        AutocompleteSupportFragment sourceFragment = (AutocompleteSupportFragment)
+                getSupportFragmentManager().findFragmentById(R.id.source_fragment);
+
+        AutocompleteSupportFragment destinationFragment = (AutocompleteSupportFragment)
+                getSupportFragmentManager().findFragmentById(R.id.destination_fragment);
 
         if (!Places.isInitialized()) {
             Places.initialize(getApplicationContext(), "AIzaSyCLCunrI2NjePZpCnEtLE0J6UQNfNN4Cg4", Locale.US);
         }
 
-        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
+        sourceFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
+        destinationFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
 
-        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+        sourceFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override
             public void onPlaceSelected(Place place) {
                 // TODO: Get info about the selected place.
-                Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
+                Log.i(TAG, "source: " + place.getName() + ", " + place.getId());
+            }
+
+
+
+            @Override
+            public void onError(Status status) {
+                // TODO: Handle the error.
+                Log.i(TAG, "An error occurred: " + status);
+            }
+        });
+
+        destinationFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+            @Override
+            public void onPlaceSelected(Place place) {
+                // TODO: Get info about the selected place.
+                Log.i(TAG, "dest: " + place.getName() + ", " + place.getId());
             }
 
 
