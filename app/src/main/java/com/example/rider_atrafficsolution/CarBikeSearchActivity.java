@@ -31,6 +31,13 @@ public class CarBikeSearchActivity extends AppCompatActivity
         AutocompleteSupportFragment destinationFragment = (AutocompleteSupportFragment)
                 getSupportFragmentManager().findFragmentById(R.id.destination_fragment);
 
+        sourceFragment.setCountry("BD");
+        destinationFragment.setCountry("BD");
+
+
+
+
+
         if (!Places.isInitialized()) {
             Places.initialize(getApplicationContext(), "AIzaSyCLCunrI2NjePZpCnEtLE0J6UQNfNN4Cg4", Locale.US);
         }
