@@ -20,6 +20,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.util.Hex;
+import com.google.android.gms.common.util.JsonUtils;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,6 +28,8 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class DriverReceiveRequestActivity extends AppCompatActivity
 {
@@ -35,9 +38,11 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
     Context context;
     RequestQueue requestQueue;
     ArrayAdapter<String > adapter;
+    ReentrantLock lock;
 
     List<Double> latlong;
-    List<String> type;
+    //List<String> type;
+    String type;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -51,18 +56,21 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
 
         context = getBaseContext();
 
+        lock = new ReentrantLock();
+
         requestQueue = Volley.newRequestQueue(context);
 
-        type = new ArrayList<>();
         latlong = new ArrayList<>();
 
         update();
 
+        GetDistance(0,0,0,0);
+
         Handler handler =new Handler();
         final Runnable r = new Runnable() {
             public void run() {
-                handler.postDelayed(this, 10000);
-                Log.i("driver request timer", "updated after 10 seconds");
+                handler.postDelayed(this, 5000);
+                Log.i("driver request timer", "updated after 5 seconds");
                 update();
 
             }
@@ -96,17 +104,24 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
     public void update()
     {
         GetDriverLocation();
+
         GetRequests();
+
+        adapter = new ArrayAdapter< String>(context, android.R.layout.simple_list_item_1, requests);
+        requestsListView.setAdapter(adapter);
     }
 
-    public void GetDriverLocation()
+    synchronized public void GetDriverLocation()
     {
+        lock.lock();
+
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/Driver.json", null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response)
             {
                 latlong.clear();
-                type.clear();
+
+                //type.clear();
                 //try
                 {
                     JSONArray array = response.names();
@@ -125,7 +140,8 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
                             {
                                 latlong.add(jsonObject.getDouble("lat"));
                                 latlong.add(jsonObject.getDouble("long"));
-                                type.add(jsonObject.getString("type"));
+                                //type.add(jsonObject.getString("type"));
+                                type = jsonObject.getString("type");
                                 //type.add(t);
                                 break;
                             }
@@ -135,11 +151,6 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
                         {
                             e.printStackTrace();
                         }
-                    }
-
-                    if(requests.isEmpty())
-                    {
-                        requests.add("No pending requests right now");
                     }
 
                 }
@@ -153,15 +164,20 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
         });
 
         requestQueue.add(jsonObjectRequest);
+
+        lock.unlock();
     }
 
-    public void GetRequests()
+    synchronized public void GetRequests()
     {
+        lock.lock();
+
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/Request.json", null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response)
             {
                 requests.clear();
+
                 //try
                 {
                     JSONArray array = response.names();
@@ -181,7 +197,8 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
 
                             String vehicleType = jsonObject.getString("type");
 
-                            if(!vehicleType.equalsIgnoreCase(type.get(0)))
+                            //if(!vehicleType.equalsIgnoreCase(type.get(0)))
+                            if(!vehicleType.equalsIgnoreCase(type))
                                 continue;
 
                             double sourceLat = jsonObject.getDouble("sourceLat");
@@ -216,8 +233,7 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
                         requests.add("No pending requests right now");
                     }
 
-                    adapter = new ArrayAdapter< String>(context, android.R.layout.simple_list_item_1, requests);
-                    requestsListView.setAdapter(adapter);
+
 
                 }
             }
@@ -230,5 +246,53 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
         });
 
         requestQueue.add(jsonObjectRequest);
+
+        lock.unlock();
     }
+
+    public void GetDistance(double lat1, double lon1, double lat2, double lon2)
+    {
+        lock.lock();
+
+        String API_Key = "AIzaSyC-9ghJoVuhdfodTVZ3JnpDbgx38-0PtGk";
+
+        String url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=40.6655101,-73.89188969999998&destinations=40.6905615%2C-73.9976592&key="  + API_Key;
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response)
+            {
+
+                try
+                {
+                    JSONArray dist = (JSONArray) response.get("rows");
+                    JSONObject obj2 = (JSONObject) dist.get(0);
+                    JSONArray disting = (JSONArray) obj2.get("elements");
+                    JSONObject obj3 = (JSONObject) disting.get(0);
+                    JSONObject obj4 =(JSONObject) obj3.get("distance");
+                    JSONObject obj5 = (JSONObject) obj3.get("duration");
+                    System.out.println(obj4.get("text"));
+                    System.out.println(obj5.get("text"));
+                    System.out.println(obj4.get("text"));
+                    System.out.println(obj5.get("text"));
+                    //Log.i("dist", String.valueOf(dist));
+
+                }catch (Exception e)
+                {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
+                Log.d("error: " , error.getMessage());
+            }
+        });
+
+        requestQueue.add(jsonObjectRequest);
+
+        lock.unlock();
+    }
+
 }

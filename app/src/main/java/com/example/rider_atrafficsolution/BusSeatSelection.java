@@ -26,6 +26,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class BusSeatSelection extends AppCompatActivity
 {
@@ -39,6 +40,7 @@ public class BusSeatSelection extends AppCompatActivity
     List<String> counts;
     List<Integer> busId;
 
+    ReentrantLock lock;
 
     private Button confirmButton;
     TextView fareShowTextView;
@@ -86,6 +88,7 @@ public class BusSeatSelection extends AppCompatActivity
         locations.add("Malibag");
         locations.add("Mirpur");
 
+        lock = new ReentrantLock();
 
         buses = new ArrayList<String>();
         from = "";
@@ -326,6 +329,7 @@ public class BusSeatSelection extends AppCompatActivity
 
     public void GetMethodForFare()
     {
+        lock.lock();
         //RequestQueue requestQueue = Volley.newRequestQueue(context);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/fare.json", null, new Response.Listener<JSONObject>() {
             @Override
@@ -377,10 +381,13 @@ public class BusSeatSelection extends AppCompatActivity
         });
 
         requestQueue.add(jsonObjectRequest);
+
+        lock.unlock();
     }
 
     public void GetMethodForBusRoute()
     {
+        lock.lock();
         //RequestQueue requestQueue = Volley.newRequestQueue(context);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/BusRoute.json", null, new Response.Listener<JSONObject>() {
             @Override
@@ -447,6 +454,8 @@ public class BusSeatSelection extends AppCompatActivity
 
         requestQueue.add(jsonObjectRequest);
 
+        lock.unlock();
+
 //        for (String b : buses)
 //        {
 //            Log.i("b", b);
@@ -455,6 +464,7 @@ public class BusSeatSelection extends AppCompatActivity
 
     public void GetMethodForCoOrdinates()
     {
+        lock.lock();
         //RequestQueue requestQueue = Volley.newRequestQueue(context);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/CoOrdinates.json", null, new Response.Listener<JSONObject>()
         {
@@ -529,6 +539,8 @@ public class BusSeatSelection extends AppCompatActivity
             Log.i("d", String.valueOf(d));
         }
 
+        lock.unlock();
+
 //        Log.i("get", String.valueOf(h2));
 //        Log.i("get", String.valueOf(h3));
 //        Log.i("get", String.valueOf(h4));
@@ -541,6 +553,7 @@ public class BusSeatSelection extends AppCompatActivity
 
     public void GetMethodForCurrentDistance()
     {
+        lock.lock();
         //RequestQueue requestQueue = Volley.newRequestQueue(context);
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/BusTable.json", null, new Response.Listener<JSONObject>() {
             @Override
@@ -601,6 +614,8 @@ public class BusSeatSelection extends AppCompatActivity
         });
 
         requestQueue.add(jsonObjectRequest);
+
+        lock.unlock();
     }
 
 
