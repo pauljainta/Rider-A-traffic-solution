@@ -54,8 +54,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         if(MainActivity.isuserTypeSwitchChecked)
         {
-            Intent intent=new Intent(getApplicationContext(),DriverLocationUpdate.class);
-            intent.putExtra("drivermail",email);
+//            Intent intent=new Intent(getApplicationContext(),DriverLocationUpdate.class);
+            Intent intent=new Intent(getApplicationContext(),DriverReceiveRequestActivity.class);
+            //intent.putExtra("id",email);
+            Info.driverID = email;
+
             startActivity(intent);
         }
 

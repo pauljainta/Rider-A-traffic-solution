@@ -104,11 +104,13 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
 
             case R.id.bikeChooseButton:
                 intent=new Intent(getApplicationContext(),CarBikeSearchActivity.class);
+                intent.putExtra("type", "bike");
                 startActivity(intent);
                 break;
 
             case R.id.carChooseButton:
-                intent=new Intent(getApplicationContext(),RequestConfirmActivity.class);
+                intent=new Intent(getApplicationContext(),CarBikeSearchActivity.class);
+                intent.putExtra("type", "car");
                 startActivity(intent);
                 break;
         }

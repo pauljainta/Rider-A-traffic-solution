@@ -48,6 +48,8 @@ public class RequestConfirmActivity extends FragmentActivity implements OnMapRea
 
     String source, dest;
 
+    String type;
+
     double estimatedFare;
 
     TextView estimatedFareTextView;
@@ -128,6 +130,7 @@ public class RequestConfirmActivity extends FragmentActivity implements OnMapRea
         destLong = intent.getDoubleExtra("destLong", 1);
         source = intent.getStringExtra("source");
         dest = intent.getStringExtra("dest");
+        type = intent.getStringExtra("type");
 
         estimatedFare = intent.getDoubleExtra("fare", 1);
         estimatedFare = (double) Math.round(estimatedFare * 100) / 100;
@@ -184,6 +187,7 @@ public class RequestConfirmActivity extends FragmentActivity implements OnMapRea
             jsonBody.put("source", source);
             jsonBody.put("dest", dest);
             jsonBody.put("pending", pending);
+            jsonBody.put("type", type);
 
 
             final String requestBody = jsonBody.toString();

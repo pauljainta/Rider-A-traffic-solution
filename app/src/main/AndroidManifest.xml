@@ -17,10 +17,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.RiderATrafficSolution">
+        <activity android:name=".DriverReceiveRequestActivity"></activity>
         <activity
             android:name=".DrawerActivity"
             android:label="@string/title_activity_drawer"
-            android:theme="@style/Theme.RiderATrafficSolution.NoActionBar"></activity>
+            android:theme="@style/Theme.RiderATrafficSolution.NoActionBar" />
         <activity android:name=".WaitingActivity" />
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.

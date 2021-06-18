@@ -51,8 +51,8 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
         mapFragment.getMapAsync(this);
 
         Intent intent=getIntent();
-        drivermail=intent.getStringExtra("drivermail");
-        Log.i("drivermail",drivermail);
+        //drivermail=intent.getStringExtra("drivermail");
+        //Log.i("drivermail",drivermail);
     }
 
     /**

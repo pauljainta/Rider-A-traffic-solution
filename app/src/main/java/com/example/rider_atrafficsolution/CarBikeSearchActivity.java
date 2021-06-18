@@ -48,7 +48,7 @@ public class CarBikeSearchActivity extends AppCompatActivity
 
     String source;
     String dest;
-
+    String type;
 
     AutocompleteSupportFragment sourceFragment;
     AutocompleteSupportFragment destinationFragment;
@@ -77,7 +77,7 @@ public class CarBikeSearchActivity extends AppCompatActivity
         destinationFragment.setCountry("BD");
 
 
-
+        type = getIntent().getStringExtra("type");
 
 
         if (!Places.isInitialized()) {
@@ -160,6 +160,7 @@ public class CarBikeSearchActivity extends AppCompatActivity
             intent.putExtra("fare", estimatedFare);
             intent.putExtra("source", source);
             intent.putExtra("dest", dest);
+            intent.putExtra("type", type);
 
             startActivity(intent);
 
