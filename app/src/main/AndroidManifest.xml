@@ -17,7 +17,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.RiderATrafficSolution">
-        <activity android:name=".DriverReceiveRequestActivity"></activity>
+        <activity android:name=".HistoryShowingActivity"></activity>
+        <activity android:name=".DriverReceiveRequestActivity" />
         <activity
             android:name=".DrawerActivity"
             android:label="@string/title_activity_drawer"
