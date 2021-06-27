@@ -26,6 +26,7 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class ChooseVehicleActivity extends AppCompatActivity implements View.OnClickListener
 {
@@ -34,8 +35,10 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
     TextView username,rating;
     List<String > name;
     private RequestQueue requestQueue;
-    private static Context context;
+    private Context context;
+    ReentrantLock lock;
 
+    boolean alreadyPending;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -46,10 +49,14 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
         bikeChooseButton=findViewById(R.id.bikeChooseButton);
         carChooseButton=findViewById(R.id.carChooseButton);
 
+        lock = new ReentrantLock();
+
         naview = findViewById(R.id.nav_view);
         View headerView = naview.getHeaderView(0);
         username = headerView.findViewById(R.id.nav_header_title);
         rating = headerView.findViewById(R.id.nav_header_subtitle);
+
+        alreadyPending = false;
 
 
         context = getBaseContext();
@@ -68,6 +75,8 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
         busChooseButton.setOnClickListener(this);
         carChooseButton.setOnClickListener(this);
         bikeChooseButton.setOnClickListener(this);
+
+        checkIfAlreadyPending();
 
         naview.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
@@ -103,21 +112,107 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
                 break;
 
             case R.id.bikeChooseButton:
-                intent=new Intent(getApplicationContext(),CarBikeSearchActivity.class);
-                intent.putExtra("type", "bike");
-                startActivity(intent);
+
+                lock.lock();
+
+                if(alreadyPending)
+                {
+                    intent=new Intent(getApplicationContext(),WaitingActivity.class);
+                    startActivity(intent);
+                }
+                else
+                {
+                    intent=new Intent(getApplicationContext(),CarBikeSearchActivity.class);
+                    intent.putExtra("type", "bike");
+                    startActivity(intent);
+                }
+
+                lock.unlock();
+
                 break;
 
             case R.id.carChooseButton:
-                intent=new Intent(getApplicationContext(),CarBikeSearchActivity.class);
-                intent.putExtra("type", "car");
-                startActivity(intent);
+
+                lock.lock();
+
+                if(alreadyPending)
+                {
+                    intent=new Intent(getApplicationContext(),WaitingActivity.class);
+                    startActivity(intent);
+                }
+                else
+                {
+                    intent=new Intent(getApplicationContext(),CarBikeSearchActivity.class);
+                    intent.putExtra("type", "car");
+                    startActivity(intent);
+                }
+
+                lock.unlock();
+
+
                 break;
         }
     }
 
+    public void checkIfAlreadyPending()
+    {
+        lock.lock();
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/Request.json", null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response)
+            {
+                //type.clear();
+                //try
+                {
+                    JSONArray array = response.names();
+
+                    for(int i=0;i<array.length();i++)
+                    {
+                        try
+                        {
+                            String key = array.getString(i);
+
+                            JSONObject jsonObject = response.getJSONObject(key);
+
+                            boolean pending = jsonObject.getBoolean("pending");
+                            if(!pending)
+                                continue;
+
+                            String user = jsonObject.getString("userEmail");
+
+                            if(Info.currentEmail.equalsIgnoreCase(user))
+                            {
+                                alreadyPending = true;
+                                break;
+                            }
+
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
+                Log.d("error: " , error.getMessage());
+            }
+        });
+
+        requestQueue.add(jsonObjectRequest);
+
+        lock.unlock();
+    }
+
     public void GetMethodForName()
     {
+        lock.lock();
+
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/users.json", null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response)
@@ -125,6 +220,7 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
                 //try
                 {
                     JSONArray array = response.names();
+
 
                     for(int i=0;i<array.length();i++)
                     {
@@ -160,5 +256,7 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
         });
 
         requestQueue.add(jsonObjectRequest);
+
+        lock.unlock();
     }
 }

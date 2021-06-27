@@ -42,6 +42,7 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
     ReentrantLock lock;
     List<LatLng> sourceList;
     List<LatLng> destList;
+    List<String > keys;
 
     List<Double> latlong;
     //List<String> type;
@@ -67,6 +68,7 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
 
         sourceList = new ArrayList<>();
         destList = new ArrayList<>();
+        keys = new ArrayList<>();
 
         update();
 
@@ -109,6 +111,7 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
                 intent.putExtra("driverLat", latlong.get(0));
                 intent.putExtra("driverLong", latlong.get(1));
                 intent.putExtra("type", type);
+                intent.putExtra("key", keys.get(position));
 
                 startActivity(intent);
             }
@@ -195,6 +198,7 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
                 requests.clear();
                 sourceList.clear();;
                 destList.clear();
+                keys.clear();
 
                 //try
                 {
@@ -241,6 +245,7 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
                                 requests.add("From: " + source + "\nTo: " + dest);
                                 sourceList.add(new LatLng(sourceLat, sourceLong));
                                 destList.add(new LatLng(destLat, destLong));
+                                keys.add(key);
 
                                 //Log.i("request", requests.get(0));
                             }

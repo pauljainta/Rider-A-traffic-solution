@@ -70,6 +70,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
     String source, dest;
 
     String driverMail;
+    String email;
 
 
    // double estimatedFare;
@@ -83,6 +84,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
     LocationManager locationManager;
     LocationListener locationListener;
     private ReentrantLock lock;
+    private String keyForRequest;
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -119,6 +121,10 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
         driverLat = intent.getDoubleExtra("driverLat", 1);
         driverLong = intent.getDoubleExtra("driverLong", 1);
         type = intent.getStringExtra("type");
+        keyForRequest = intent.getStringExtra("key");
+
+
+        GetRequestInfo();
 
       //  requestQueue = Volley.newRequestQueue(context);
         acceptRequestButton = findViewById(R.id.driver_request_accept_button);
@@ -126,6 +132,19 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
 
         driverMail=Info.driverID;
 
+        acceptRequestButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                System.out.println("s "+ source);
+                System.out.println("d " + dest);
+                System.out.println("user " + email);
+                System.out.println("type " + type);
+
+                updateRequestStatus();
+            }
+        });
 
         rejectRequestButton.setOnClickListener(new View.OnClickListener()
         {
@@ -222,9 +241,8 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
 
     }
 
-    public void GetKeyForLocationUpdate()
+    synchronized public void GetKeyForLocationUpdate()
     {
-        lock.lock();
 
         lock.lock();
 
@@ -250,7 +268,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
                             if(id.equalsIgnoreCase(Info.driverID))
                             {
                                 keyForDriverID = key;
-                                busy = jsonObject.getBoolean("type");
+                                busy = jsonObject.getBoolean("busy");
 
                                 //type.add(t);
                                 break;
@@ -278,7 +296,135 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
         lock.unlock();
     }
 
-    public void updateDriverLocation()
+    synchronized public void GetRequestInfo()
+    {
+        lock.lock();
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/Request.json", null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response)
+            {
+
+                //try
+                {
+                    JSONArray array = response.names();
+
+                    for(int i=0;i<array.length();i++)
+                    {
+                        try
+                        {
+                            String key = array.getString(i);
+
+                            if(key.equalsIgnoreCase(keyForRequest))
+                            {
+                                JSONObject jsonObject = response.getJSONObject(key);
+
+                                source = jsonObject.getString("source");
+                                dest = jsonObject.getString("dest");
+                                email = jsonObject.getString("userEmail");
+
+                                System.out.println("s "+ source);
+                                System.out.println("d " + dest);
+                                System.out.println("user " + email);
+
+                                break;
+                            }
+
+
+
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+
+
+
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
+                Log.d("error: " , error.getMessage());
+            }
+        });
+
+        requestQueue.add(jsonObjectRequest);
+
+        lock.unlock();
+    }
+
+    synchronized public void updateRequestStatus()
+    {
+        lock.lock();
+        try
+        {
+            String URL = "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/Request/" + keyForRequest + ".json";
+            JSONObject jsonBody = new JSONObject();
+
+
+            jsonBody.put("destLat", destLat);
+            jsonBody.put("destLong", destLong);
+            jsonBody.put("sourceLat", sourceLat);
+            jsonBody.put("sourceLong", sourceLong);
+            jsonBody.put("userEmail", email);
+            jsonBody.put("pending", false);
+            jsonBody.put("accepeted_by", Info.driverID);
+            jsonBody.put("dest", dest);
+            jsonBody.put("source", source);
+            jsonBody.put("type", type);
+
+            final String requestBody = jsonBody.toString();
+
+            StringRequest stringRequest = new StringRequest(Request.Method.PUT, URL, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    Log.i("VOLLEY", response);
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.e("VOLLEY", error.toString());
+                }
+            }) {
+                @Override
+                public String getBodyContentType() {
+                    return "application/json; charset=utf-8";
+                }
+
+                @Override
+                public byte[] getBody() throws AuthFailureError
+                {
+                    try {
+                        return requestBody == null ? null : requestBody.getBytes("utf-8");
+                    } catch (UnsupportedEncodingException uee) {
+                        VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", requestBody, "utf-8");
+                        return null;
+                    }
+                }
+
+                @Override
+                protected Response<String> parseNetworkResponse(NetworkResponse response) {
+                    String responseString = "";
+                    if (response != null) {
+                        responseString = String.valueOf(response.statusCode);
+                        // can get more details such as response.headers
+                    }
+                    return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
+                }
+            };
+
+            requestQueue.add(stringRequest);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        lock.unlock();
+    }
+
+    synchronized public void updateDriverLocation()
     {
         lock.lock();
         try
