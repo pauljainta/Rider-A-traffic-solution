@@ -91,7 +91,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_request_confirm);
+        setContentView(R.layout.activity_driver_location_update);
         //estimatedFareTextView = findViewById(R.id.estimatedFareTextView);
 
         context = getBaseContext();

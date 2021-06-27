@@ -262,7 +262,6 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
             @Override
             public void onResponse(JSONObject response)
             {
-
                 try
                 {
                     JSONArray dist = (JSONArray) response.get("rows");
