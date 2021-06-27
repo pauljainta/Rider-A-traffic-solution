@@ -108,6 +108,7 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
                 intent.putExtra("destLong", destList.get(position).longitude);
                 intent.putExtra("driverLat", latlong.get(0));
                 intent.putExtra("driverLong", latlong.get(1));
+                intent.putExtra("type", type);
 
                 startActivity(intent);
             }
