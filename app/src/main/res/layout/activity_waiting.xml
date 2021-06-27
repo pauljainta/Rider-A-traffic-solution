@@ -11,7 +11,7 @@
         android:id="@+id/waitingTextView2"
         android:layout_width="333dp"
         android:layout_height="54dp"
-        android:text="We are searchoing for your ride"
+        android:text="We are searching for your ride"
         android:textColor="#FFFFFF"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
