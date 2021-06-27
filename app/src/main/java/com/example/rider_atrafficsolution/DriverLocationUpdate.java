@@ -96,6 +96,15 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
 
         context = getBaseContext();
 
+        Intent intent = this.getIntent();
+
+        sourceLat = intent.getDoubleExtra("sourceLat", 1);
+        sourceLong = intent.getDoubleExtra("sourceLong", 1);
+        destLat = intent.getDoubleExtra("destLat", 1);
+        destLong = intent.getDoubleExtra("destLong", 1);
+        driverLat = intent.getDoubleExtra("driverLat", 1);
+        driverLong = intent.getDoubleExtra("driverLong", 1);
+
       //  requestQueue = Volley.newRequestQueue(context);
         acceptRequestButton = findViewById(R.id.driver_request_accept_button);
         rejectRequestButton=findViewById(R.id.driver_request_reject_button);
@@ -150,11 +159,11 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
        // estimatedFare = intent.getDoubleExtra("fare", 1);
         //estimatedFare = (double) Math.round(estimatedFare * 100) / 100;
 
-        sourceLat= 23.738;
-        sourceLong= 90.4;
-
-        destLat=23.7561067;
-        destLong=90.38719609999998;
+//        sourceLat= 23.738;
+//        sourceLong= 90.4;
+//
+//        destLat=23.7561067;
+//        destLong=90.38719609999998;
 
         LatLng source = new LatLng(sourceLat, sourceLong);
         LatLng dest = new LatLng(destLat, destLong);
@@ -168,7 +177,8 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
 
         locationListener=new LocationListener() {
             @Override
-            public void onLocationChanged(@NonNull Location location) {
+            public void onLocationChanged(@NonNull Location location)
+            {
                 driverLat=location.getLatitude();
                 driverLong=location.getLongitude();
                 LatLng driverLatLng=new LatLng(driverLat,driverLong);

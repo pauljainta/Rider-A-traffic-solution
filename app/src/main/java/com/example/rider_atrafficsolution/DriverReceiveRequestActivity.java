@@ -21,6 +21,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.common.util.Hex;
 import com.google.android.gms.common.util.JsonUtils;
+import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -39,6 +40,8 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
     RequestQueue requestQueue;
     ArrayAdapter<String > adapter;
     ReentrantLock lock;
+    List<LatLng> sourceList;
+    List<LatLng> destList;
 
     List<Double> latlong;
     //List<String> type;
@@ -62,9 +65,12 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
 
         latlong = new ArrayList<>();
 
-        update();
+        sourceList = new ArrayList<>();
+        destList = new ArrayList<>();
 
-        GetDistance(0,0,0,0);
+        //update();
+
+
 
         Handler handler =new Handler();
         final Runnable r = new Runnable() {
@@ -95,6 +101,14 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
                     return;
 
                 Intent intent = new Intent(getApplicationContext(), DriverLocationUpdate.class);
+
+                intent.putExtra("sourceLat", sourceList.get(position).latitude);
+                intent.putExtra("sourceLong", sourceList.get(position).longitude);
+                intent.putExtra("destLat", destList.get(position).latitude);
+                intent.putExtra("destLong", destList.get(position).longitude);
+                intent.putExtra("driverLat", latlong.get(0));
+                intent.putExtra("driverLong", latlong.get(1));
+
                 startActivity(intent);
             }
         });
@@ -106,6 +120,9 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
         GetDriverLocation();
 
         GetRequests();
+
+        if(!sourceList.isEmpty())
+            GetDistance(sourceList.get(0).latitude,sourceList.get(1).longitude,destList.get(0).latitude,destList.get(0).longitude);
 
         adapter = new ArrayAdapter< String>(context, android.R.layout.simple_list_item_1, requests);
         requestsListView.setAdapter(adapter);
@@ -177,6 +194,8 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
             public void onResponse(JSONObject response)
             {
                 requests.clear();
+                sourceList.clear();;
+                destList.clear();
 
                 //try
                 {
@@ -203,8 +222,13 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
 
                             double sourceLat = jsonObject.getDouble("sourceLat");
                             double sourceLong = jsonObject.getDouble("sourceLong");
+
+                            double destLat = jsonObject.getDouble("destLat");
+                            double destLong = jsonObject.getDouble("destLong");
+
 //                            double destLat = jsonObject.getDouble("destLat");
 //                            double destLong = jsonObject.getDouble("destLong");
+
 
                             double dist = util.getDistanceFromLatLonInKm(sourceLat, sourceLong, latlong.get(0), latlong.get(1));
 
@@ -216,6 +240,8 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
                                 String dest = jsonObject.getString("dest");
 
                                 requests.add("From: " + source + "\nTo: " + dest);
+                                sourceList.add(new LatLng(sourceLat, sourceLong));
+                                destList.add(new LatLng(destLat, destLong));
 
                                 //Log.i("request", requests.get(0));
                             }
@@ -256,7 +282,7 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
 
         String API_Key = "AIzaSyC-9ghJoVuhdfodTVZ3JnpDbgx38-0PtGk";
 
-        String url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins=40.6655101,-73.89188969999998&destinations=40.6905615%2C-73.9976592&key="  + API_Key;
+        String url = "https://maps.googleapis.com/maps/api/distancematrix/json?units=metric&origins="+lat1+","+lon1+"&destinations="+lat2+","+lon2+"&key="  + API_Key;
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
@@ -270,6 +296,7 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
                     JSONObject obj3 = (JSONObject) disting.get(0);
                     JSONObject obj4 =(JSONObject) obj3.get("distance");
                     JSONObject obj5 = (JSONObject) obj3.get("duration");
+                    Log.i("distance", obj4.get("text").toString());
                     System.out.println(obj4.get("text"));
                     System.out.println(obj5.get("text"));
                     System.out.println(obj4.get("text"));
