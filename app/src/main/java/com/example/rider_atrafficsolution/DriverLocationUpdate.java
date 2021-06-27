@@ -71,6 +71,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
 
     String driverMail;
 
+
    // double estimatedFare;
 
    // TextView estimatedFareTextView;
@@ -101,6 +102,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
         setContentView(R.layout.activity_driver_location_update);
         //estimatedFareTextView = findViewById(R.id.estimatedFareTextView);
 
+
         context = getBaseContext();
         requestQueue = Volley.newRequestQueue(context);
 
@@ -120,12 +122,20 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
 
       //  requestQueue = Volley.newRequestQueue(context);
         acceptRequestButton = findViewById(R.id.driver_request_accept_button);
-        rejectRequestButton=findViewById(R.id.driver_request_reject_button);
+        rejectRequestButton = findViewById(R.id.driver_request_reject_button);
 
         driverMail=Info.driverID;
 
 
-
+        rejectRequestButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Intent intent1 = new Intent(getApplicationContext(), DriverReceiveRequestActivity.class);
+                startActivity(intent1);
+            }
+        });
 
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
