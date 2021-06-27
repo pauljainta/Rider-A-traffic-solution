@@ -68,7 +68,7 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
         sourceList = new ArrayList<>();
         destList = new ArrayList<>();
 
-        //update();
+        update();
 
 
 
@@ -122,8 +122,6 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
 
         GetRequests();
 
-        if(!sourceList.isEmpty())
-            GetDistance(sourceList.get(0).latitude,sourceList.get(1).longitude,destList.get(0).latitude,destList.get(0).longitude);
 
         adapter = new ArrayAdapter< String>(context, android.R.layout.simple_list_item_1, requests);
         requestsListView.setAdapter(adapter);
