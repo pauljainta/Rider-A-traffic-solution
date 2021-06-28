@@ -39,6 +39,7 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
     ReentrantLock lock;
 
     boolean alreadyPending;
+    boolean checked;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -57,6 +58,7 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
         rating = headerView.findViewById(R.id.nav_header_subtitle);
 
         alreadyPending = false;
+        checked = false;
 
 
         context = getBaseContext();
@@ -115,16 +117,20 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
 
                 lock.lock();
 
-                if(alreadyPending)
+                if(checked)
                 {
-                    intent=new Intent(getApplicationContext(),WaitingActivity.class);
-                    startActivity(intent);
-                }
-                else
-                {
-                    intent=new Intent(getApplicationContext(),CarBikeSearchActivity.class);
-                    intent.putExtra("type", "bike");
-                    startActivity(intent);
+                    if(alreadyPending)
+                    {
+                        intent=new Intent(getApplicationContext(),WaitingActivity.class);
+                        startActivity(intent);
+                    }
+                    else
+                    {
+                        intent=new Intent(getApplicationContext(),CarBikeSearchActivity.class);
+                        intent.putExtra("type", "bike");
+                        startActivity(intent);
+                    }
+
                 }
 
                 lock.unlock();
@@ -135,16 +141,19 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
 
                 lock.lock();
 
-                if(alreadyPending)
+                if(checked)
                 {
-                    intent=new Intent(getApplicationContext(),WaitingActivity.class);
-                    startActivity(intent);
-                }
-                else
-                {
-                    intent=new Intent(getApplicationContext(),CarBikeSearchActivity.class);
-                    intent.putExtra("type", "car");
-                    startActivity(intent);
+                    if(alreadyPending)
+                    {
+                        intent=new Intent(getApplicationContext(),WaitingActivity.class);
+                        startActivity(intent);
+                    }
+                    else
+                    {
+                        intent=new Intent(getApplicationContext(),CarBikeSearchActivity.class);
+                        intent.putExtra("type", "car");
+                        startActivity(intent);
+                    }
                 }
 
                 lock.unlock();
@@ -205,6 +214,8 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
         });
 
         requestQueue.add(jsonObjectRequest);
+
+        checked = true;
 
         lock.unlock();
     }
