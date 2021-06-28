@@ -156,7 +156,9 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
     {
         lock.lock();
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/Request.json", null, new Response.Listener<JSONObject>() {
+        String url = "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/Request.json";
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response)
             {
@@ -214,7 +216,8 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
     {
         lock.lock();
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/users.json", null, new Response.Listener<JSONObject>() {
+        String url = "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/users.json";
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response)
             {

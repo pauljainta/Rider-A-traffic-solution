@@ -1,10 +1,12 @@
 package com.example.rider_atrafficsolution;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 
 import com.android.volley.Request;
@@ -19,8 +21,10 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polygon;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.gson.JsonArray;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,7 +40,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class TestMapsActivity extends FragmentActivity implements OnMapReadyCallback
+public class TestMapsActivity extends FragmentActivity implements
+        OnMapReadyCallback,
+        GoogleMap.OnPolylineClickListener,
+        GoogleMap.OnPolygonClickListener
 {
 
     private GoogleMap mMap;
@@ -44,6 +51,8 @@ public class TestMapsActivity extends FragmentActivity implements OnMapReadyCall
     RequestQueue requestQueue;
     Context context;
     ReentrantLock lock;
+    List<LatLng> intermediate;
+    Polyline polyline1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -53,6 +62,23 @@ public class TestMapsActivity extends FragmentActivity implements OnMapReadyCall
         context = getBaseContext();
         requestQueue = Volley.newRequestQueue(context);
         lock = new ReentrantLock();
+        intermediate = new ArrayList<>();
+
+
+
+        GetDriverLocation();
+
+        Handler handler =new Handler();
+        final Runnable r = new Runnable()
+        {
+            public void run() {
+                handler.postDelayed(this, 5000);
+                Log.i("map timer", "updated after 5 seconds");
+                update();
+
+            }
+        };
+        handler.postDelayed(r, 0000);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -70,7 +96,7 @@ public class TestMapsActivity extends FragmentActivity implements OnMapReadyCall
      * installed Google Play services and returned to the app.
      */
     @Override
-    public void onMapReady(GoogleMap googleMap)
+    synchronized public void onMapReady(GoogleMap googleMap)
     {
         mMap = googleMap;
 
@@ -79,29 +105,49 @@ public class TestMapsActivity extends FragmentActivity implements OnMapReadyCall
 //        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
 //        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
 
-        GetDriverLocation();
+        polyline1 = mMap.addPolyline(new PolylineOptions()
+                .clickable(true)
+                .addAll(intermediate));
+
+        // Position the map's camera near Alice Springs in the center of Australia,
+        // and set the zoom factor so most of Australia shows on the screen.
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(23.7561, 90.3872), 12));
+
+        // Set listeners for click events.
+        googleMap.setOnPolylineClickListener(this);
+        googleMap.setOnPolygonClickListener(this);
     }
 
-    private static final LatLng LOWER_MANHATTAN = new LatLng(40.722543,-73.998585);
-    private static final LatLng BROOKLYN_BRIDGE = new LatLng(40.7057, -73.9964);
-    private static final LatLng WALL_STREET = new LatLng(40.7064, -74.0094);
+    public void update()
+    {
+        if(polyline1 == null)
+            return;
+
+        System.out.println("intermediate" + intermediate);
+        polyline1 = mMap.addPolyline(new PolylineOptions()
+                .clickable(true)
+                .addAll(intermediate));
+    }
+
 
     private String getMapsApiDirectionsUrl()
     {
-        String origin = "origin=" + LOWER_MANHATTAN.latitude + "," + LOWER_MANHATTAN.longitude;
-        String waypoints = "waypoints=optimize:true|" + BROOKLYN_BRIDGE.latitude + "," + BROOKLYN_BRIDGE.longitude + "|";
-        String destination = "destination=" + WALL_STREET.latitude + "," + WALL_STREET.longitude;
+
+
+        String origin = "origin=" + "23.7561" + "," + "90.3872";
+        //String waypoints = "waypoints=optimize:true|" + BROOKLYN_BRIDGE.latitude + "," + BROOKLYN_BRIDGE.longitude + "|";
+        String destination = "destination=" + "23.8223" + "," + "90.3654";
 
         String sensor = "sensor=false";
-        String params = origin + "&" + waypoints + "&"  + destination + "&" + sensor + "&key=" + "AIzaSyC-9ghJoVuhdfodTVZ3JnpDbgx38-0PtGk";
+        String params = origin + "&"  + "&"  + destination + "&" + sensor + "&key=" + "AIzaSyC-9ghJoVuhdfodTVZ3JnpDbgx38-0PtGk";
         String output = "json";
         String url = "https://maps.googleapis.com/maps/api/directions/"
                 + output + "?" + params;
         return url;
     }
 
-    List<LatLng> decodePoly(String encoded)
-    {
+
+    private List<LatLng> decodePoly(String encoded) {
 
         List<LatLng> poly = new ArrayList<LatLng>();
         int index = 0, len = encoded.length();
@@ -147,21 +193,33 @@ public class TestMapsActivity extends FragmentActivity implements OnMapReadyCall
                 try {
                     //Tranform the string into a json object
 
-                    JSONArray routeArray = response.getJSONArray("routes");
-                    JSONObject routes = routeArray.getJSONObject(0);
-                    JSONObject overviewPolylines = routes.getJSONObject("overview_polyline");
-                    String encodedString = overviewPolylines.getString("points");
-                    List<LatLng> list = decodePoly(encodedString);
+                    JSONArray legs = response.getJSONArray("routes").getJSONObject(0).getJSONArray("legs");
+                    for (int j = 0; j < legs.length(); j++)
+                    {
+                        JSONObject leg = legs.getJSONObject(j);
 
-                    Polyline line = mMap.addPolyline(new PolylineOptions()
-                            .addAll(list)
-                            .width(12)
-                            .color(Color.parseColor("#05b1fb"))//Google maps blue color
-                            .geodesic(true)
-                    );
+
+                        int distance = leg.getJSONObject("distance").getInt("value");
+
+
+                        JSONArray steps = response.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(j).getJSONArray("steps");
+                        for (int k = 0; k < steps.length(); k++)
+                        {
+                            JSONObject step = steps.getJSONObject(k);
+                            String polyline = step.getJSONObject("polyline").getString("points");
+
+                            List<LatLng> latLngs = decodePoly(polyline);
+
+                            intermediate.addAll(latLngs);
+
+                            System.out.println(latLngs);
+                        }
+                    }
+
 
                 } catch (JSONException e) {
 
+                    System.out.println("exception from distance matrix");
                 }
             }
         }, new Response.ErrorListener() {
@@ -178,42 +236,15 @@ public class TestMapsActivity extends FragmentActivity implements OnMapReadyCall
     }
 
 
-    String downloadUrl(String strUrl) throws IOException
+    @Override
+    public void onPolygonClick(@NonNull Polygon polygon)
     {
-        String data = "";
-        InputStream iStream = null;
-        HttpURLConnection urlConnection = null;
-        try{
-            URL url = new URL(strUrl);
 
-            // Creating an http connection to communicate with url
-            urlConnection = (HttpURLConnection) url.openConnection();
+    }
 
-            // Connecting to url
-            urlConnection.connect();
+    @Override
+    public void onPolylineClick(@NonNull Polyline polyline)
+    {
 
-            // Reading data from url
-            iStream = urlConnection.getInputStream();
-
-            BufferedReader br = new BufferedReader(new InputStreamReader(iStream));
-
-            StringBuffer sb  = new StringBuffer();
-
-            String line = "";
-            while( ( line = br.readLine())  != null){
-                sb.append(line);
-            }
-
-            data = sb.toString();
-
-            br.close();
-
-        }catch(Exception e){
-            Log.d("Exception ", e.toString());
-        }finally{
-            iStream.close();
-            urlConnection.disconnect();
-        }
-        return data;
     }
 }
