@@ -115,55 +115,44 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
 
             case R.id.bikeChooseButton:
 
-                lock.lock();
-
-                if(checked)
-                {
-                    if(alreadyPending)
-                    {
-                        intent=new Intent(getApplicationContext(),WaitingActivity.class);
-                        startActivity(intent);
-                    }
-                    else
-                    {
-                        intent=new Intent(getApplicationContext(),CarBikeSearchActivity.class);
-                        intent.putExtra("type", "bike");
-                        startActivity(intent);
-                    }
-
-                }
-
-                lock.unlock();
+                carBikeButtonFunction("bike");
 
                 break;
 
             case R.id.carChooseButton:
 
-                lock.lock();
-
-                if(checked)
-                {
-                    if(alreadyPending)
-                    {
-                        intent=new Intent(getApplicationContext(),WaitingActivity.class);
-                        startActivity(intent);
-                    }
-                    else
-                    {
-                        intent=new Intent(getApplicationContext(),CarBikeSearchActivity.class);
-                        intent.putExtra("type", "car");
-                        startActivity(intent);
-                    }
-                }
-
-                lock.unlock();
-
+                carBikeButtonFunction("car");
 
                 break;
         }
     }
 
-    public void checkIfAlreadyPending()
+    synchronized void carBikeButtonFunction(String type)
+    {
+        lock.lock();
+
+        Intent intent = null;
+
+        if(!checked)
+            return;
+
+        if(!alreadyPending)
+        {
+            intent=new Intent(getApplicationContext(),CarBikeSearchActivity.class);
+            intent.putExtra("type", type);
+            startActivity(intent);
+        }
+
+        else
+        {
+            intent=new Intent(getApplicationContext(),WaitingActivity.class);
+            startActivity(intent);
+        }
+
+        lock.unlock();
+    }
+
+    synchronized public void checkIfAlreadyPending()
     {
         lock.lock();
 
@@ -203,6 +192,8 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
                         }
                     }
 
+                    checked = true;
+
                 }
             }
         }, new Response.ErrorListener() {
@@ -215,7 +206,6 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
 
         requestQueue.add(jsonObjectRequest);
 
-        checked = true;
 
         lock.unlock();
     }
