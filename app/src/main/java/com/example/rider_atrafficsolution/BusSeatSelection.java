@@ -331,7 +331,7 @@ public class BusSeatSelection extends AppCompatActivity
     {
         lock.lock();
         //RequestQueue requestQueue = Volley.newRequestQueue(context);
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/fare.json", null, new Response.Listener<JSONObject>() {
+        CustomPriorityRequest jsonObjectRequest = new CustomPriorityRequest(Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/fare.json", null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response)
             {
@@ -380,6 +380,7 @@ public class BusSeatSelection extends AppCompatActivity
             }
         });
 
+        jsonObjectRequest.setPriority(Request.Priority.HIGH);
         requestQueue.add(jsonObjectRequest);
 
         lock.unlock();
@@ -389,7 +390,7 @@ public class BusSeatSelection extends AppCompatActivity
     {
         lock.lock();
         //RequestQueue requestQueue = Volley.newRequestQueue(context);
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/BusRoute.json", null, new Response.Listener<JSONObject>() {
+        CustomPriorityRequest jsonObjectRequest = new CustomPriorityRequest(Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/BusRoute.json", null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response)
             {
@@ -452,6 +453,7 @@ public class BusSeatSelection extends AppCompatActivity
             }
         });
 
+        jsonObjectRequest.setPriority(Request.Priority.IMMEDIATE);
         requestQueue.add(jsonObjectRequest);
 
         lock.unlock();
@@ -466,7 +468,7 @@ public class BusSeatSelection extends AppCompatActivity
     {
         lock.lock();
         //RequestQueue requestQueue = Volley.newRequestQueue(context);
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/CoOrdinates.json", null, new Response.Listener<JSONObject>()
+        CustomPriorityRequest jsonObjectRequest = new CustomPriorityRequest(Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/CoOrdinates.json", null, new Response.Listener<JSONObject>()
         {
             @Override
             public void onResponse(JSONObject response)
@@ -532,6 +534,7 @@ public class BusSeatSelection extends AppCompatActivity
             }
         });
 
+        jsonObjectRequest.setPriority(Request.Priority.NORMAL);
         requestQueue.add(jsonObjectRequest);
 
         for (Double d : fromLatLong)
@@ -555,7 +558,7 @@ public class BusSeatSelection extends AppCompatActivity
     {
         lock.lock();
         //RequestQueue requestQueue = Volley.newRequestQueue(context);
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/BusTable.json", null, new Response.Listener<JSONObject>() {
+        CustomPriorityRequest jsonObjectRequest = new CustomPriorityRequest(Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/BusTable.json", null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response)
             {
@@ -613,6 +616,7 @@ public class BusSeatSelection extends AppCompatActivity
             }
         });
 
+        jsonObjectRequest.setPriority(Request.Priority.NORMAL);
         requestQueue.add(jsonObjectRequest);
 
         lock.unlock();

@@ -71,10 +71,18 @@ public class TestMapsActivity extends FragmentActivity implements
         Handler handler =new Handler();
         final Runnable r = new Runnable()
         {
-            public void run() {
+            public void run()
+            {
+                if(!intermediate.isEmpty())
+                {
+                    update();
+                    return;
+                }
+
                 handler.postDelayed(this, 5000);
                 Log.i("map timer", "updated after 5 seconds");
                 update();
+
 
             }
         };

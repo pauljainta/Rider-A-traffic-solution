@@ -158,7 +158,7 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
 
         String url = "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/Request.json";
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+        CustomPriorityRequest jsonObjectRequest = new CustomPriorityRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response)
             {
@@ -206,6 +206,7 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
             }
         });
 
+        jsonObjectRequest.setPriority(Request.Priority.HIGH);
         requestQueue.add(jsonObjectRequest);
 
 

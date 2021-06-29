@@ -137,11 +137,6 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
             @Override
             public void onClick(View v)
             {
-                System.out.println("s "+ source);
-                System.out.println("d " + dest);
-                System.out.println("user " + email);
-                System.out.println("type " + type);
-
                 updateRequestStatus();
             }
         });
