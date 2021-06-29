@@ -74,7 +74,6 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
 
     String driverMail;
     String email;
-    String classid;
 
 
    // double estimatedFare;
@@ -134,32 +133,6 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
 
 
 
-        classid=intent.getStringExtra("classid");
-
-        if(classid.equalsIgnoreCase("driver"))
-        {
-            acceptRequestButton.setText("ACCEPT");
-            acceptRequestButton.setVisibility(View.VISIBLE);
-            acceptRequestButton.setEnabled(true);
-
-            rejectRequestButton.setText("REJECT");
-            rejectRequestButton.setVisibility(View.VISIBLE);
-            rejectRequestButton.setEnabled(true);
-        }
-
-        if(classid.equalsIgnoreCase("waiting"))
-        {
-            acceptRequestButton.setVisibility(View.GONE);
-            acceptRequestButton.setEnabled(false);
-            rejectRequestButton.setEnabled(false);
-
-            //rejectRequestButton.setVisibility(View.GONE);
-
-            updateMessage();
-
-        }
-
-
 
 
 
@@ -208,19 +181,6 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
     }
 
 
-    synchronized void updateMessage()
-    {
-        //lock.lock();
-
-        if(classid.equalsIgnoreCase("waiting"))
-        {
-            rejectRequestButton.setText(name + " is in his way");
-            rejectRequestButton.setEnabled(false);
-        }
-
-
-        //lock.unlock();
-    }
 
     public void showLocation(LatLng latLng,String comment)
     {
@@ -278,16 +238,15 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
             @Override
             public void onLocationChanged(@NonNull Location location)
             {
-                if(classid.equalsIgnoreCase("driver"))
-                {
-                    driverLat=location.getLatitude();
-                    driverLong=location.getLongitude();
-                    LatLng driverLatLng=new LatLng(driverLat,driverLong);
-                    showLocation(driverLatLng,"Driver");
 
-                    //busy = true;
-                    updateDriverLocation();
-                }
+                driverLat=location.getLatitude();
+                driverLong=location.getLongitude();
+                LatLng driverLatLng=new LatLng(driverLat,driverLong);
+                showLocation(driverLatLng,"Driver");
+
+                //busy = true;
+                updateDriverLocation();
+
 
 
             }
@@ -334,7 +293,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
                                 //busy = jsonObject.getBoolean("busy");
                                 name = jsonObject.getString("name");
 
-                                updateMessage();
+                                //updateMessage();
 
                                 //type.add(t);
                                 break;

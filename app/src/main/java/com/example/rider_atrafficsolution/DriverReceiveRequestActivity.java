@@ -139,7 +139,7 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
     {
         lock.lock();
 
-        CustomPriorityRequest jsonObjectRequest = new CustomPriorityRequest(Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/Driver.json", null, new Response.Listener<JSONObject>() {
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/Driver.json", null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response)
             {
@@ -188,7 +188,7 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
             }
         });
 
-        jsonObjectRequest.setPriority(Request.Priority.IMMEDIATE);
+        //jsonObjectRequest.setPriority(Request.Priority.IMMEDIATE);
         requestQueue.add(jsonObjectRequest);
 
         lock.unlock();
@@ -198,7 +198,7 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
     {
         lock.lock();
 
-        CustomPriorityRequest jsonObjectRequest = new CustomPriorityRequest(Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/Request.json", null, new Response.Listener<JSONObject>() {
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/Request.json", null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response)
             {
@@ -282,7 +282,7 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
             }
         });
 
-        jsonObjectRequest.setPriority(Request.Priority.HIGH);
+        //jsonObjectRequest.setPriority(Request.Priority.HIGH);
         requestQueue.add(jsonObjectRequest);
 
         lock.unlock();

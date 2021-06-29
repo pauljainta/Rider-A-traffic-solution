@@ -89,7 +89,7 @@ public class WaitingActivity extends AppCompatActivity
 
                     intent.putExtra("classid","waiting");
 
-                    startActivity(intent);
+                    //startActivity(intent);
 
                     return;
                 }
