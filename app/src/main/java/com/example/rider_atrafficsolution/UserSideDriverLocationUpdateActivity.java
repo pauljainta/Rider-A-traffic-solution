@@ -116,7 +116,7 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
         keyForRequest = intent.getStringExtra("key");
         driverID = intent.getIntExtra("driverID",1);
 
-        omuk_driver_accept_korse_textview.setText("Omuk Driver Accept korse");
+        //omuk_driver_accept_korse_textview.setText("Omuk Driver Accept korse");
 
 
        // acceptRequestButton = findViewById(R.id.driver_request_accept_button);
@@ -293,6 +293,8 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
                                 keyForDriverID = key;
                                 //busy = jsonObject.getBoolean("busy");
                                 name = jsonObject.getString("name");
+
+                                omuk_driver_accept_korse_textview.setText(name + " is on his way");
 
                                 //updateMessage();
 
