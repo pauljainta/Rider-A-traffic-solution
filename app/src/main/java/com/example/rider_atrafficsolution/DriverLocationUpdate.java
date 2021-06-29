@@ -105,6 +105,9 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
         setContentView(R.layout.activity_driver_location_update);
         //estimatedFareTextView = findViewById(R.id.estimatedFareTextView);
 
+        acceptRequestButton = findViewById(R.id.driver_request_accept_button);
+        rejectRequestButton = findViewById(R.id.driver_request_reject_button);
+
 
         context = getBaseContext();
         requestQueue = Volley.newRequestQueue(context);
@@ -143,8 +146,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
         GetRequestInfo();
 
       //  requestQueue = Volley.newRequestQueue(context);
-        acceptRequestButton = findViewById(R.id.driver_request_accept_button);
-        rejectRequestButton = findViewById(R.id.driver_request_reject_button);
+
 
         driverMail=Info.driverID;
 
