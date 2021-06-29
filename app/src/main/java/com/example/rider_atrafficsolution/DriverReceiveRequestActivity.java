@@ -112,6 +112,7 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
                 intent.putExtra("driverLong", latlong.get(1));
                 intent.putExtra("type", type);
                 intent.putExtra("key", keys.get(position));
+                intent.putExtra("driverID", Info.driverID);
 
                 intent.putExtra("classid","driver");
 
@@ -156,8 +157,9 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
                             JSONObject jsonObject = response.getJSONObject(key);
 
                             String id = jsonObject.getString("driverID");
+                            boolean busy = jsonObject.getBoolean("busy");
 
-                            if(id.equalsIgnoreCase(Info.driverID))
+                            if(id.equalsIgnoreCase(Info.driverID) && !busy)
                             {
                                 latlong.add(jsonObject.getDouble("lat"));
                                 latlong.add(jsonObject.getDouble("long"));

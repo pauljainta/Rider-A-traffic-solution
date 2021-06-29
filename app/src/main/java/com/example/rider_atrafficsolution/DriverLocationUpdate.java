@@ -63,6 +63,9 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
 
     double driverLat,driverLong;
 
+    int driverID;
+    String name;
+
     String keyForDriverID;
     boolean busy;
     String type;
@@ -141,6 +144,8 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
         driverLong = intent.getDoubleExtra("driverLong", 1);
         type = intent.getStringExtra("type");
         keyForRequest = intent.getStringExtra("key");
+        driverID = intent.getIntExtra("driverID", 1);
+
 
 
         GetRequestInfo();
@@ -148,7 +153,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
       //  requestQueue = Volley.newRequestQueue(context);
 
 
-        driverMail=Info.driverID;
+        //driverMail=Info.driverID;
 
         acceptRequestButton.setOnClickListener(new View.OnClickListener()
         {
@@ -236,11 +241,17 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
             @Override
             public void onLocationChanged(@NonNull Location location)
             {
-                driverLat=location.getLatitude();
-                driverLong=location.getLongitude();
-                LatLng driverLatLng=new LatLng(driverLat,driverLong);
-                showLocation(driverLatLng,"Driver");
-                updateDriverLocation();
+                if(getIntent().getStringExtra("classid").equalsIgnoreCase("driver"))
+                {
+                    driverLat=location.getLatitude();
+                    driverLong=location.getLongitude();
+                    LatLng driverLatLng=new LatLng(driverLat,driverLong);
+                    showLocation(driverLatLng,"Driver");
+
+                    busy = true;
+                    updateDriverLocation();
+                }
+
 
             }
         };
@@ -278,12 +289,13 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
 
                             JSONObject jsonObject = response.getJSONObject(key);
 
-                            String id = jsonObject.getString("driverID");
+                            int id = jsonObject.getInt("driverID");
 
-                            if(id.equalsIgnoreCase(Info.driverID))
+                            if(id == driverID)
                             {
                                 keyForDriverID = key;
-                                busy = jsonObject.getBoolean("busy");
+                                //busy = jsonObject.getBoolean("busy");
+                                name = jsonObject.getString("name");
 
                                 //type.add(t);
                                 break;
@@ -450,9 +462,10 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
 
             jsonBody.put("lat", driverLat);
             jsonBody.put("long", driverLong);
-            jsonBody.put("driverID", Info.driverID);
+            jsonBody.put("driverID", driverID);
             jsonBody.put("type", type);
             jsonBody.put("busy", busy);
+            jsonBody.put("name", name);
 
             final String requestBody = jsonBody.toString();
 

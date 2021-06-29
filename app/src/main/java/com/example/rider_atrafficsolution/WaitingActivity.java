@@ -85,6 +85,8 @@ public class WaitingActivity extends AppCompatActivity
                     intent.putExtra("driverLong", driverLong);
                     intent.putExtra("type", type);
                     intent.putExtra("key", key);
+                    intent.putExtra("driverID", driverID);
+
                     intent.putExtra("classid","waiting");
 
                     startActivity(intent);
@@ -195,9 +197,9 @@ public class WaitingActivity extends AppCompatActivity
 
                             JSONObject jsonObject = response.getJSONObject(key);
 
-                            int id = jsonObject.getInt("driverID");
+                            String id = jsonObject.getString("driverID");
 
-                            if(id == driverID)
+                            if(id.equalsIgnoreCase(String.valueOf(driverID)))
                             {
                                 driverLat = jsonObject.getDouble("lat");
                                 driverLong = jsonObject.getDouble("long");
