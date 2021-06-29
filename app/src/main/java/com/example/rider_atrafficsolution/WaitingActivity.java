@@ -75,7 +75,7 @@ public class WaitingActivity extends AppCompatActivity
 
                 if((driverLat != 0 && driverLong != 0))
                 {
-                    Intent intent = new Intent(getApplicationContext(), DriverLocationUpdate.class);
+                    Intent intent = new Intent(getApplicationContext(), UserSideDriverLocationUpdateActivity.class);
 
                     intent.putExtra("sourceLat", sourceLat);
                     intent.putExtra("sourceLong", sourceLong);
@@ -89,7 +89,7 @@ public class WaitingActivity extends AppCompatActivity
 
                     intent.putExtra("classid","waiting");
 
-                    //startActivity(intent);
+                    startActivity(intent);
 
                     return;
                 }

@@ -32,8 +32,11 @@
             android:value="@string/google_maps_key" />
 
         <activity
+            android:name=".UserSideDriverLocationUpdateActivity"
+            android:label="@string/title_activity_user_side_driver_location_update"></activity>
+        <activity
             android:name=".TestMapsActivity"
-            android:label="@string/title_activity_test_maps"></activity>
+            android:label="@string/title_activity_test_maps" />
         <activity android:name=".HistoryShowingActivity" />
         <activity android:name=".DriverReceiveRequestActivity" />
         <activity
