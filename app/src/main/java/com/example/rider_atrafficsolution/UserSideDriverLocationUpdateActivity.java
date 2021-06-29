@@ -251,8 +251,8 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
             public void onLocationChanged(@NonNull Location location)
             {
 
-                driverLat=location.getLatitude();
-                driverLong=location.getLongitude();
+                //driverLat=location.getLatitude();
+                //driverLong=location.getLongitude();
                 LatLng driverLatLng=new LatLng(driverLat,driverLong);
                 showLocation(driverLatLng,"Driver");
 
@@ -476,7 +476,7 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
             jsonBody.put("long", driverLong);
             jsonBody.put("driverID", driverID);
             jsonBody.put("type", type);
-            jsonBody.put("busy", busy);
+            jsonBody.put("busy", true);
             jsonBody.put("name", name);
 
             final String requestBody = jsonBody.toString();
