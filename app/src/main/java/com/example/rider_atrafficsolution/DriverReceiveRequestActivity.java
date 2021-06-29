@@ -113,6 +113,8 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
                 intent.putExtra("type", type);
                 intent.putExtra("key", keys.get(position));
 
+                intent.putExtra("class_id", "driver");
+
                 startActivity(intent);
             }
         });

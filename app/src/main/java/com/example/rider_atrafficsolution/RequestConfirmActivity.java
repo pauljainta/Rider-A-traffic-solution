@@ -64,6 +64,19 @@ public class RequestConfirmActivity extends FragmentActivity implements OnMapRea
         setContentView(R.layout.activity_request_confirm);
         estimatedFareTextView = findViewById(R.id.estimatedFareTextView);
 
+        Intent intent = this.getIntent();
+
+        sourceLat = intent.getDoubleExtra("sourceLat", 1);
+        sourceLong = intent.getDoubleExtra("sourceLong", 1);
+        destLat = intent.getDoubleExtra("destLat", 1);
+        destLong = intent.getDoubleExtra("destLong", 1);
+        source = intent.getStringExtra("source");
+        dest = intent.getStringExtra("dest");
+        type = intent.getStringExtra("type");
+
+        estimatedFare = intent.getDoubleExtra("fare", 1);
+        estimatedFare = (double) Math.round(estimatedFare * 100) / 100;
+
         context = getBaseContext();
 
         requestQueue = Volley.newRequestQueue(context);
@@ -75,7 +88,15 @@ public class RequestConfirmActivity extends FragmentActivity implements OnMapRea
             public void onClick(View v)
             {
                 sendRequest(Info.currentEmail, sourceLat, sourceLong, destLat, destLong, source, dest, true);
+
                 Intent intent = new Intent(getApplicationContext(), WaitingActivity.class);
+
+                intent.putExtra("sourceLat", sourceLat);
+                intent.putExtra("sourceLong", sourceLong);
+                intent.putExtra("destLat", destLat);
+                intent.putExtra("destLong", destLong);
+                intent.putExtra("type", type);
+
                 startActivity(intent);
             }
         });
@@ -122,18 +143,7 @@ public class RequestConfirmActivity extends FragmentActivity implements OnMapRea
         mMap = googleMap;
 
         // Add a marker in Sydney and move the camera
-        Intent intent = this.getIntent();
 
-        sourceLat = intent.getDoubleExtra("sourceLat", 1);
-        sourceLong = intent.getDoubleExtra("sourceLong", 1);
-        destLat = intent.getDoubleExtra("destLat", 1);
-        destLong = intent.getDoubleExtra("destLong", 1);
-        source = intent.getStringExtra("source");
-        dest = intent.getStringExtra("dest");
-        type = intent.getStringExtra("type");
-
-        estimatedFare = intent.getDoubleExtra("fare", 1);
-        estimatedFare = (double) Math.round(estimatedFare * 100) / 100;
 
         LatLng source = new LatLng(sourceLat, sourceLong);
         LatLng dest = new LatLng(destLat, destLong);

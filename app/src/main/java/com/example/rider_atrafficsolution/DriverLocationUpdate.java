@@ -138,6 +138,8 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
             public void onClick(View v)
             {
                 updateRequestStatus();
+                acceptRequestButton.setVisibility(View.GONE);
+                rejectRequestButton.setVisibility(View.GONE);
             }
         });
 
@@ -366,10 +368,11 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
             jsonBody.put("sourceLong", sourceLong);
             jsonBody.put("userEmail", email);
             jsonBody.put("pending", false);
-            jsonBody.put("accepeted_by", Info.driverID);
+            jsonBody.put("accepted_by", Info.driverID);
             jsonBody.put("dest", dest);
             jsonBody.put("source", source);
             jsonBody.put("type", type);
+            jsonBody.put("finished", false);
 
             final String requestBody = jsonBody.toString();
 

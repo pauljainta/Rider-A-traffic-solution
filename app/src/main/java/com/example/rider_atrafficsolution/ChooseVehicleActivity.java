@@ -38,6 +38,11 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
     private Context context;
     ReentrantLock lock;
 
+    Double sourceLat;
+    Double sourceLong;
+    Double destLat;
+    Double destLong;
+
     boolean alreadyPending;
     boolean checked;
 
@@ -146,6 +151,13 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
         else
         {
             intent=new Intent(getApplicationContext(),WaitingActivity.class);
+
+            intent.putExtra("sourceLat", sourceLat);
+            intent.putExtra("sourceLong", sourceLong);
+            intent.putExtra("destLat", destLat);
+            intent.putExtra("destLong", destLong);
+            intent.putExtra("type", type);
+
             startActivity(intent);
         }
 
@@ -176,16 +188,46 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
                             JSONObject jsonObject = response.getJSONObject(key);
 
                             boolean pending = jsonObject.getBoolean("pending");
-                            if(!pending)
-                                continue;
 
-                            String user = jsonObject.getString("userEmail");
-
-                            if(Info.currentEmail.equalsIgnoreCase(user))
+                            if(pending)
                             {
-                                alreadyPending = true;
-                                break;
+                                String user = jsonObject.getString("userEmail");
+
+                                if(Info.currentEmail.equalsIgnoreCase(user))
+                                {
+                                    sourceLat = jsonObject.getDouble("sourceLat");
+                                    sourceLong = jsonObject.getDouble("sourceLong");
+                                    destLat = jsonObject.getDouble("destLat");
+                                    destLong = jsonObject.getDouble("destLong");
+
+                                    alreadyPending = true;
+                                    break;
+                                }
                             }
+
+                            else
+                            {
+                                boolean finished = jsonObject.getBoolean("finished");
+                                if(!finished)
+                                {
+                                    String user = jsonObject.getString("userEmail");
+
+                                    if(Info.currentEmail.equalsIgnoreCase(user))
+                                    {
+                                        sourceLat = jsonObject.getDouble("sourceLat");
+                                        sourceLong = jsonObject.getDouble("sourceLong");
+                                        destLat = jsonObject.getDouble("destLat");
+                                        destLong = jsonObject.getDouble("destLong");
+
+                                        alreadyPending = true;
+                                        break;
+                                    }
+                                }
+                            }
+
+
+
+
 
                         }
                         catch (JSONException e)
