@@ -85,6 +85,7 @@ public class WaitingActivity extends AppCompatActivity
                     intent.putExtra("driverLong", driverLong);
                     intent.putExtra("type", type);
                     intent.putExtra("key", key);
+                    intent.putExtra("classid","waiting");
 
                     startActivity(intent);
 

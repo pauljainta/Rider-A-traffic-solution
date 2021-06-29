@@ -71,6 +71,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
 
     String driverMail;
     String email;
+    String classid;
 
 
    // double estimatedFare;
@@ -113,6 +114,21 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
         GetKeyForLocationUpdate();
 
         Intent intent = this.getIntent();
+
+        classid=intent.getStringExtra("classid");
+
+        if(classid.equalsIgnoreCase("waiting"))
+        {
+            acceptRequestButton.setVisibility(View.GONE);
+            acceptRequestButton.setEnabled(false);
+
+            rejectRequestButton.setVisibility(View.GONE);
+            rejectRequestButton.setEnabled(false);
+
+
+        }
+
+
 
         sourceLat = intent.getDoubleExtra("sourceLat", 1);
         sourceLong = intent.getDoubleExtra("sourceLong", 1);
