@@ -12,15 +12,11 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.android.volley.AuthFailureError;
@@ -48,9 +44,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
-import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class UserSideDriverLocationUpdateActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -184,7 +177,7 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.car_request_confirm);
+                .findFragmentById(R.id.userSideDriverLocationFragment);
         mapFragment.getMapAsync(this);
     }
 

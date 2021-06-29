@@ -113,7 +113,7 @@ public class WaitingActivity extends AppCompatActivity
 
     }
 
-    void checkIfAccepted()
+    synchronized void checkIfAccepted()
     {
         lock.lock();
 
@@ -176,7 +176,7 @@ public class WaitingActivity extends AppCompatActivity
         lock.unlock();
     }
 
-    void GetDriverLocation()
+    synchronized void GetDriverLocation()
     {
         lock.lock();
 

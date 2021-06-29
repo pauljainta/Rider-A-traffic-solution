@@ -9,7 +9,7 @@
 
 
     <fragment
-        android:id="@+id/car_request_confirm"
+        android:id="@+id/driverLocationFragment"
         class="com.google.android.gms.maps.SupportMapFragment"
 
         android:layout_width="0dp"

@@ -123,6 +123,12 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
         acceptRequestButton = findViewById(R.id.driver_request_accept_button);
         rejectRequestButton = findViewById(R.id.driver_request_reject_button);
 
+        if (intent.getStringExtra("classid").equalsIgnoreCase("driver2"))
+        {
+            acceptRequestButton.setVisibility(View.INVISIBLE);
+            rejectRequestButton.setVisibility(View.INVISIBLE);
+
+        }
 
         context = getBaseContext();
         requestQueue = Volley.newRequestQueue(context);
@@ -134,15 +140,21 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
 
 
 
-
-
-
         GetRequestInfo();
 
       //  requestQueue = Volley.newRequestQueue(context);
 
 
         //driverMail=Info.driverID;
+
+
+
+
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.driverLocationFragment);
+        mapFragment.getMapAsync(this);
+
 
         acceptRequestButton.setOnClickListener(new View.OnClickListener()
         {
@@ -154,8 +166,8 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
                 updateRequestStatus();
                 acceptRequestButton.setVisibility(View.GONE);
                 rejectRequestButton.setVisibility(View.GONE);
-                acceptRequestButton.setEnabled(false);
-                rejectRequestButton.setEnabled(false);
+                //acceptRequestButton.setEnabled(false);
+                //rejectRequestButton.setEnabled(false);
 
                 busy = true;
                 updateDriverLocation();
@@ -172,13 +184,10 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
                 startActivity(intent1);
             }
         });
-
-
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.car_request_confirm);
-        mapFragment.getMapAsync(this);
     }
+
+
+
 
 
 
@@ -244,7 +253,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
                 LatLng driverLatLng=new LatLng(driverLat,driverLong);
                 showLocation(driverLatLng,"Driver");
 
-                //busy = true;
+                busy = true;
                 updateDriverLocation();
 
 

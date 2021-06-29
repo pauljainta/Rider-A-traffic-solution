@@ -105,7 +105,7 @@ public class RequestConfirmActivity extends FragmentActivity implements OnMapRea
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.car_request_confirm);
+                .findFragmentById(R.id.requestConfirmMap);
         mapFragment.getMapAsync(this);
     }
 

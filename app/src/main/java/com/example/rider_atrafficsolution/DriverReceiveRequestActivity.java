@@ -4,7 +4,6 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -19,8 +18,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.gms.common.util.Hex;
-import com.google.android.gms.common.util.JsonUtils;
 import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
@@ -29,7 +26,6 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class DriverReceiveRequestActivity extends AppCompatActivity
@@ -43,6 +39,19 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
     List<LatLng> sourceList;
     List<LatLng> destList;
     List<String > keys;
+    boolean busy;
+    boolean checked = false;
+    boolean checked1 = false;
+
+    double accepted_sourceLat;
+    double accepted_sourceLong;
+    double accepted_destLat;
+    double accepted_destLong;
+    String accepted_key;
+
+    Handler handler;
+    Runnable r;
+
 
     List<Double> latlong;
     //List<String> type;
@@ -72,11 +81,14 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
 
         update();
 
+        busy = false;
 
 
-        Handler handler =new Handler();
-        final Runnable r = new Runnable() {
-            public void run() {
+        handler =new Handler();
+        r = new Runnable()
+        {
+            public void run()
+            {
                 handler.postDelayed(this, 5000);
                 Log.i("driver request timer", "updated after 5 seconds");
                 update();
@@ -84,7 +96,6 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
             }
         };
         handler.postDelayed(r, 0000);
-
 
         adapter = new ArrayAdapter< >(this, android.R.layout.simple_list_item_1, requests);
         requestsListView.setAdapter(adapter);
@@ -117,6 +128,8 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
 
                 intent.putExtra("classid","driver");
 
+                handler.removeCallbacks(r);
+
                 startActivity(intent);
             }
         });
@@ -127,12 +140,115 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
     {
         GetDriverLocation();
 
-        if(latlong.isEmpty())
+        if(!latlong.isEmpty())
             GetRequests();
 
+        if(!checked)
+            return;
+
+        if(busy)
+        {
+            Log.i("busy", "busy");
+            GetAlreadyAcceptedRequest();
+        }
+
+        if(busy && !checked1)
+            return;
+
+        if(busy && checked1)
+        {
+            Intent intent = new Intent(getApplicationContext(), DriverLocationUpdate.class);
+
+            intent.putExtra("sourceLat", accepted_sourceLat);
+            intent.putExtra("sourceLong", accepted_sourceLong);
+            intent.putExtra("destLat", accepted_destLat);
+            intent.putExtra("destLong", accepted_destLong);
+            intent.putExtra("driverLat", latlong.get(0));
+            intent.putExtra("driverLong", latlong.get(1));
+            intent.putExtra("type", type);
+            intent.putExtra("key", accepted_key);
+            intent.putExtra("driverID", Info.driverID);
+            Log.i("info.id = ", Info.driverID);
+
+            intent.putExtra("classid","driver2");
+
+            handler.removeCallbacks(r);
+
+            startActivity(intent);
+        }
+
+        if(requests.isEmpty())
+            requests.add("No pending requests right now");
 
         adapter = new ArrayAdapter< String>(context, android.R.layout.simple_list_item_1, requests);
         requestsListView.setAdapter(adapter);
+    }
+
+
+    synchronized public void GetAlreadyAcceptedRequest()
+    {
+        lock.lock();
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/Request.json", null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response)
+            {
+
+                //try
+                {
+                    JSONArray array = response.names();
+                    Util util = new Util();
+
+                    for(int i=0;i<array.length();i++)
+                    {
+                        try
+                        {
+                            String key = array.getString(i);
+
+                            JSONObject jsonObject = response.getJSONObject(key);
+
+                            String acceptor = jsonObject.getString("accepted_by");
+
+                            if(acceptor.equalsIgnoreCase(Info.driverID))
+                            {
+                                accepted_sourceLat = jsonObject.getDouble("sourceLat");
+                                accepted_sourceLong = jsonObject.getDouble("sourceLong");
+                                accepted_destLat = jsonObject.getDouble("destLat");
+                                accepted_destLong = jsonObject.getDouble("destLong");
+                                accepted_key = key;
+
+                                break;
+                            }
+
+
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    if(requests.isEmpty())
+                    {
+                        requests.add("No pending requests right now");
+                    }
+
+
+                    checked1 = true;
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
+                Log.d("error: " , error.getMessage());
+            }
+        });
+
+        //jsonObjectRequest.setPriority(Request.Priority.HIGH);
+        requestQueue.add(jsonObjectRequest);
+
+        lock.unlock();
     }
 
     synchronized public void GetDriverLocation()
@@ -159,9 +275,11 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
                             JSONObject jsonObject = response.getJSONObject(key);
 
                             String id = jsonObject.getString("driverID");
-                            boolean busy = jsonObject.getBoolean("busy");
+                            busy = jsonObject.getBoolean("busy");
 
-                            if(id.equalsIgnoreCase(Info.driverID) && !busy)
+
+
+                            if(id.equalsIgnoreCase(Info.driverID))
                             {
                                 latlong.add(jsonObject.getDouble("lat"));
                                 latlong.add(jsonObject.getDouble("long"));
@@ -178,6 +296,7 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
                         }
                     }
 
+                    checked = true;
                 }
             }
         }, new Response.ErrorListener() {
@@ -239,6 +358,16 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
 //                            double destLat = jsonObject.getDouble("destLat");
 //                            double destLong = jsonObject.getDouble("destLong");
 
+
+//                            while (true)
+//                            {
+//                                lock.lock();
+//
+//                                if(!latlong.isEmpty())
+//                                    break;
+//
+//                                lock.unlock();
+//                            }
 
                             double dist = util.getDistanceFromLatLonInKm(sourceLat, sourceLong, latlong.get(0), latlong.get(1));
 
