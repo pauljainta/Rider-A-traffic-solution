@@ -113,6 +113,7 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
                 intent.putExtra("type", type);
                 intent.putExtra("key", keys.get(position));
                 intent.putExtra("driverID", Info.driverID);
+                Log.i("info.id = ", Info.driverID);
 
                 intent.putExtra("classid","driver");
 
@@ -126,7 +127,8 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
     {
         GetDriverLocation();
 
-        GetRequests();
+        if(latlong.isEmpty())
+            GetRequests();
 
 
         adapter = new ArrayAdapter< String>(context, android.R.layout.simple_list_item_1, requests);
@@ -137,7 +139,7 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
     {
         lock.lock();
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/Driver.json", null, new Response.Listener<JSONObject>() {
+        CustomPriorityRequest jsonObjectRequest = new CustomPriorityRequest(Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/Driver.json", null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response)
             {
@@ -186,6 +188,7 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
             }
         });
 
+        jsonObjectRequest.setPriority(Request.Priority.IMMEDIATE);
         requestQueue.add(jsonObjectRequest);
 
         lock.unlock();
@@ -195,7 +198,7 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
     {
         lock.lock();
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/Request.json", null, new Response.Listener<JSONObject>() {
+        CustomPriorityRequest jsonObjectRequest = new CustomPriorityRequest(Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/Request.json", null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response)
             {
@@ -279,6 +282,7 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
             }
         });
 
+        jsonObjectRequest.setPriority(Request.Priority.HIGH);
         requestQueue.add(jsonObjectRequest);
 
         lock.unlock();

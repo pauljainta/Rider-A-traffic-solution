@@ -108,6 +108,19 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
         setContentView(R.layout.activity_driver_location_update);
         //estimatedFareTextView = findViewById(R.id.estimatedFareTextView);
 
+        Intent intent = this.getIntent();
+
+        sourceLat = intent.getDoubleExtra("sourceLat", 1);
+        sourceLong = intent.getDoubleExtra("sourceLong", 1);
+        destLat = intent.getDoubleExtra("destLat", 1);
+        destLong = intent.getDoubleExtra("destLong", 1);
+        driverLat = intent.getDoubleExtra("driverLat", 1);
+        driverLong = intent.getDoubleExtra("driverLong", 1);
+        type = intent.getStringExtra("type");
+        keyForRequest = intent.getStringExtra("key");
+        driverID = Integer.parseInt(intent.getStringExtra("driverID"));
+
+
         acceptRequestButton = findViewById(R.id.driver_request_accept_button);
         rejectRequestButton = findViewById(R.id.driver_request_reject_button);
 
@@ -119,32 +132,35 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
 
         GetKeyForLocationUpdate();
 
-        Intent intent = this.getIntent();
+
 
         classid=intent.getStringExtra("classid");
+
+        if(classid.equalsIgnoreCase("driver"))
+        {
+            acceptRequestButton.setText("ACCEPT");
+            acceptRequestButton.setVisibility(View.VISIBLE);
+            acceptRequestButton.setEnabled(true);
+
+            rejectRequestButton.setText("REJECT");
+            rejectRequestButton.setVisibility(View.VISIBLE);
+            rejectRequestButton.setEnabled(true);
+        }
 
         if(classid.equalsIgnoreCase("waiting"))
         {
             acceptRequestButton.setVisibility(View.GONE);
             acceptRequestButton.setEnabled(false);
-
-            rejectRequestButton.setVisibility(View.GONE);
             rejectRequestButton.setEnabled(false);
 
+            //rejectRequestButton.setVisibility(View.GONE);
+
+            updateMessage();
 
         }
 
 
 
-        sourceLat = intent.getDoubleExtra("sourceLat", 1);
-        sourceLong = intent.getDoubleExtra("sourceLong", 1);
-        destLat = intent.getDoubleExtra("destLat", 1);
-        destLong = intent.getDoubleExtra("destLong", 1);
-        driverLat = intent.getDoubleExtra("driverLat", 1);
-        driverLong = intent.getDoubleExtra("driverLong", 1);
-        type = intent.getStringExtra("type");
-        keyForRequest = intent.getStringExtra("key");
-        driverID = intent.getIntExtra("driverID", 1);
 
 
 
@@ -160,9 +176,16 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
             @Override
             public void onClick(View v)
             {
+                Log.i("accept", "clicked");
+
                 updateRequestStatus();
                 acceptRequestButton.setVisibility(View.GONE);
                 rejectRequestButton.setVisibility(View.GONE);
+                acceptRequestButton.setEnabled(false);
+                rejectRequestButton.setEnabled(false);
+
+                busy = true;
+                updateDriverLocation();
             }
         });
 
@@ -171,6 +194,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
             @Override
             public void onClick(View v)
             {
+                Log.i("reject", "clicked");
                 Intent intent1 = new Intent(getApplicationContext(), DriverReceiveRequestActivity.class);
                 startActivity(intent1);
             }
@@ -184,6 +208,19 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
     }
 
 
+    synchronized void updateMessage()
+    {
+        //lock.lock();
+
+        if(classid.equalsIgnoreCase("waiting"))
+        {
+            rejectRequestButton.setText(name + " is in his way");
+            rejectRequestButton.setEnabled(false);
+        }
+
+
+        //lock.unlock();
+    }
 
     public void showLocation(LatLng latLng,String comment)
     {
@@ -241,14 +278,14 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
             @Override
             public void onLocationChanged(@NonNull Location location)
             {
-                if(getIntent().getStringExtra("classid").equalsIgnoreCase("driver"))
+                if(classid.equalsIgnoreCase("driver"))
                 {
                     driverLat=location.getLatitude();
                     driverLong=location.getLongitude();
                     LatLng driverLatLng=new LatLng(driverLat,driverLong);
                     showLocation(driverLatLng,"Driver");
 
-                    busy = true;
+                    //busy = true;
                     updateDriverLocation();
                 }
 
@@ -296,6 +333,8 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
                                 keyForDriverID = key;
                                 //busy = jsonObject.getBoolean("busy");
                                 name = jsonObject.getString("name");
+
+                                updateMessage();
 
                                 //type.add(t);
                                 break;
