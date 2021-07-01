@@ -207,9 +207,9 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
 
                             else
                             {
-                                boolean finished = jsonObject.getBoolean("finished");
+                                boolean done = jsonObject.getBoolean("done");
 
-                                if(!finished)
+                                if(!done)
                                 {
                                     String user = jsonObject.getString("userEmail");
 

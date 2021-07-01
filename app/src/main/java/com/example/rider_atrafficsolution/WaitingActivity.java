@@ -38,12 +38,15 @@ public class WaitingActivity extends AppCompatActivity
     private double driverLong;
     String key;
     String type;
+    boolean busy;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_waiting);
+
+        busy = false;
 
         context = getBaseContext();
         requestQueue = Volley.newRequestQueue(context);
@@ -68,12 +71,13 @@ public class WaitingActivity extends AppCompatActivity
             {
                 if(accepted && driverID != 0)
                 {
-                    update();
+                    //update();
+                    GetDriverLocation();
 
                     //return;
                 }
 
-                if((driverLat != 0 && driverLong != 0))
+                if(busy)
                 {
                     Intent intent = new Intent(getApplicationContext(), UserSideDriverLocationUpdateActivity.class);
 
@@ -203,6 +207,8 @@ public class WaitingActivity extends AppCompatActivity
                             {
                                 driverLat = jsonObject.getDouble("lat");
                                 driverLong = jsonObject.getDouble("long");
+
+                                busy = true;
 
                                 break;
                             }

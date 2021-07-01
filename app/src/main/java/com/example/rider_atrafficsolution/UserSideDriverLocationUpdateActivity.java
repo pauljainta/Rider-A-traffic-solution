@@ -85,6 +85,7 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
     private ReentrantLock lock;
     private String keyForRequest;
     private boolean started;
+    private boolean finished;
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -106,6 +107,7 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
         omuk_driver_accept_korse_textview=findViewById(R.id.omuk_driver_accept_korse_textview);
 
         started = false;
+        finished = false;
         Intent intent = this.getIntent();
 
         sourceLat = intent.getDoubleExtra("sourceLat", 1);
@@ -207,6 +209,8 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
         showLocation(source,"source");
         showLocation(dest,"destination");
 
+        GetKeyForLocationUpdate();
+
         locationManager=(LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
         locationListener=new LocationListener() {
@@ -222,9 +226,8 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
                 showLocation(source,"source");
 
                 //updateDriverLocation();
-                GetKeyForLocationUpdate();
 
-                if(!started)
+                if(!started || !finished)
                     GetRequestInfo();
             }
         };
@@ -344,10 +347,16 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
                                 dest = jsonObject.getString("dest");
                                 email = jsonObject.getString("userEmail");
                                 started = jsonObject.getBoolean("started");
+                                finished = jsonObject.getBoolean("finished");
 
                                 if(started)
                                 {
                                     omuk_driver_accept_korse_textview.setText("Your ride is started");
+                                }
+
+                                if(finished)
+                                {
+                                    omuk_driver_accept_korse_textview.setText("Your ride has ended");
                                 }
 
                                 System.out.println("s "+ source);

@@ -539,6 +539,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
             jsonBody.put("type", type);
             jsonBody.put("started", started);
             jsonBody.put("finished", finished);
+            jsonBody.put("done", false);
 
             final String requestBody = jsonBody.toString();
 
