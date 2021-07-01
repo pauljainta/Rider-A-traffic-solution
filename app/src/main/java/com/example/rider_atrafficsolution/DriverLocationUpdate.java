@@ -68,6 +68,8 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
 
     String keyForDriverID;
     boolean busy;
+    boolean accepted;
+
     String type;
 
     String source, dest;
@@ -79,7 +81,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
    // double estimatedFare;
 
    // TextView estimatedFareTextView;
-    Button acceptRequestButton,rejectRequestButton;
+    Button acceptRequestButton,rejectRequestButton, startRideButton;
 
     Context context;
     RequestQueue requestQueue;
@@ -119,15 +121,20 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
         keyForRequest = intent.getStringExtra("key");
         driverID = Integer.parseInt(intent.getStringExtra("driverID"));
 
+        accepted = false;
 
         acceptRequestButton = findViewById(R.id.driver_request_accept_button);
         rejectRequestButton = findViewById(R.id.driver_request_reject_button);
+        startRideButton = findViewById(R.id.startRideButton);
+
+        startRideButton.setVisibility(View.INVISIBLE);
 
         if (intent.getStringExtra("classid").equalsIgnoreCase("driver2"))
         {
             acceptRequestButton.setVisibility(View.INVISIBLE);
             rejectRequestButton.setVisibility(View.INVISIBLE);
 
+            //startRideButton.setVisibility(View.VISIBLE);
         }
 
         context = getBaseContext();
@@ -147,9 +154,6 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
 
         //driverMail=Info.driverID;
 
-
-
-
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.driverLocationFragment);
@@ -163,6 +167,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
             {
                 Log.i("accept", "clicked");
 
+                accepted = true;
                 updateRequestStatus();
                 acceptRequestButton.setVisibility(View.GONE);
                 rejectRequestButton.setVisibility(View.GONE);
@@ -171,6 +176,8 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
 
                 busy = true;
                 updateDriverLocation();
+
+                //startRideButton.setVisibility(View.VISIBLE);
             }
         });
 
@@ -472,6 +479,11 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
 
     synchronized public void updateDriverLocation()
     {
+        if(accepted)
+        {
+            startRideButton.setVisibility(View.VISIBLE);
+        }
+
         lock.lock();
         try
         {
