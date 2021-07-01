@@ -135,6 +135,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
             rejectRequestButton.setVisibility(View.INVISIBLE);
 
             //startRideButton.setVisibility(View.VISIBLE);
+            accepted = true;
         }
 
         context = getBaseContext();
@@ -269,6 +270,11 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
                 driverLat=location.getLatitude();
                 driverLong=location.getLongitude();
                 LatLng driverLatLng=new LatLng(driverLat,driverLong);
+                mMap.clear();
+
+
+                showLocation(source,"source");
+                showLocation(dest,"destination");
                 showLocation(driverLatLng,"Driver");
 
                 busy = true;
@@ -481,7 +487,21 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
     {
         if(accepted)
         {
-            startRideButton.setVisibility(View.VISIBLE);
+            Util util = new Util();
+
+            double dist = util.getDistanceFromLatLonInKm(driverLat, driverLong, sourceLat, sourceLong);
+
+            if(dist < 0.5)
+            {
+                startRideButton.setVisibility(View.VISIBLE);
+                startRideButton.setEnabled(true);
+            }
+
+            else
+            {
+                startRideButton.setVisibility(View.INVISIBLE);
+                startRideButton.setEnabled(false);
+            }
         }
 
         lock.lock();

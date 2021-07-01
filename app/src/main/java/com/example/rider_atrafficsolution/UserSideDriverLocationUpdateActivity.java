@@ -257,7 +257,7 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
                 showLocation(driverLatLng,"Driver");
 
                 //busy = true;
-                updateDriverLocation();
+                //updateDriverLocation();
 
 
 
