@@ -15,6 +15,8 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -31,6 +33,9 @@ public class DriverInitialSetLocationActivity extends FragmentActivity implement
     private GoogleMap mMap;
     LocationManager locationManager;
     LocationListener locationListener;
+    Button driverIntialSetLocationContinueButton;
+    LatLng driverlatLng;
+
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -50,8 +55,17 @@ public class DriverInitialSetLocationActivity extends FragmentActivity implement
         setContentView(R.layout.activity_driver_initial_set_location);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+                .findFragmentById(R.id.driverInitialSetLocationFragment);
         mapFragment.getMapAsync(this);
+
+        driverIntialSetLocationContinueButton=findViewById(R.id.driverInitialSetLocationContinueButton);
+
+        driverIntialSetLocationContinueButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
     }
 
     public void showLocation(LatLng latLng,String comment)
@@ -83,8 +97,8 @@ public class DriverInitialSetLocationActivity extends FragmentActivity implement
             public void onLocationChanged(@NonNull Location location) {
 
                 mMap.clear();
-                LatLng latLng=new LatLng(location.getLatitude(),location.getLongitude());
-                showLocation(latLng,"Your Location");
+                driverlatLng=new LatLng(location.getLatitude(),location.getLongitude());
+                showLocation(driverlatLng,"Your Location");
 
 
 
