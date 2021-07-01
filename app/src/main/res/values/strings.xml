@@ -17,4 +17,5 @@
     <string name="menu_slideshow">Slideshow</string>
     <string name="title_activity_test_maps">Map</string>
     <string name="title_activity_user_side_driver_location_update">Map</string>
+    <string name="title_activity_driver_initial_set_location">Map</string>
 </resources>
