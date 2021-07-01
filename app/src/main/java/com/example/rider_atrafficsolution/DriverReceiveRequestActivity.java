@@ -85,6 +85,7 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
 
 
         handler =new Handler();
+
         r = new Runnable()
         {
             public void run()
