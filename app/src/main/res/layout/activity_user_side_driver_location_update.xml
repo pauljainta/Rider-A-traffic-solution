@@ -36,7 +36,7 @@
             android:background="#359c5e"
             android:padding="8dp"
             android:gravity="center_horizontal|center_vertical"
-            android:text="Accept"
+            android:text=""
             android:textColor="#ffffff"
             android:textSize="30sp" />
 

@@ -216,7 +216,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
     {
         if(comment.equalsIgnoreCase("Driver"))
         {
-            mMap.addMarker(new MarkerOptions().position(latLng).title("Bus Location")
+            mMap.addMarker(new MarkerOptions().position(latLng).title("car")
                     // below line is use to add custom marker on our map.
                     .icon(BitmapFromVector(getApplicationContext(), R.drawable.car)));                //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latLng.latitude, latLng.longitude), 12.0f));

@@ -132,47 +132,8 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
 
         GetKeyForLocationUpdate();
 
-
-
-
-
-
-
         GetRequestInfo();
 
-        //  requestQueue = Volley.newRequestQueue(context);
-
-
-        //driverMail=Info.driverID;
-
-//        acceptRequestButton.setOnClickListener(new View.OnClickListener()
-//        {
-//            @Override
-//            public void onClick(View v)
-//            {
-//                Log.i("accept", "clicked");
-//
-//                updateRequestStatus();
-//                acceptRequestButton.setVisibility(View.GONE);
-//                rejectRequestButton.setVisibility(View.GONE);
-//                acceptRequestButton.setEnabled(false);
-//                rejectRequestButton.setEnabled(false);
-//
-//                busy = true;
-//                updateDriverLocation();
-//            }
-//        });
-//
-//        rejectRequestButton.setOnClickListener(new View.OnClickListener()
-//        {
-//            @Override
-//            public void onClick(View v)
-//            {
-//                Log.i("reject", "clicked");
-//                Intent intent1 = new Intent(getApplicationContext(), DriverReceiveRequestActivity.class);
-//                startActivity(intent1);
-//            }
-//        });
 
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -187,7 +148,7 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
     {
         if(comment.equalsIgnoreCase("Driver"))
         {
-            mMap.addMarker(new MarkerOptions().position(latLng).title("Bus Location")
+            mMap.addMarker(new MarkerOptions().position(latLng).title("car")
                     // below line is use to add custom marker on our map.
                     .icon(BitmapFromVector(getApplicationContext(), R.drawable.car)));                //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latLng.latitude, latLng.longitude), 12.0f));
@@ -255,12 +216,11 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
                 //driverLong=location.getLongitude();
                 LatLng driverLatLng=new LatLng(driverLat,driverLong);
                 showLocation(driverLatLng,"Driver");
+                showLocation(dest,"destination");
+                showLocation(source,"source");
 
-                //busy = true;
                 //updateDriverLocation();
-
-
-
+                GetKeyForLocationUpdate();
             }
         };
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED)
@@ -270,7 +230,6 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
         else
         {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,locationListener);
-
         }
 
     }
@@ -287,6 +246,8 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
                 //type.clear();
                 //try
                 {
+                    Util util = new Util();
+
                     JSONArray array = response.names();
 
                     for(int i=0;i<array.length();i++)
@@ -305,7 +266,20 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
                                 //busy = jsonObject.getBoolean("busy");
                                 name = jsonObject.getString("name");
 
-                                omuk_driver_accept_korse_textview.setText(name + " is on his way");
+                                driverLat = jsonObject.getDouble("lat");
+                                driverLong = jsonObject.getDouble("long");
+
+                                double dist = util.getDistanceFromLatLonInKm(driverLat, driverLong, sourceLat, sourceLong);
+
+                                if(dist < 0.5)
+                                {
+                                    omuk_driver_accept_korse_textview.setText(name + " is here");
+                                }
+
+                                else
+                                {
+                                    omuk_driver_accept_korse_textview.setText(name + " is on his way");
+                                }
 
                                 //updateMessage();
 
@@ -395,134 +369,13 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
         lock.unlock();
     }
 
-    synchronized public void updateRequestStatus()
-    {
-        lock.lock();
-        try
-        {
-            String URL = "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/Request/" + keyForRequest + ".json";
-            JSONObject jsonBody = new JSONObject();
 
-
-            jsonBody.put("destLat", destLat);
-            jsonBody.put("destLong", destLong);
-            jsonBody.put("sourceLat", sourceLat);
-            jsonBody.put("sourceLong", sourceLong);
-            jsonBody.put("userEmail", email);
-            jsonBody.put("pending", false);
-            jsonBody.put("accepted_by", Info.driverID);
-            jsonBody.put("dest", dest);
-            jsonBody.put("source", source);
-            jsonBody.put("type", type);
-            jsonBody.put("finished", false);
-
-            final String requestBody = jsonBody.toString();
-
-            StringRequest stringRequest = new StringRequest(Request.Method.PUT, URL, new Response.Listener<String>() {
-                @Override
-                public void onResponse(String response) {
-                    Log.i("VOLLEY", response);
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Log.e("VOLLEY", error.toString());
-                }
-            }) {
-                @Override
-                public String getBodyContentType() {
-                    return "application/json; charset=utf-8";
-                }
-
-                @Override
-                public byte[] getBody() throws AuthFailureError
-                {
-                    try {
-                        return requestBody == null ? null : requestBody.getBytes("utf-8");
-                    } catch (UnsupportedEncodingException uee) {
-                        VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", requestBody, "utf-8");
-                        return null;
-                    }
-                }
-
-                @Override
-                protected Response<String> parseNetworkResponse(NetworkResponse response) {
-                    String responseString = "";
-                    if (response != null) {
-                        responseString = String.valueOf(response.statusCode);
-                        // can get more details such as response.headers
-                    }
-                    return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
-                }
-            };
-
-            requestQueue.add(stringRequest);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        lock.unlock();
-    }
 
     synchronized public void updateDriverLocation()
     {
         lock.lock();
-        try
-        {
-            String URL = "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/Driver/" + keyForDriverID + ".json";
-            JSONObject jsonBody = new JSONObject();
 
-            jsonBody.put("lat", driverLat);
-            jsonBody.put("long", driverLong);
-            jsonBody.put("driverID", driverID);
-            jsonBody.put("type", type);
-            jsonBody.put("busy", true);
-            jsonBody.put("name", name);
 
-            final String requestBody = jsonBody.toString();
-
-            StringRequest stringRequest = new StringRequest(Request.Method.PUT, URL, new Response.Listener<String>() {
-                @Override
-                public void onResponse(String response) {
-                    Log.i("VOLLEY", response);
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Log.e("VOLLEY", error.toString());
-                }
-            }) {
-                @Override
-                public String getBodyContentType() {
-                    return "application/json; charset=utf-8";
-                }
-
-                @Override
-                public byte[] getBody() throws AuthFailureError
-                {
-                    try {
-                        return requestBody == null ? null : requestBody.getBytes("utf-8");
-                    } catch (UnsupportedEncodingException uee) {
-                        VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", requestBody, "utf-8");
-                        return null;
-                    }
-                }
-
-                @Override
-                protected Response<String> parseNetworkResponse(NetworkResponse response) {
-                    String responseString = "";
-                    if (response != null) {
-                        responseString = String.valueOf(response.statusCode);
-                        // can get more details such as response.headers
-                    }
-                    return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
-                }
-            };
-
-            requestQueue.add(stringRequest);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
         lock.unlock();
     }
