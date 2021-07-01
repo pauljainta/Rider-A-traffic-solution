@@ -182,7 +182,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
                 Log.i("accept", "clicked");
 
                 accepted = true;
-                updateRequestStatus();
+                updateRequestStatus(false, false);
                 acceptRequestButton.setVisibility(View.GONE);
                 rejectRequestButton.setVisibility(View.GONE);
                 //acceptRequestButton.setEnabled(false);
@@ -203,6 +203,20 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
                 Log.i("reject", "clicked");
                 Intent intent1 = new Intent(getApplicationContext(), DriverReceiveRequestActivity.class);
                 startActivity(intent1);
+            }
+        });
+
+
+
+        startRideButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                updateRequestStatus(true, false);
+                started = true;
+                startRideButton.setVisibility(View.GONE);
+                Log.i("start", "ride started");
             }
         });
     }
@@ -463,7 +477,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
         lock.unlock();
     }
 
-    synchronized public void updateRequestStatus()
+    synchronized public void updateRequestStatus(boolean started, boolean finished)
     {
         lock.lock();
         try
@@ -482,8 +496,8 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
             jsonBody.put("dest", dest);
             jsonBody.put("source", source);
             jsonBody.put("type", type);
-            jsonBody.put("started", false);
-            jsonBody.put("finished", false);
+            jsonBody.put("started", started);
+            jsonBody.put("finished", finished);
 
             final String requestBody = jsonBody.toString();
 
@@ -532,6 +546,9 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
 
         lock.unlock();
     }
+
+
+
 
     synchronized public void updateDriverLocation()
     {

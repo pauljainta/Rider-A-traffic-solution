@@ -84,6 +84,7 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
     LocationListener locationListener;
     private ReentrantLock lock;
     private String keyForRequest;
+    private boolean started;
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -104,6 +105,7 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
         //estimatedFareTextView = findViewById(R.id.estimatedFareTextView);
         omuk_driver_accept_korse_textview=findViewById(R.id.omuk_driver_accept_korse_textview);
 
+        started = false;
         Intent intent = this.getIntent();
 
         sourceLat = intent.getDoubleExtra("sourceLat", 1);
@@ -221,6 +223,9 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
 
                 //updateDriverLocation();
                 GetKeyForLocationUpdate();
+
+                if(!started)
+                    GetRequestInfo();
             }
         };
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED)
@@ -271,14 +276,17 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
 
                                 double dist = util.getDistanceFromLatLonInKm(driverLat, driverLong, sourceLat, sourceLong);
 
-                                if(dist < 0.5)
+                                if(!started)
                                 {
-                                    omuk_driver_accept_korse_textview.setText(name + " is here");
-                                }
+                                    if(dist < 0.5)
+                                    {
+                                        omuk_driver_accept_korse_textview.setText(name + " is here");
+                                    }
 
-                                else
-                                {
-                                    omuk_driver_accept_korse_textview.setText(name + " is on his way");
+                                    else
+                                    {
+                                        omuk_driver_accept_korse_textview.setText(name + " is on his way");
+                                    }
                                 }
 
                                 //updateMessage();
@@ -335,6 +343,12 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
                                 source = jsonObject.getString("source");
                                 dest = jsonObject.getString("dest");
                                 email = jsonObject.getString("userEmail");
+                                started = jsonObject.getBoolean("started");
+
+                                if(started)
+                                {
+                                    omuk_driver_accept_korse_textview.setText("Your ride is started");
+                                }
 
                                 System.out.println("s "+ source);
                                 System.out.println("d " + dest);
