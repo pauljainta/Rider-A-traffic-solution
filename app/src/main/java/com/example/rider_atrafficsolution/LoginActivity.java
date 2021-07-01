@@ -55,15 +55,17 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         if(MainActivity.isuserTypeSwitchChecked)
         {
 //            Intent intent=new Intent(getApplicationContext(),DriverLocationUpdate.class);
-            Intent intent=new Intent(getApplicationContext(),DriverReceiveRequestActivity.class);
+            Intent intent=new Intent(getApplicationContext(),DriverInitialSetLocationActivity.class);
             //intent.putExtra("id",email);
             Info.driverID = email;
 
             startActivity(intent);
         }
 
-        else {
+        else
+        {
             mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
 
