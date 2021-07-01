@@ -145,18 +145,17 @@ public class DriverInitialSetLocationActivity extends FragmentActivity implement
         // Add a marker in Sydney and move the camera
         locationManager=(LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
-        locationListener=new LocationListener() {
+        locationListener=new LocationListener()
+        {
             @Override
-            public void onLocationChanged(@NonNull Location location) {
-
+            public void onLocationChanged(@NonNull Location location)
+            {
                 mMap.clear();
                 driverlatLng=new LatLng(location.getLatitude(),location.getLongitude());
                 showLocation(driverlatLng,"Your Location");
-
-
-
             }
         };
+
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED)
         {
             ActivityCompat.requestPermissions(this,new String[]{Manifest.permission.ACCESS_FINE_LOCATION},1);
