@@ -12,16 +12,14 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
@@ -48,9 +46,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
-import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.locks.Lock;
+import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class DriverLocationUpdate extends FragmentActivity implements OnMapReadyCallback
@@ -65,6 +62,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
 
     int driverID;
     String name;
+    String userName;
 
     String keyForDriverID;
     boolean busy;
@@ -81,10 +79,16 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
     boolean started;
     boolean finished;
 
-   // double estimatedFare;
+    String startTime;
+    String finishTime;
+
+    boolean thisWindowDone;
+
+    // double estimatedFare;
 
    // TextView estimatedFareTextView;
     Button acceptRequestButton,rejectRequestButton, startRideButton, finishRideButton, proceedButton;
+    Button ridingWithButton;
 
     Context context;
     RequestQueue requestQueue;
@@ -94,6 +98,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
     private ReentrantLock lock;
     private String keyForRequest;
     private double fare;
+    private String userEmail;
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -112,6 +117,10 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_driver_location_update);
         //estimatedFareTextView = findViewById(R.id.estimatedFareTextView);
+
+        thisWindowDone = false;
+
+        busy = false;
 
         Intent intent = this.getIntent();
 
@@ -136,6 +145,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
         startRideButton = findViewById(R.id.startRideButton);
         finishRideButton = findViewById(R.id.finishRideButton);
         proceedButton = findViewById(R.id.proceedToPaymentButton);
+        ridingWithButton = findViewById(R.id.ridingWith);
 
         startRideButton.setVisibility(View.GONE);
         startRideButton.setEnabled(false);
@@ -145,6 +155,9 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
 
         proceedButton.setVisibility(View.GONE);
         proceedButton.setEnabled(false);
+
+        ridingWithButton.setVisibility(View.GONE);
+        ridingWithButton.setEnabled(false);
 
         if (intent.getStringExtra("classid").equalsIgnoreCase("driver2"))
         {
@@ -174,6 +187,21 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
 
         GetRequestInfo();
 
+        Handler handler = new Handler();
+        Runnable runnable = new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                if(email != null)
+                {
+                    GetUserName();
+                    return;
+                }
+                handler.postDelayed(this, 2000);
+            }
+        };
+        handler.postDelayed(runnable, 0);
       //  requestQueue = Volley.newRequestQueue(context);
 
 
@@ -203,7 +231,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
                 //rejectRequestButton.setEnabled(false);
 
                 busy = true;
-                updateDriverLocation();
+                updateDriverLocation(true);
 
                 //startRideButton.setVisibility(View.VISIBLE);
             }
@@ -216,6 +244,11 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
             {
                 Log.i("reject", "clicked");
                 Intent intent1 = new Intent(getApplicationContext(), DriverReceiveRequestActivity.class);
+
+                thisWindowDone = true;
+                locationManager.removeUpdates(locationListener);
+                locationListener = null;
+
                 startActivity(intent1);
             }
         });
@@ -227,10 +260,14 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
             @Override
             public void onClick(View v)
             {
+                startTime = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Timestamp(System.currentTimeMillis()));
+
                 updateRequestStatus(true, false);
                 started = true;
                 startRideButton.setVisibility(View.GONE);
                 Log.i("start", "ride started");
+
+                ridingWithButton.setVisibility(View.VISIBLE);
             }
         });
 
@@ -240,6 +277,8 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
             @Override
             public void onClick(View v)
             {
+                finishTime = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Timestamp(System.currentTimeMillis()));
+
                 System.out.println(fare);
 
                 fare = Math.round(CalculateFareClass.CalculateFare(fare));
@@ -248,11 +287,46 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
                 updateRequestStatus(true, true);
                 finished = true;
 
+                ridingWithButton.setVisibility(View.GONE);
                 finishRideButton.setVisibility(View.GONE);
                 finishRideButton.setEnabled(false);
 
                 proceedButton.setVisibility(View.VISIBLE);
                 proceedButton.setEnabled(true);
+            }
+        });
+
+        proceedButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                Intent intent1 = new Intent(getApplicationContext(), DriverCollectCashActivity.class);
+
+                intent1.putExtra("destLat", destLat);
+                intent1.putExtra("destLong", destLong);
+                intent1.putExtra("sourceLat", sourceLat);
+                intent1.putExtra("sourceLong", sourceLong);
+                intent1.putExtra("driverLat", driverLat);
+                intent1.putExtra("driverLong", driverLong);
+                intent1.putExtra("dest", dest);
+                intent1.putExtra("source", source);
+                intent1.putExtra("type", type);
+                intent1.putExtra("fare", fare);
+                intent1.putExtra("key", keyForRequest);
+                intent1.putExtra("key2", keyForDriverID);
+                intent1.putExtra("driverName", name);
+                intent1.putExtra("userEmail", userEmail);
+                intent1.putExtra("userName", userName);
+                intent1.putExtra("startTime", startTime);
+                intent1.putExtra("finishTime", startTime);
+
+                thisWindowDone = true;
+
+                locationManager.removeUpdates(locationListener);
+                locationListener = null;
+
+                startActivity(intent1);
             }
         });
     }
@@ -317,11 +391,12 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
 
         locationManager=(LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
-        locationListener=new LocationListener() {
+        locationListener=new LocationListener()
+        {
             @Override
             public void onLocationChanged(@NonNull Location location)
             {
-                if(keyForDriverID == null)
+                if(keyForDriverID == null || thisWindowDone)
                     return;
 
                 driverLat=location.getLatitude();
@@ -380,10 +455,8 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
                 showLocation(dest,"destination");
                 showLocation(driverLatLng,"Driver");
 
-                busy = true;
-
-                updateDriverLocation();
-
+                if(!busy)
+                    updateDriverLocation(busy);
             }
         };
 
@@ -427,6 +500,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
                                 keyForDriverID = key;
                                 //busy = jsonObject.getBoolean("busy");
                                 name = jsonObject.getString("name");
+                                busy = jsonObject.getBoolean("busy");
 
                                 //updateMessage();
 
@@ -458,6 +532,62 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
 
 
 
+    public void GetUserName()
+    {
+        lock.lock();
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/users.json", null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response)
+            {
+
+                //try
+                {
+                    JSONArray array = response.names();
+
+                    for(int i=0;i<array.length();i++)
+                    {
+                        try
+                        {
+                            String key = array.getString(i);
+
+                            JSONObject jsonObject = response.getJSONObject(key);
+
+                            userEmail = jsonObject.getString("email");
+
+                            if(email.equalsIgnoreCase(userEmail))
+                            {
+                                userName = jsonObject.getString("name");
+
+                                ridingWithButton.setText("You are sharing ride with " +  userName);
+
+                                break;
+                            }
+
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+
+
+                    startedChecked = true;
+
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
+                Log.d("error: " , error.getMessage());
+            }
+        });
+
+        requestQueue.add(jsonObjectRequest);
+
+        lock.unlock();
+    }
 
 
     synchronized public void GetRequestInfo()
@@ -595,7 +725,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
 
 
 
-    synchronized public void updateDriverLocation()
+    synchronized public void updateDriverLocation(boolean busy)
     {
         lock.lock();
         try
@@ -607,7 +737,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
             jsonBody.put("long", driverLong);
             jsonBody.put("driverID", driverID);
             jsonBody.put("type", type);
-            jsonBody.put("busy", true);
+            jsonBody.put("busy", busy);
             jsonBody.put("name", name);
 
             final String requestBody = jsonBody.toString();

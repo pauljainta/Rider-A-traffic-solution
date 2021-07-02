@@ -16,6 +16,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -67,6 +68,9 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
 
     String driverMail;
     String email;
+
+    Handler handler;
+    Runnable runnable;
 
 
     // double estimatedFare;
@@ -139,6 +143,22 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
         GetRequestInfo();
 
 
+        handler = new Handler();
+        runnable = new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                handler.postDelayed(this, 3000);
+
+                GetKeyForLocationUpdate();
+
+                GetRequestInfo();
+
+            }
+        };
+        handler.postDelayed(runnable, 0);
+
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
@@ -150,12 +170,25 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
 
     public void showLocation(LatLng latLng,String comment)
     {
+        //mMap.clear();
+
         if(comment.equalsIgnoreCase("Driver"))
         {
-            mMap.addMarker(new MarkerOptions().position(latLng).title("car")
-                    // below line is use to add custom marker on our map.
-                    .icon(BitmapFromVector(getApplicationContext(), R.drawable.car)));                //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latLng.latitude, latLng.longitude), 12.0f));
+            if(type.equalsIgnoreCase("car"))
+            {
+                mMap.addMarker(new MarkerOptions().position(latLng).title("car")
+                        // below line is use to add custom marker on our map.
+                        .icon(BitmapFromVector(getApplicationContext(), R.drawable.car)));                //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latLng.latitude, latLng.longitude), 12.0f));
+            }
+
+            if(type.equalsIgnoreCase("bike"))
+            {
+                mMap.addMarker(new MarkerOptions().position(latLng).title("bike")
+                        // below line is use to add custom marker on our map.
+                        .icon(BitmapFromVector(getApplicationContext(), R.drawable.bike)));                //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latLng.latitude, latLng.longitude), 12.0f));
+            }
         }
         else
         {
@@ -220,15 +253,11 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
 
                 //driverLat=location.getLatitude();
                 //driverLong=location.getLongitude();
-                LatLng driverLatLng=new LatLng(driverLat,driverLong);
-                showLocation(driverLatLng,"Driver");
-                showLocation(dest,"destination");
-                showLocation(source,"source");
+
 
                 //updateDriverLocation();
 
-                if(!started || !finished)
-                    GetRequestInfo();
+
             }
         };
         if(ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED)
@@ -291,6 +320,13 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
                                         omuk_driver_accept_korse_textview.setText(name + " is on his way");
                                     }
                                 }
+
+                                mMap.clear();
+
+                                LatLng driverLatLng=new LatLng(driverLat,driverLong);
+                                showLocation(driverLatLng,"Driver");
+                                showLocation(new LatLng(sourceLat, sourceLong),"destination");
+                                showLocation(new LatLng(destLat, destLong),"source");
 
                                 //updateMessage();
 

@@ -63,6 +63,17 @@
             android:textSize="30sp" />
 
         <Button
+            android:id="@+id/ridingWith"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#359c5e"
+            android:padding="8dp"
+            android:gravity="center_horizontal|center_vertical"
+            android:text="START RIDE"
+            android:textColor="#ffffff"
+            android:textSize="30sp" />
+
+        <Button
             android:id="@+id/finishRideButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

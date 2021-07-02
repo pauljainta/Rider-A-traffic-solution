@@ -1,0 +1,402 @@
+{
+  "BusRoute" : {
+    "-MbWjyES5BiNWE6E8T4H" : {
+      "busNo" : "1,2,3",
+      "from" : "Motijheel",
+      "id" : "1",
+      "intermediate" : "Shahbag,Farmgate,Malibag",
+      "to" : "Mirpur"
+    },
+    "-MbWkciy5o3aFijgWf7z" : {
+      "busNo" : "4,5",
+      "from" : "Dhanmondi",
+      "id" : "2",
+      "intermediate" : "Science lab,Bata signal",
+      "to" : "Shahbag"
+    }
+  },
+  "BusTable" : {
+    "-MbZo2UT0lkqeX0kcBqj" : {
+      "busID" : 8,
+      "busNo" : 3,
+      "lat" : 23.7397,
+      "long" : 90.3943
+    },
+    "-MbZo2UdNIKbdNX70uix" : {
+      "busID" : 7,
+      "busNo" : 3,
+      "lat" : 23.7678,
+      "long" : 90.4678
+    },
+    "-MbZo2UhiMRt06xzCryp" : {
+      "busID" : 4,
+      "busNo" : 2,
+      "lat" : 23.7331,
+      "long" : 90.4171
+    },
+    "-MbZo2UsCA0actZPT-xy" : {
+      "busID" : 10,
+      "busNo" : 4,
+      "lat" : 23.5,
+      "long" : 90.5
+    },
+    "-MbZo2UuOkG3bkyX5YMq" : {
+      "busID" : 1,
+      "busNo" : 1,
+      "lat" : 23.8223,
+      "long" : 90.3654
+    },
+    "-MbZo2UwzQrX0KmxlDrt" : {
+      "busID" : 13,
+      "busNo" : 5,
+      "lat" : 23.8223,
+      "long" : 90.3654
+    },
+    "-MbZo2UxnAAsimjPwuKj" : {
+      "busID" : 2,
+      "busNo" : 1,
+      "lat" : 23.7561,
+      "long" : 90.3872
+    },
+    "-MbZo2V0IjZexgyVhY6d" : {
+      "busID" : 14,
+      "busNo" : 5,
+      "lat" : 23.7126,
+      "long" : 90.5126
+    },
+    "-MbZo2V740-pnlQXjHNI" : {
+      "busID" : 15,
+      "busNo" : 5,
+      "lat" : 23.5,
+      "long" : 90.5
+    },
+    "-MbZo2VDbzWdpa_yN7j_" : {
+      "busID" : 3,
+      "busNo" : 1,
+      "lat" : 23.8223,
+      "long" : 90.3654
+    },
+    "-MbZo2VEMVI-bGS1vDo5" : {
+      "busID" : 9,
+      "busNo" : 3,
+      "lat" : 23.7891,
+      "long" : 90.4891
+    },
+    "-MbZo2VFD2UAsODi06n3" : {
+      "busID" : 11,
+      "busNo" : 4,
+      "lat" : 23.5,
+      "long" : 90.5
+    },
+    "-MbZo2VKL3K3lUv0FOMh" : {
+      "busID" : 6,
+      "busNo" : 2,
+      "lat" : 23.8223,
+      "long" : 90.3654
+    },
+    "-MbZo2VLALbTxMDi9xkD" : {
+      "busID" : 12,
+      "busNo" : 4,
+      "lat" : 23.5,
+      "long" : 90.5
+    },
+    "-MbZo2VQo9m8VOPOaqPm" : {
+      "busID" : 5,
+      "busNo" : 2,
+      "lat" : 23.8223,
+      "long" : 90.3654
+    }
+  },
+  "CoOrdinates" : {
+    "-MbXJxo1tpOGIuBx1zK_" : {
+      "lat" : 23.7561,
+      "location" : "Farmgate",
+      "long" : 90.3872
+    },
+    "-MbXMlSiqQXN1v6EIn_Q" : {
+      "lat" : 23.733,
+      "location" : "Motijheel",
+      "long" : 90.4172
+    },
+    "-MbXNWoAPWwN-giQPvzN" : {
+      "lat" : 23.8223,
+      "location" : "Mirpur",
+      "long" : 90.3654
+    },
+    "-MbXNeyL7QZiKgChGjk2" : {
+      "lat" : 23.7397,
+      "location" : "Shahbag",
+      "long" : 90.3943
+    },
+    "-MbXNqjYZzMMBE24eKOE" : {
+      "lat" : 23.7504,
+      "location" : "Malibag",
+      "long" : 90.4396
+    }
+  },
+  "Driver" : {
+    "-Mc51yWiZOpGeO0qoNF4" : {
+      "busy" : false,
+      "driverID" : 4,
+      "lat" : 23.875853333333332,
+      "long" : 90.37954333333333,
+      "name" : "Trump",
+      "type" : "car"
+    },
+    "-Mc51yWoYLcHLk8Qr3fT" : {
+      "busy" : false,
+      "driverID" : "2",
+      "lat" : 23.876473333333333,
+      "long" : 90.39197833333333,
+      "name" : "Biden",
+      "type" : "car"
+    },
+    "-Mc51yWuf5rNlgtkFU6C" : {
+      "busy" : false,
+      "driverID" : "2",
+      "lat" : 23.72473333333333,
+      "long" : 90.39197833333333,
+      "name" : "Macron",
+      "type" : "car"
+    },
+    "-Mc51yX4RaBIJ3no0_ZD" : {
+      "busy" : false,
+      "driverID" : 5,
+      "lat" : 23.732113333333334,
+      "long" : 90.38524833333334,
+      "name" : "Modi",
+      "type" : "car"
+    },
+    "-MdDJ6LxoYqyR_1bJTAr" : {
+      "busy" : true,
+      "driverID" : 1,
+      "lat" : 23.726576666666666,
+      "long" : 90.39266166666667,
+      "name" : "Bennett",
+      "type" : "bike"
+    }
+  },
+  "Request" : {
+    "-McVarzTAtD8mn6vmtex" : {
+      "dest" : "BUET Teachers' Quarter",
+      "destLat" : 23.723089,
+      "destLong" : 90.392569,
+      "pending" : false,
+      "source" : "Dhaka New Market",
+      "sourceLat" : 23.7331937,
+      "sourceLong" : 90.3837664,
+      "type" : "car",
+      "userEmail" : "aaatowsif16@gmail.com"
+    },
+    "-McVbY9r0sN-JHzN--GN" : {
+      "dest" : "Dhanmondi 32 Road Bridge",
+      "destLat" : 23.7509735,
+      "destLong" : 90.373582,
+      "pending" : true,
+      "source" : "Goalghat Lane Water Pump",
+      "sourceLat" : 23.715189,
+      "sourceLong" : 90.4137949,
+      "type" : "car",
+      "userEmail" : "aaatowsif16@gmail.com"
+    },
+    "-McVgsbTNch4R5MvZFrs" : {
+      "dest" : "Azimpur Bus Stand",
+      "destLat" : 23.7271183,
+      "destLong" : 90.3861432,
+      "pending" : true,
+      "source" : "Goalghat Lane Water Pump",
+      "sourceLat" : 23.715189,
+      "sourceLong" : 90.4137949,
+      "type" : "bike",
+      "userEmail" : "aaatowsif16@gmail.com"
+    },
+    "-MceqfkSuRTWGhIWfFJo" : {
+      "dest" : "Farmgate Foot Over Bridge",
+      "destLat" : 23.7584357,
+      "destLong" : 90.3901714,
+      "pending" : true,
+      "source" : "Goalghat Lane Water Pump",
+      "sourceLat" : 23.715189,
+      "sourceLong" : 90.4137949,
+      "type" : "car",
+      "userEmail" : "aaatowsif16@gmail.com"
+    },
+    "-McerGfJ9-ROjRoWeHUZ" : {
+      "dest" : "BUET Central Road",
+      "destLat" : 23.7255473,
+      "destLong" : 90.3919042,
+      "pending" : true,
+      "source" : "Goalghat Lane Water Pump",
+      "sourceLat" : 23.715189,
+      "sourceLong" : 90.4137949,
+      "type" : "bike",
+      "userEmail" : "aaatowsif16@gmail.com"
+    },
+    "-MchoEMjJaF0rl02vePv" : {
+      "dest" : "BUET Teachers' Quarter",
+      "destLat" : 23.723089,
+      "destLong" : 90.392569,
+      "pending" : true,
+      "source" : "Goalghat Lane Water Pump",
+      "sourceLat" : 23.715189,
+      "sourceLong" : 90.4137949,
+      "type" : "car",
+      "userEmail" : "aaatowsif16@gmail.com"
+    },
+    "-MdD7H5NgEj6Wml2ldaA" : {
+      "accepted_by" : "5",
+      "dest" : "Uttara",
+      "destLat" : 23.8758547,
+      "destLong" : 90.3795438,
+      "finished" : false,
+      "pending" : false,
+      "source" : "Goalghat Primary School",
+      "sourceLat" : 23.7150932,
+      "sourceLong" : 90.41300079999999,
+      "type" : "car",
+      "userEmail" : "aaatowsif16@gmail.com"
+    },
+    "-MdDqZlympwfkuhjUFDC" : {
+      "accepeted_by" : "4",
+      "dest" : "Uttara Sector 11 Park",
+      "destLat" : 23.8764744,
+      "destLong" : 90.39197949999999,
+      "pending" : false,
+      "source" : "Dhaka New Market",
+      "sourceLat" : 23.7331937,
+      "sourceLong" : 90.3837664,
+      "type" : "car",
+      "userEmail" : "aaatowsif16@gmail.com"
+    },
+    "-MdQjkAuMU_AGYmMslkF" : {
+      "accepted_by" : "4",
+      "dest" : "Uttara",
+      "destLat" : 23.8758547,
+      "destLong" : 90.3795438,
+      "done" : false,
+      "finished" : false,
+      "pending" : true,
+      "source" : "Dhaka New Market",
+      "sourceLat" : 23.7331937,
+      "sourceLong" : 90.3837664,
+      "started" : false,
+      "type" : "car",
+      "userEmail" : "1605020@ugrad.cse.buet.ac.bd"
+    },
+    "-MdboUEf152Xshg02bQa" : {
+      "accepted_by" : "1",
+      "dest" : "Bangladesh University of Engineering and Technology (BUET)",
+      "destLat" : 23.7265768,
+      "destLong" : 90.3926623,
+      "done" : false,
+      "fare" : 351,
+      "finished" : true,
+      "pending" : false,
+      "source" : "Mohammadpur Bus Stand",
+      "sourceLat" : 23.7570632,
+      "sourceLong" : 90.3613321,
+      "started" : true,
+      "type" : "bike",
+      "userEmail" : "zulfiqar9726@gmail.com"
+    }
+  },
+  "fare" : {
+    "-MbXQqW_GtfEnvErS-Wn" : {
+      "fare" : 10,
+      "location1" : "Shahbag",
+      "location2" : "Farmgate"
+    },
+    "-MbXQqWwY29oTvLpwUWr" : {
+      "fare" : 40,
+      "location1" : "Motijheel",
+      "location2" : "Mirpur"
+    },
+    "-MbXQqY3p5ukwUqkUPEU" : {
+      "fare" : 10,
+      "location1" : "Farmgate",
+      "location2" : "Malibag"
+    },
+    "-MbXQqaP1ud6KZgB1fTA" : {
+      "fare" : 10,
+      "location1" : "Motijheel",
+      "location2" : "Shahbag"
+    },
+    "-MbXQqal9i99Er9YvHfz" : {
+      "fare" : 20,
+      "location1" : "Shahbag",
+      "location2" : "Malibag"
+    },
+    "-MbXQqbE3AYtgb_1XULO" : {
+      "fare" : 30,
+      "location1" : "Motijheel",
+      "location2" : "Malibag"
+    },
+    "-MbXQqbhojoTLeC0vobk" : {
+      "fare" : 20,
+      "location1" : "Motijheel",
+      "location2" : "Farmgate"
+    },
+    "-MbXQqbrWhozg0gTq6sK" : {
+      "fare" : 30,
+      "location1" : "Shahbag",
+      "location2" : "Mirpur"
+    },
+    "-MbXQqeK4ub2SoE1xV1B" : {
+      "fare" : 10,
+      "location1" : "Malibag",
+      "location2" : "Mirpur"
+    },
+    "-MbXQqg6mHtFE-3PdXAf" : {
+      "fare" : 20,
+      "location1" : "Farmgate",
+      "location2" : "Mirpur"
+    },
+    "-MbXSE7dKQUXeXfAyXtc" : {
+      "fare" : 10,
+      "location1" : "Science lab",
+      "location2" : "Bata signal"
+    },
+    "-MbXSE7goNRyNEqPjlst" : {
+      "fare" : 20,
+      "location1" : "Science lab",
+      "location2" : "Shahbag"
+    },
+    "-MbXSE7vhkZpIrKTi6xU" : {
+      "fare" : 10,
+      "location1" : "Dhanmondi",
+      "location2" : "Science lab"
+    },
+    "-MbXSE89gtUIT4IgLxO4" : {
+      "fare" : 10,
+      "location1" : "Bata signal",
+      "location2" : "Shahbag"
+    },
+    "-MbXSE8A9l4dMX8dUAT-" : {
+      "fare" : 20,
+      "location1" : "Dhanmondi",
+      "location2" : "Bata signal"
+    },
+    "-MbXSEGhCChglXVFYT5F" : {
+      "fare" : 30,
+      "location1" : "Dhanmondi",
+      "location2" : "Shahbag"
+    }
+  },
+  "users" : {
+    "-MbSaw_blF0gYOdhuMYm" : {
+      "email" : "aaatowsif16@gmail.com",
+      "name" : "Towsif Abdullah",
+      "phone_number" : "+8801521419597"
+    },
+    "-Mb_lFSA6DSECI6fmJiq" : {
+      "email" : "1605020@ugrad.cse.buet.ac.bd",
+      "name" : "Abdullah",
+      "phone_number" : "+8801770270798"
+    },
+    "-MbqaJYdOgLfa_lm08cf" : {
+      "email" : "zulfiqar9726@gmail.com",
+      "name" : "Zulfiqar",
+      "phone_number" : "+8801919214111"
+    }
+  }
+}
