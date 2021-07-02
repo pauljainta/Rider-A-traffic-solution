@@ -45,6 +45,7 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
 
     boolean alreadyPending;
     boolean checked;
+    private String type;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -114,25 +115,43 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
         switch (v.getId())
         {
             case R.id.busChooseButton:
-                intent=new Intent(getApplicationContext(),BusSeatSelection.class);
-                startActivity(intent);
+
+                if(checked )
+                {
+                    if(alreadyPending)
+                        carBikeButtonFunction();
+
+                    else
+                    {
+                        intent=new Intent(getApplicationContext(),BusSeatSelection.class);
+                        startActivity(intent);
+                    }
+
+                }
+
                 break;
 
             case R.id.bikeChooseButton:
 
-                carBikeButtonFunction("bike");
+                if(checked && !alreadyPending)
+                    type = "bike";
+
+                carBikeButtonFunction();
 
                 break;
 
             case R.id.carChooseButton:
 
-                carBikeButtonFunction("car");
+                if(checked && !alreadyPending)
+                    type = "car";
+
+                carBikeButtonFunction();
 
                 break;
         }
     }
 
-    synchronized void carBikeButtonFunction(String type)
+    synchronized void carBikeButtonFunction()
     {
         lock.lock();
 
@@ -199,6 +218,7 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
                                     sourceLong = jsonObject.getDouble("sourceLong");
                                     destLat = jsonObject.getDouble("destLat");
                                     destLong = jsonObject.getDouble("destLong");
+                                    type = jsonObject.getString("type");
 
                                     alreadyPending = true;
                                     break;
@@ -219,6 +239,7 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
                                         sourceLong = jsonObject.getDouble("sourceLong");
                                         destLat = jsonObject.getDouble("destLat");
                                         destLong = jsonObject.getDouble("destLong");
+                                        type = jsonObject.getString("type");
 
                                         alreadyPending = true;
                                         break;

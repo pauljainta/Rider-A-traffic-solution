@@ -53,8 +53,8 @@ import java.util.Locale;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class DriverLocationUpdate extends FragmentActivity implements OnMapReadyCallback {
-
+public class DriverLocationUpdate extends FragmentActivity implements OnMapReadyCallback
+{
     private GoogleMap mMap;
 
     double sourceLat, sourceLong;
@@ -93,6 +93,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
     LocationListener locationListener;
     private ReentrantLock lock;
     private String keyForRequest;
+    private double fare;
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -166,9 +167,6 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
         lock = new ReentrantLock();
 
         GetKeyForLocationUpdate();
-
-
-
 
         GetRequestInfo();
 
@@ -487,6 +485,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
                                 email = jsonObject.getString("userEmail");
                                 started = jsonObject.getBoolean("started");
                                 finished = jsonObject.getBoolean("finished");
+                                fare = jsonObject.getDouble("fare");
 
                                 break;
                             }

@@ -57,6 +57,7 @@ public class RequestConfirmActivity extends FragmentActivity implements OnMapRea
 
     Context context;
     RequestQueue requestQueue;
+    private double duration;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,7 +76,10 @@ public class RequestConfirmActivity extends FragmentActivity implements OnMapRea
         type = intent.getStringExtra("type");
 
         estimatedFare = intent.getDoubleExtra("fare", 1);
-        estimatedFare = (double) Math.round(estimatedFare * 100) / 100;
+        estimatedFare = Math.round(estimatedFare);
+
+        duration = intent.getDoubleExtra("duration", 1);
+        duration = Math.round(duration);
 
         context = getBaseContext();
 
@@ -87,7 +91,7 @@ public class RequestConfirmActivity extends FragmentActivity implements OnMapRea
             @Override
             public void onClick(View v)
             {
-                sendRequest(Info.currentEmail, sourceLat, sourceLong, destLat, destLong, source, dest, true);
+                sendRequest(Info.currentEmail, sourceLat, sourceLong, destLat, destLong, source, dest, estimatedFare, true);
 
                 Intent intent = new Intent(getApplicationContext(), WaitingActivity.class);
 
@@ -148,7 +152,7 @@ public class RequestConfirmActivity extends FragmentActivity implements OnMapRea
         LatLng source = new LatLng(sourceLat, sourceLong);
         LatLng dest = new LatLng(destLat, destLong);
 
-        estimatedFareTextView.setText("Estimated Fare "+String.valueOf(estimatedFare) + " TK");
+        estimatedFareTextView.setText("Estimated Fare "+String.valueOf(estimatedFare) + " TK\n" + "Estimated duration " + duration +" Mins");
 
         showLocation(source,"source");
         showLocation(dest,"destination");
@@ -185,7 +189,7 @@ public class RequestConfirmActivity extends FragmentActivity implements OnMapRea
 
 
 
-    public void sendRequest(String email, double sourceLat, double sourceLong, double destLat, double destLong, String source, String dest, boolean pending)
+    public void sendRequest(String email, double sourceLat, double sourceLong, double destLat, double destLong, String source, String dest, double fare, boolean pending)
     {
         try
         {
@@ -200,6 +204,7 @@ public class RequestConfirmActivity extends FragmentActivity implements OnMapRea
             jsonBody.put("dest", dest);
             jsonBody.put("pending", pending);
             jsonBody.put("type", type);
+            jsonBody.put("fare", estimatedFare);
 
 
             final String requestBody = jsonBody.toString();
