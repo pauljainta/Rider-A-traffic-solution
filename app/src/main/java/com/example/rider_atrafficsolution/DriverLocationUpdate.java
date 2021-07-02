@@ -84,7 +84,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
    // double estimatedFare;
 
    // TextView estimatedFareTextView;
-    Button acceptRequestButton,rejectRequestButton, startRideButton, finishRideButton;
+    Button acceptRequestButton,rejectRequestButton, startRideButton, finishRideButton, proceedButton;
 
     Context context;
     RequestQueue requestQueue;
@@ -135,12 +135,16 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
         rejectRequestButton = findViewById(R.id.driver_request_reject_button);
         startRideButton = findViewById(R.id.startRideButton);
         finishRideButton = findViewById(R.id.finishRideButton);
+        proceedButton = findViewById(R.id.proceedToPaymentButton);
 
         startRideButton.setVisibility(View.GONE);
         startRideButton.setEnabled(false);
 
         finishRideButton.setVisibility(View.GONE);
         finishRideButton.setEnabled(false);
+
+        proceedButton.setVisibility(View.GONE);
+        proceedButton.setEnabled(false);
 
         if (intent.getStringExtra("classid").equalsIgnoreCase("driver2"))
         {
@@ -186,6 +190,9 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
             @Override
             public void onClick(View v)
             {
+                if(keyForDriverID == null)
+                    return;
+
                 Log.i("accept", "clicked");
 
                 accepted = true;
@@ -233,11 +240,19 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
             @Override
             public void onClick(View v)
             {
+                System.out.println(fare);
+
+                fare = Math.round(CalculateFareClass.CalculateFare(fare));
+                System.out.println("last fare " + fare);
+
                 updateRequestStatus(true, true);
                 finished = true;
 
                 finishRideButton.setVisibility(View.GONE);
                 finishRideButton.setEnabled(false);
+
+                proceedButton.setVisibility(View.VISIBLE);
+                proceedButton.setEnabled(true);
             }
         });
     }
@@ -251,19 +266,27 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
     {
         if(comment.equalsIgnoreCase("Driver"))
         {
-            mMap.addMarker(new MarkerOptions().position(latLng).title("car")
-                    // below line is use to add custom marker on our map.
-                    .icon(BitmapFromVector(getApplicationContext(), R.drawable.car)));                //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latLng.latitude, latLng.longitude), 12.0f));
+            if(type.equalsIgnoreCase("car"))
+            {
+                mMap.addMarker(new MarkerOptions().position(latLng).title("car")
+                        // below line is use to add custom marker on our map.
+                        .icon(BitmapFromVector(getApplicationContext(), R.drawable.car)));                //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latLng.latitude, latLng.longitude), 12.0f));
+            }
+
+            if(type.equalsIgnoreCase("bike"))
+            {
+                mMap.addMarker(new MarkerOptions().position(latLng).title("bike")
+                        // below line is use to add custom marker on our map.
+                        .icon(BitmapFromVector(getApplicationContext(), R.drawable.bike)));                //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latLng.latitude, latLng.longitude), 12.0f));
+            }
         }
         else
         {
             mMap.addMarker(new MarkerOptions().position(latLng).title(comment));
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latLng.latitude, latLng.longitude), 12.0f));
         }
-
-
-
     }
 
 
@@ -283,22 +306,6 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
         // Add a marker in Sydney and move the camera
         Intent intent = this.getIntent();
 
-//        sourceLat = intent.getDoubleExtra("sourceLat", 1);
-//        sourceLong = intent.getDoubleExtra("sourceLong", 1);
-//        destLat = intent.getDoubleExtra("destLat", 1);
-//        destLong = intent.getDoubleExtra("destLong", 1);
-//        source = intent.getStringExtra("source");
-//        dest = intent.getStringExtra("dest");
-//        type = intent.getStringExtra("type");
-
-       // estimatedFare = intent.getDoubleExtra("fare", 1);
-        //estimatedFare = (double) Math.round(estimatedFare * 100) / 100;
-
-//        sourceLat= 23.738;
-//        sourceLong= 90.4;
-//
-//        destLat=23.7561067;
-//        destLong=90.38719609999998;
 
         LatLng source = new LatLng(sourceLat, sourceLong);
         LatLng dest = new LatLng(destLat, destLong);
@@ -314,6 +321,9 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
             @Override
             public void onLocationChanged(@NonNull Location location)
             {
+                if(keyForDriverID == null)
+                    return;
+
                 driverLat=location.getLatitude();
                 driverLong=location.getLongitude();
                 LatLng driverLatLng=new LatLng(driverLat,driverLong);
@@ -325,9 +335,6 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
 
                     if(!started)
                     {
-
-
-
                         double dist = util.getDistanceFromLatLonInKm(driverLat, driverLong, sourceLat, sourceLong);
 
                         if(dist < 0.5)
@@ -367,9 +374,6 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
                             finishRideButton.setEnabled(false);
                         }
                     }
-
-
-
                 }
 
                 showLocation(source,"source");
@@ -390,7 +394,6 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
         else
         {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,locationListener);
-
         }
 
     }
@@ -539,6 +542,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
             jsonBody.put("started", started);
             jsonBody.put("finished", finished);
             jsonBody.put("done", false);
+            jsonBody.put("fare", fare);
 
             final String requestBody = jsonBody.toString();
 
@@ -593,8 +597,6 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
 
     synchronized public void updateDriverLocation()
     {
-
-
         lock.lock();
         try
         {
@@ -605,7 +607,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
             jsonBody.put("long", driverLong);
             jsonBody.put("driverID", driverID);
             jsonBody.put("type", type);
-            jsonBody.put("busy", busy);
+            jsonBody.put("busy", true);
             jsonBody.put("name", name);
 
             final String requestBody = jsonBody.toString();

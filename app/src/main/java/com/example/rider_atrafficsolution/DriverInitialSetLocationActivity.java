@@ -65,6 +65,7 @@ public class DriverInitialSetLocationActivity extends FragmentActivity implement
     private String name;
     private boolean updated;
     private boolean readComplete;
+    private boolean done;
 
 
     @Override
@@ -91,6 +92,7 @@ public class DriverInitialSetLocationActivity extends FragmentActivity implement
         requestQueue = Volley.newRequestQueue(context);
         busy = false;
         name = "";
+        done = false;
 
         updated = false;
         readComplete = false;
@@ -114,6 +116,8 @@ public class DriverInitialSetLocationActivity extends FragmentActivity implement
                     Intent intent=new Intent(getApplicationContext(),DriverReceiveRequestActivity.class);
 
                     startActivity(intent);
+
+                    done = true;
                 }
             }
         });
@@ -125,7 +129,7 @@ public class DriverInitialSetLocationActivity extends FragmentActivity implement
         mMap.addMarker(new MarkerOptions().position(latLng).title("Your Location"));
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latLng.latitude, latLng.longitude), 12.0f));
 
-        if(readComplete)
+        if(readComplete && !done && keyForDriverID != null)
             updateDriverLocation(latLng.latitude, latLng.longitude);
     }
 
@@ -152,6 +156,7 @@ public class DriverInitialSetLocationActivity extends FragmentActivity implement
             {
                 mMap.clear();
                 driverlatLng=new LatLng(location.getLatitude(),location.getLongitude());
+
                 showLocation(driverlatLng,"Your Location");
             }
         };
