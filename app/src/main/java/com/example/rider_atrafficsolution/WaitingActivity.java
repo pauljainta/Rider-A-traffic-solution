@@ -14,6 +14,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.JsonObject;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -39,6 +40,7 @@ public class WaitingActivity extends AppCompatActivity
     String key;
     String type;
     boolean busy;
+    String keyForRequest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -62,6 +64,7 @@ public class WaitingActivity extends AppCompatActivity
         destLat = intent.getDoubleExtra("destLat", 1);
         destLong = intent.getDoubleExtra("destLong", 1);
         type = intent.getStringExtra("type");
+        keyForRequest = intent.getStringExtra("key");
 
 
         Handler handler =new Handler();
@@ -121,28 +124,24 @@ public class WaitingActivity extends AppCompatActivity
     {
         lock.lock();
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/Request.json", null, new Response.Listener<JSONObject>() {
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/Request/" + keyForRequest + ".json", null, new Response.Listener<JSONObject>() {
             @Override
-            public void onResponse(JSONObject response)
+            public void onResponse(JSONObject jsonObject)
             {
                 //type.clear();
                 //try
                 {
-                    JSONArray array = response.names();
 
-                    for(int i=0;i<array.length();i++)
+                    //for(int i=0;i<array.length();i++)
                     {
                         try
                         {
-                            String k = array.getString(i);
-
-                            JSONObject jsonObject = response.getJSONObject(k);
 
                             boolean pending = jsonObject.getBoolean("pending");
 
 
                             if(pending)
-                                continue;
+                                return;
 
                             String user = jsonObject.getString("userEmail");
                             String t = jsonObject.getString("type");
@@ -153,9 +152,8 @@ public class WaitingActivity extends AppCompatActivity
 
                                 driverID = jsonObject.getInt("accepted_by");
 
-                                key = k;
+                                key = keyForRequest;
 
-                                break;
                             }
 
                         }

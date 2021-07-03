@@ -73,6 +73,7 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
     Runnable runnable;
 
 
+
     // double estimatedFare;
 
     // TextView estimatedFareTextView;
@@ -90,6 +91,10 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
     private String keyForRequest;
     private boolean started;
     private boolean finished;
+    private double fare;
+    private boolean done;
+
+    boolean checked = false;
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -112,6 +117,8 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
 
         started = false;
         finished = false;
+        done = false;
+
         Intent intent = this.getIntent();
 
         sourceLat = intent.getDoubleExtra("sourceLat", 1);
@@ -149,6 +156,17 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
             @Override
             public void run()
             {
+                if(done)
+                {
+                    //handler.removeCallbacks(runnable);
+
+                    Intent intent1 = new Intent(getApplicationContext(), UserSideJourneyCompleteActivity.class);
+                    intent1.putExtra("fare", fare);
+                    startActivity(intent1);
+
+                    return;
+                }
+
                 handler.postDelayed(this, 3000);
 
                 GetKeyForLocationUpdate();
@@ -392,7 +410,12 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
 
                                 if(finished)
                                 {
-                                    omuk_driver_accept_korse_textview.setText("Your ride has ended");
+                                    fare = jsonObject.getDouble("fare");
+                                    omuk_driver_accept_korse_textview.setText("Your ride has ended\n" + "Pay TK " + fare);
+                                    done = jsonObject.getBoolean("done");
+
+                                    System.out.println("done = " + done);
+
                                 }
 
                                 System.out.println("s "+ source);
@@ -410,7 +433,6 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
                             e.printStackTrace();
                         }
                     }
-
 
 
                 }

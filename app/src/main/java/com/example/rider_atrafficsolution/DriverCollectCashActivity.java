@@ -120,6 +120,8 @@ public class DriverCollectCashActivity extends AppCompatActivity
 
                 updateDriverLocation();
 
+                addHistory();
+
                 driverRatingBar.setVisibility(View.VISIBLE);
                 submitButton.setVisibility(View.VISIBLE);
                 driverRatingTextView.setVisibility(View.VISIBLE);
@@ -145,9 +147,6 @@ public class DriverCollectCashActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                addHistory();
-
-                updateDriverLocation();
 
                 Intent intent1 = new Intent(getApplicationContext(), DriverInitialSetLocationActivity.class);
                 startActivity(intent1);

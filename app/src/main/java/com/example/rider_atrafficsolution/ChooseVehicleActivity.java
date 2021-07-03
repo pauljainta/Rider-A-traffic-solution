@@ -46,6 +46,7 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
     boolean alreadyPending;
     boolean checked;
     private String type;
+    private String keyForRequest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -176,6 +177,7 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
             intent.putExtra("destLat", destLat);
             intent.putExtra("destLong", destLong);
             intent.putExtra("type", type);
+            intent.putExtra("key", keyForRequest);
 
             startActivity(intent);
         }
@@ -219,6 +221,7 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
                                     destLat = jsonObject.getDouble("destLat");
                                     destLong = jsonObject.getDouble("destLong");
                                     type = jsonObject.getString("type");
+                                    keyForRequest = key;
 
                                     alreadyPending = true;
                                     break;
@@ -240,6 +243,7 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
                                         destLat = jsonObject.getDouble("destLat");
                                         destLong = jsonObject.getDouble("destLong");
                                         type = jsonObject.getString("type");
+                                        keyForRequest = key;
 
                                         alreadyPending = true;
                                         break;
