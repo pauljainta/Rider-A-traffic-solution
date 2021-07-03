@@ -48,7 +48,7 @@ public class TestMapsActivity extends FragmentActivity implements
 
     private GoogleMap mMap;
 
-    RequestQueue requestQueue;
+    public static RequestQueue requestQueue;
     Context context;
     ReentrantLock lock;
     List<LatLng> intermediate;
@@ -138,13 +138,13 @@ public class TestMapsActivity extends FragmentActivity implements
     }
 
 
-    private String getMapsApiDirectionsUrl()
+    public static String getMapsApiDirectionsUrl(double lat1, double lon1, double lat2, double lon2)
     {
 
 
-        String origin = "origin=" + "23.7561" + "," + "90.3872";
+        String origin = "origin=" + lat1 + "," + lon1;
         //String waypoints = "waypoints=optimize:true|" + BROOKLYN_BRIDGE.latitude + "," + BROOKLYN_BRIDGE.longitude + "|";
-        String destination = "destination=" + "23.8223" + "," + "90.3654";
+        String destination = "destination=" + lat2 + "," + lon2;
 
         String sensor = "sensor=false";
         String params = origin + "&"  + "&"  + destination + "&" + sensor + "&key=" + "AIzaSyC-9ghJoVuhdfodTVZ3JnpDbgx38-0PtGk";
@@ -155,7 +155,7 @@ public class TestMapsActivity extends FragmentActivity implements
     }
 
 
-    private List<LatLng> decodePoly(String encoded) {
+    public static List<LatLng> decodePoly(String encoded) {
 
         List<LatLng> poly = new ArrayList<LatLng>();
         int index = 0, len = encoded.length();
@@ -193,7 +193,7 @@ public class TestMapsActivity extends FragmentActivity implements
     {
         lock.lock();
 
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, getMapsApiDirectionsUrl(), null, new Response.Listener<JSONObject>() {
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, getMapsApiDirectionsUrl(23.5, 90.5, 24.5, 91.5), null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response)
             {

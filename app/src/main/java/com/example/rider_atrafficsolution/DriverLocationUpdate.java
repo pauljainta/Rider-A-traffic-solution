@@ -40,6 +40,8 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -48,6 +50,8 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class DriverLocationUpdate extends FragmentActivity implements OnMapReadyCallback
@@ -99,6 +103,12 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
     private String keyForRequest;
     private double fare;
     private String userEmail;
+    ArrayList<LatLng> intermediate;
+
+    Handler routeHandler;
+    Runnable routeRunnable;
+    boolean retrievedIntermediate;
+    Polyline polyline1;
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -122,6 +132,8 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
 
         busy = false;
 
+        intermediate = new ArrayList<>();
+
         Intent intent = this.getIntent();
 
         sourceLat = intent.getDoubleExtra("sourceLat", 1);
@@ -133,6 +145,8 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
         type = intent.getStringExtra("type");
         keyForRequest = intent.getStringExtra("key");
         driverID = Integer.parseInt(intent.getStringExtra("driverID"));
+
+        retrievedIntermediate = false;
 
         accepted = false;
 
@@ -183,9 +197,33 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
 
         lock = new ReentrantLock();
 
+        GetIntermediateLocations();
+
         GetKeyForLocationUpdate();
 
         GetRequestInfo();
+
+
+        routeHandler = new Handler();
+        routeRunnable = new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                if(retrievedIntermediate)
+                {
+                    update();
+
+                    return;
+                }
+
+
+
+                routeHandler.postDelayed(this, 3000);
+            }
+        };
+        routeHandler.postDelayed(routeRunnable, 0);
+
 
         Handler handler = new Handler();
         Runnable runnable = new Runnable()
@@ -331,9 +369,16 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
         });
     }
 
+    private void update()
+    {
+        if(polyline1 == null)
+            return;
 
-
-
+        //System.out.println("intermediate" + intermediate);
+        polyline1 = mMap.addPolyline(new PolylineOptions()
+                .clickable(true)
+                .addAll(intermediate));
+    }
 
 
     public void showLocation(LatLng latLng,String comment)
@@ -380,6 +425,9 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
         // Add a marker in Sydney and move the camera
         Intent intent = this.getIntent();
 
+        polyline1 = mMap.addPolyline(new PolylineOptions()
+                .clickable(true)
+                .addAll(intermediate));
 
         LatLng source = new LatLng(sourceLat, sourceLong);
         LatLng dest = new LatLng(destLat, destLong);
@@ -453,6 +501,9 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
                     }
                 }
 
+                if(retrievedIntermediate)
+                    update();
+
                 showLocation(source,"source");
                 showLocation(dest,"destination");
                 showLocation(driverLatLng,"Driver");
@@ -468,7 +519,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
         }
         else
         {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,locationListener);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,3000,100,locationListener);
         }
 
     }
@@ -650,6 +701,61 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
         requestQueue.add(jsonObjectRequest);
 
         lock.unlock();
+    }
+
+    synchronized public void GetIntermediateLocations()
+    {
+        //lock.lock();
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, TestMapsActivity.getMapsApiDirectionsUrl(sourceLat, sourceLong, destLat, destLong), null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response)
+            {
+
+                try {
+                    //Tranform the string into a json object
+
+                    JSONArray legs = response.getJSONArray("routes").getJSONObject(0).getJSONArray("legs");
+                    for (int j = 0; j < legs.length(); j++)
+                    {
+                        JSONObject leg = legs.getJSONObject(j);
+
+
+                        int distance = leg.getJSONObject("distance").getInt("value");
+
+
+                        JSONArray steps = response.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(j).getJSONArray("steps");
+                        for (int k = 0; k < steps.length(); k++)
+                        {
+                            JSONObject step = steps.getJSONObject(k);
+                            String polyline = step.getJSONObject("polyline").getString("points");
+
+                            List<LatLng> latLngs = TestMapsActivity.decodePoly(polyline);
+
+                            intermediate.addAll(latLngs);
+
+                            System.out.println(latLngs);
+                        }
+                    }
+
+                    retrievedIntermediate = true;
+
+                } catch (JSONException e) {
+
+                    System.out.println("exception from distance matrix");
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
+                Log.d("error: " , error.getMessage());
+            }
+        });
+
+        requestQueue.add(jsonObjectRequest);
+
+        //lock.unlock();
     }
 
     synchronized public void updateRequestStatus(boolean started, boolean finished)
