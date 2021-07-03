@@ -437,6 +437,8 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
 
                             if(dist < 0.5)
                             {
+                                ridingWithButton.setVisibility(View.GONE);
+
                                 finishRideButton.setVisibility(View.VISIBLE);
                                 finishRideButton.setEnabled(true);
                             }
