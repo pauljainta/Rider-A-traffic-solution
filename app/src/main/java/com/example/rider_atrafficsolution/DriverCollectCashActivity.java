@@ -147,7 +147,6 @@ public class DriverCollectCashActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-
                 Intent intent1 = new Intent(getApplicationContext(), DriverInitialSetLocationActivity.class);
                 startActivity(intent1);
             }

@@ -260,7 +260,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
             @Override
             public void onClick(View v)
             {
-                startTime = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Timestamp(System.currentTimeMillis()));
+                startTime = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss").format(new Timestamp(System.currentTimeMillis()));
 
                 updateRequestStatus(true, false);
                 started = true;
@@ -277,7 +277,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
             @Override
             public void onClick(View v)
             {
-                finishTime = new SimpleDateFormat("yyyy.MM.dd.HH.mm.ss").format(new Timestamp(System.currentTimeMillis()));
+                finishTime = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss").format(new Timestamp(System.currentTimeMillis()));
 
                 System.out.println(fare);
 

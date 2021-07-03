@@ -72,6 +72,8 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
     Handler handler;
     Runnable runnable;
 
+    String key;
+
 
 
     // double estimatedFare;
@@ -162,6 +164,7 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
 
                     Intent intent1 = new Intent(getApplicationContext(), UserSideJourneyCompleteActivity.class);
                     intent1.putExtra("fare", fare);
+                    intent1.putExtra("email", email);
                     startActivity(intent1);
 
                     return;
@@ -449,6 +452,7 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
 
         lock.unlock();
     }
+
 
 
 
