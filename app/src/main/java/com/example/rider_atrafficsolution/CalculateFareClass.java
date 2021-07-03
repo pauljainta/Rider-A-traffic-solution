@@ -7,19 +7,17 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class CalculateFareClass {
 
-    public static float nextFloatBetween(float min, float max) {
-        return (new Random().nextFloat() * (max - min)) + min;
-    }
+
     public static double CalculateFare(double estimated_fare)
     {
 
-        double extra=nextFloatBetween(0,1)*100;
+        int extra=new Random().nextInt(10)+20;
 
         Log.i("extra " , String.valueOf(extra));
 
         Random random=new Random();
         int prob=random.nextInt(100);
-        if(prob<20)
+        if(prob<=20)
         {
             return estimated_fare;
         }
