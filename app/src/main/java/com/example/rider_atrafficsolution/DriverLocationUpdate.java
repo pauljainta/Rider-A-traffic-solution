@@ -319,7 +319,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
                 intent1.putExtra("userEmail", userEmail);
                 intent1.putExtra("userName", userName);
                 intent1.putExtra("startTime", startTime);
-                intent1.putExtra("finishTime", startTime);
+                intent1.putExtra("finishTime", finishTime);
 
                 thisWindowDone = true;
 

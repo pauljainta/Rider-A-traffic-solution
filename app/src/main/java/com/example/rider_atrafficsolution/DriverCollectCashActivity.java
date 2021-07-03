@@ -84,6 +84,8 @@ public class DriverCollectCashActivity extends AppCompatActivity
         driverName = intent.getStringExtra("driverName");
         userName = intent.getStringExtra("userName");
         userEmail = intent.getStringExtra("userEmail");
+        startTime = intent.getStringExtra("startTime");
+        finishTime = intent.getStringExtra("finishTime");
 
         context = getBaseContext();
 
