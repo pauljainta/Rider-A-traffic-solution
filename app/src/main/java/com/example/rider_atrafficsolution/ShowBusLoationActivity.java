@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -28,10 +29,15 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ShowBusLoationActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -59,12 +65,18 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
     Boolean isDestinationAlertShown;
 
     LatLng startCounter,endCounter,busLocation;
+    private ArrayList<LatLng> route;
+    boolean retrievedIntermediate;
+
+    Polyline polyline;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_bus_loation);
+
+        retrievedIntermediate = false;
 
         context = getBaseContext();
 
@@ -78,6 +90,8 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
         toLat = getIntent().getDoubleExtra("toLat", 1);
         toLong = getIntent().getDoubleExtra("toLong", 1);
         fare = getIntent().getDoubleExtra("fare", 1);
+        route = getIntent().getParcelableArrayListExtra("route");
+
 
         Log.i("map", String.valueOf(fromLat));
         Log.i("map", String.valueOf(fromLong));
@@ -132,6 +146,18 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
                 });
 
 
+    }
+
+
+    private void update()
+    {
+        if(polyline == null)
+            return;
+
+        //System.out.println("intermediate" + intermediate);
+        polyline = mMap.addPolyline(new PolylineOptions()
+                .clickable(true).color(Color.RED)
+                .addAll(route));
     }
 
 
@@ -197,9 +223,12 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
+         mMap = googleMap;
 
 
+        polyline = mMap.addPolyline(new PolylineOptions()
+                .clickable(true).color(Color.RED)
+                .addAll(route));
 
          startCounter = new LatLng(fromLat, fromLong);
          endCounter = new LatLng(toLat, toLong);
@@ -216,6 +245,8 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
                 Log.i("timer", "updated after 30 seconds");
                 GetCurrentLocation();
                 updateUI();
+
+                update();
 
             }
         };
@@ -295,4 +326,5 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
         // after generating our bitmap we are returning our bitmap.
         return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
+
 }
