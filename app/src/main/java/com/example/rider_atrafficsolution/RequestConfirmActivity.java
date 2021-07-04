@@ -7,8 +7,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -22,6 +24,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -32,11 +35,16 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RequestConfirmActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -59,12 +67,17 @@ public class RequestConfirmActivity extends FragmentActivity implements OnMapRea
     RequestQueue requestQueue;
     private double duration;
     private String keyForRequest;
+    private ArrayList<LatLng> intermediate;
+    private boolean retrievedIntermediate;
+    private Polyline polyline1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_request_confirm);
         estimatedFareTextView = findViewById(R.id.estimatedFareTextView);
+        intermediate = new ArrayList<>();
+        retrievedIntermediate = false;
 
         Intent intent = this.getIntent();
 
@@ -87,6 +100,26 @@ public class RequestConfirmActivity extends FragmentActivity implements OnMapRea
 
         requestQueue = Volley.newRequestQueue(context);
         sendRequestButton = findViewById(R.id.carrequestconfirmbutton);
+
+        GetIntermediateLocations();
+
+        Handler h = new Handler();
+        Runnable r = new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                if(retrievedIntermediate)
+                {
+                    update();
+                    return;
+                }
+                h.postDelayed(this, 2000);
+            }
+        };
+        h.postDelayed(r, 0);
+
+
 
         sendRequestButton.setOnClickListener(new View.OnClickListener()
         {
@@ -119,6 +152,16 @@ public class RequestConfirmActivity extends FragmentActivity implements OnMapRea
         mapFragment.getMapAsync(this);
     }
 
+    private void update()
+    {
+        if(polyline1 == null)
+            return;
+
+        //System.out.println("intermediate" + intermediate);
+        polyline1 = mMap.addPolyline(new PolylineOptions()
+                .clickable(true).color(Color.RED)
+                .addAll(intermediate));
+    }
 
 
     public void showLocation(LatLng latLng,String comment)
@@ -162,11 +205,12 @@ public class RequestConfirmActivity extends FragmentActivity implements OnMapRea
 
         estimatedFareTextView.setText("Estimated Fare "+String.valueOf(estimatedFare) + " TK\n" + "Estimated duration " + duration +" Mins");
 
+        polyline1 = mMap.addPolyline(new PolylineOptions()
+                .clickable(true)
+                .addAll(intermediate));
+
         showLocation(source,"source");
         showLocation(dest,"destination");
-
-
-
     }
 
 
@@ -261,5 +305,60 @@ public class RequestConfirmActivity extends FragmentActivity implements OnMapRea
         } catch (JSONException e) {
             e.printStackTrace();
         }
+    }
+
+    synchronized public void GetIntermediateLocations()
+    {
+        //lock.lock();
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, TestMapsActivity.getMapsApiDirectionsUrl(sourceLat, sourceLong, destLat, destLong), null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response)
+            {
+
+                try {
+                    //Tranform the string into a json object
+
+                    JSONArray legs = response.getJSONArray("routes").getJSONObject(0).getJSONArray("legs");
+                    for (int j = 0; j < legs.length(); j++)
+                    {
+                        JSONObject leg = legs.getJSONObject(j);
+
+
+                        int distance = leg.getJSONObject("distance").getInt("value");
+
+
+                        JSONArray steps = response.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(j).getJSONArray("steps");
+                        for (int k = 0; k < steps.length(); k++)
+                        {
+                            JSONObject step = steps.getJSONObject(k);
+                            String polyline = step.getJSONObject("polyline").getString("points");
+
+                            List<LatLng> latLngs = TestMapsActivity.decodePoly(polyline);
+
+                            intermediate.addAll(latLngs);
+
+                            System.out.println(latLngs);
+                        }
+                    }
+
+                    retrievedIntermediate = true;
+
+                } catch (JSONException e) {
+
+                    System.out.println("exception from distance matrix");
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
+                Log.d("error: " , error.getMessage());
+            }
+        });
+
+        requestQueue.add(jsonObjectRequest);
+
+        //lock.unlock();
     }
 }

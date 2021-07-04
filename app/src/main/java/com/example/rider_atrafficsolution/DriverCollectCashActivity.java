@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -20,9 +21,11 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -48,6 +51,8 @@ public class DriverCollectCashActivity extends AppCompatActivity
 
     String driverName, userName, userEmail;
 
+    double user_rating_driver;
+
     String startTime, finishTime;
 
     String ts;
@@ -63,6 +68,7 @@ public class DriverCollectCashActivity extends AppCompatActivity
     Button submitButton;
     TextView driverRatingTextView;
     String keyForDriverID;
+    private boolean checkedHistory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -70,6 +76,7 @@ public class DriverCollectCashActivity extends AppCompatActivity
         Intent intent = getIntent();
 
         flag = false;
+        checkedHistory = false;
 
         source = intent.getStringExtra("source");
         dest = intent.getStringExtra("dest");
@@ -89,6 +96,8 @@ public class DriverCollectCashActivity extends AppCompatActivity
         userEmail = intent.getStringExtra("userEmail");
         startTime = intent.getStringExtra("startTime");
         finishTime = intent.getStringExtra("finishTime");
+
+        user_rating_driver = -1;
 
         context = getBaseContext();
 
@@ -125,7 +134,7 @@ public class DriverCollectCashActivity extends AppCompatActivity
 
                 updateDriverLocation();
 
-                addHistory();
+                addHistory(5);
 
                 driverRatingBar.setVisibility(View.VISIBLE);
                 submitButton.setVisibility(View.VISIBLE);
@@ -152,12 +161,61 @@ public class DriverCollectCashActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                addHistory();
+                GetUserRating();
+
+                Handler h = new Handler();
+                Runnable r = new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        if(checkedHistory)
+                        {
+                            addHistory(user_rating_driver);
+                            return;
+                        }
+                        h.postDelayed(this, 2000);
+                    }
+                };
+                h.postDelayed(r, 0);
+
+                addHistory(user_rating_driver);
 
                 Intent intent1 = new Intent(getApplicationContext(), DriverInitialSetLocationActivity.class);
                 startActivity(intent1);
             }
         });
+    }
+
+    public void GetUserRating()
+    {
+        lock.lock();
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/History/" + ts + ".json", null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response)
+            {
+                try
+                {
+                    user_rating_driver = response.getDouble("user_rating_driver");
+
+                }catch (JSONException e)
+                {
+                    e.printStackTrace();
+                }
+
+                checkedHistory = true;
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
+                Log.d("error: " , error.getMessage());
+            }
+        });
+
+        requestQueue.add(jsonObjectRequest);
+        lock.unlock();
     }
 
 
@@ -237,7 +295,7 @@ public class DriverCollectCashActivity extends AppCompatActivity
     }
 
 
-     public void addHistory()
+     public void addHistory(double user_rating_driver)
     {
         try
         {
@@ -254,7 +312,7 @@ public class DriverCollectCashActivity extends AppCompatActivity
             jsonBody.put("startTime", startTime);
             jsonBody.put("finishTime", finishTime);
             jsonBody.put("driver_rating_user", driver_rating_user);
-            jsonBody.put("user_rating_driver", 5);
+            jsonBody.put("user_rating_driver", user_rating_driver);
 
 
 

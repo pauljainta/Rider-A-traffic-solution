@@ -263,6 +263,9 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
 
                 accepted = true;
 
+                startedChecked = false;
+                GetRequestInfo();
+
                 Handler h2 = new Handler();
                 Runnable r2 = new Runnable()
                 {
