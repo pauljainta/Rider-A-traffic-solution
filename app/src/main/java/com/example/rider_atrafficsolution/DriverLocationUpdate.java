@@ -243,23 +243,6 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
       //  requestQueue = Volley.newRequestQueue(context);
 
 
-        Handler handlerFroDriverLocation = new Handler();
-        Runnable runnable2 = new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                if(thisWindowDone)
-                {
-                    return;
-                }
-                handlerFroDriverLocation.postDelayed(this, 2000);
-
-                //updateDriverLocation(busy);
-            }
-        };
-        handlerFroDriverLocation.postDelayed(runnable2, 0);
-
         //driverMail=Info.driverID;
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -279,7 +262,26 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
                 Log.i("accept", "clicked");
 
                 accepted = true;
-                updateRequestStatus(false, false);
+
+                Handler h2 = new Handler();
+                Runnable r2 = new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        if(startedChecked)
+                        {
+                            System.out.println("fare in accept button = " + fare);
+                            updateRequestStatus(false, false);
+                            return;
+                        }
+                        h2.postDelayed(this, 2000);
+                    }
+                };
+                h2.postDelayed(r2, 0);
+
+
+
                 acceptRequestButton.setVisibility(View.GONE);
                 rejectRequestButton.setVisibility(View.GONE);
                 //acceptRequestButton.setEnabled(false);
@@ -345,7 +347,23 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
             {
                 startTime = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Timestamp(System.currentTimeMillis()));
 
-                updateRequestStatus(true, false);
+                Handler h2 = new Handler();
+                Runnable r2 = new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        if(startedChecked)
+                        {
+                            System.out.println("fare in start ride = " + fare);
+                            updateRequestStatus(true, false);
+                            return;
+                        }
+                        h2.postDelayed(this, 2000);
+                    }
+                };
+                h2.postDelayed(r2, 0);
+
                 started = true;
                 startRideButton.setVisibility(View.GONE);
                 Log.i("start", "ride started");
@@ -674,7 +692,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
                     }
 
 
-                    startedChecked = true;
+                    //startedChecked = true;
 
                 }
             }
@@ -721,7 +739,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
                                 started = jsonObject.getBoolean("started");
                                 finished = jsonObject.getBoolean("finished");
                                 fare = jsonObject.getInt("fare");
-                                System.out.println("fare red in driver side " + fare);
+                                System.out.println("fare read in driver side " + fare);
 
                                 break;
                             }
