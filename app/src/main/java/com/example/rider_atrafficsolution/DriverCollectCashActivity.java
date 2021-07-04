@@ -69,6 +69,7 @@ public class DriverCollectCashActivity extends AppCompatActivity
     TextView driverRatingTextView;
     String keyForDriverID;
     private boolean checkedHistory;
+    private boolean flag2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -76,6 +77,7 @@ public class DriverCollectCashActivity extends AppCompatActivity
         Intent intent = getIntent();
 
         flag = false;
+        flag2 = false;
         checkedHistory = false;
 
         source = intent.getStringExtra("source");
@@ -130,15 +132,46 @@ public class DriverCollectCashActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                updateRequestStatus();
+                addHistory(5);
 
                 updateDriverLocation();
 
-                addHistory(5);
+                Handler h = new Handler();
+                Runnable r = new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        if(flag)
+                        {
+                            updateRequestStatus();
+                            return;
+                        }
+                        h.postDelayed(this, 2000);
+                    }
+                };
+                h.postDelayed(r, 0);
 
-                driverRatingBar.setVisibility(View.VISIBLE);
-                submitButton.setVisibility(View.VISIBLE);
-                driverRatingTextView.setVisibility(View.VISIBLE);
+                Handler h2 = new Handler();
+                Runnable r2 = new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        if(flag2)
+                        {
+                            driverRatingBar.setVisibility(View.VISIBLE);
+                            submitButton.setVisibility(View.VISIBLE);
+                            driverRatingTextView.setVisibility(View.VISIBLE);
+
+                            return;
+                        }
+                        h2.postDelayed(this, 2000);
+                    }
+                };
+                h2.postDelayed(r2, 0);
+
+
             }
         });
 
@@ -179,7 +212,6 @@ public class DriverCollectCashActivity extends AppCompatActivity
                 };
                 h.postDelayed(r, 0);
 
-                addHistory(user_rating_driver);
 
                 Intent intent1 = new Intent(getApplicationContext(), DriverInitialSetLocationActivity.class);
                 startActivity(intent1);
@@ -250,8 +282,7 @@ public class DriverCollectCashActivity extends AppCompatActivity
                 @Override
                 public void onResponse(String response) {
                     Log.i("VOLLEY", response);
-
-                    flag = true;
+                    flag2 = true;
                 }
             }, new Response.ErrorListener() {
                 @Override
@@ -322,6 +353,7 @@ public class DriverCollectCashActivity extends AppCompatActivity
                 @Override
                 public void onResponse(String response) {
                     Log.i("VOLLEY", response);
+                    flag = true;
                 }
             }, new Response.ErrorListener() {
                 @Override

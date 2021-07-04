@@ -94,7 +94,7 @@ public class UserSideJourneyCompleteActivity extends AppCompatActivity
             public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser)
             {
                 user_rating_driver = rating;
-                userRatingTextView.setText("Rate Your Driver : " + rating);
+                userRatingTextView.setText("Rate Your Driver : " + user_rating_driver);
             }
         });
 
@@ -103,7 +103,7 @@ public class UserSideJourneyCompleteActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                checkedHistory = false;
+                //checkedHistory = false;
 
                 GetHistoryInfo();
 
