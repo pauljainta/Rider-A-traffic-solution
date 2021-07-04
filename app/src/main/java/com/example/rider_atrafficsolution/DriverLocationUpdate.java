@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
@@ -203,7 +204,6 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
 
         GetRequestInfo();
 
-
         routeHandler = new Handler();
         routeRunnable = new Runnable()
         {
@@ -243,6 +243,23 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
       //  requestQueue = Volley.newRequestQueue(context);
 
 
+        Handler handlerFroDriverLocation = new Handler();
+        Runnable runnable2 = new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                if(thisWindowDone)
+                {
+                    return;
+                }
+                handlerFroDriverLocation.postDelayed(this, 2000);
+
+                //updateDriverLocation(busy);
+            }
+        };
+        handlerFroDriverLocation.postDelayed(runnable2, 0);
+
         //driverMail=Info.driverID;
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -269,7 +286,35 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
                 //rejectRequestButton.setEnabled(false);
 
                 busy = true;
-                updateDriverLocation(true);
+                Handler h = new Handler();
+                Runnable r = new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        if(keyForDriverID != null)
+                        {
+                            updateDriverLocation(true);
+                            return;
+                        }
+
+                        h.postDelayed(this, 2000);
+                    }
+                };
+                h.postDelayed(r, 0);
+
+
+
+
+                Util util = new Util();
+                double dist = util.getDistanceFromLatLonInKm(driverLat, driverLong, sourceLat, sourceLong);
+
+                if(dist < 0.5)
+                {
+                    startRideButton.setVisibility(View.VISIBLE);
+                    startRideButton.setEnabled(true);
+                }
+
 
                 //startRideButton.setVisibility(View.VISIBLE);
             }
@@ -298,7 +343,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
             @Override
             public void onClick(View v)
             {
-                startTime = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss").format(new Timestamp(System.currentTimeMillis()));
+                startTime = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Timestamp(System.currentTimeMillis()));
 
                 updateRequestStatus(true, false);
                 started = true;
@@ -315,7 +360,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
             @Override
             public void onClick(View v)
             {
-                finishTime = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss").format(new Timestamp(System.currentTimeMillis()));
+                finishTime = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss").format(new Timestamp(System.currentTimeMillis()));
 
                 System.out.println(fare);
 
@@ -376,7 +421,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
 
         //System.out.println("intermediate" + intermediate);
         polyline1 = mMap.addPolyline(new PolylineOptions()
-                .clickable(true)
+                .clickable(true).color(Color.RED)
                 .addAll(intermediate));
     }
 
@@ -436,6 +481,8 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
 
         showLocation(source,"source");
         showLocation(dest,"destination");
+        showLocation(new LatLng(driverLat, driverLong),"driver");
+        //updateDriverLocation(busy);
 
         locationManager=(LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
@@ -451,6 +498,8 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
                 driverLong=location.getLongitude();
                 LatLng driverLatLng=new LatLng(driverLat,driverLong);
                 mMap.clear();
+
+                updateDriverLocation(busy);
 
                 if(startedChecked && accepted)
                 {
@@ -508,8 +557,8 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
                 showLocation(dest,"destination");
                 showLocation(driverLatLng,"Driver");
 
-                if(!busy)
-                    updateDriverLocation(busy);
+                //if(!busy)
+                //updateDriverLocation(busy);
             }
         };
 
@@ -519,7 +568,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
         }
         else
         {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,3000,100,locationListener);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,50,locationListener);
         }
 
     }
@@ -671,7 +720,8 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
                                 email = jsonObject.getString("userEmail");
                                 started = jsonObject.getBoolean("started");
                                 finished = jsonObject.getBoolean("finished");
-                                fare = jsonObject.getDouble("fare");
+                                fare = jsonObject.getInt("fare");
+                                System.out.println("fare red in driver side " + fare);
 
                                 break;
                             }
@@ -847,6 +897,9 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
             jsonBody.put("type", type);
             jsonBody.put("busy", busy);
             jsonBody.put("name", name);
+
+            System.out.println("driverLat " + driverLat);
+            System.out.println("driverLong " + driverLong);
 
             final String requestBody = jsonBody.toString();
 

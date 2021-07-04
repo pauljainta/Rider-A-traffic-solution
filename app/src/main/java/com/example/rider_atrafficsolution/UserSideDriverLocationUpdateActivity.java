@@ -263,7 +263,7 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
         showLocation(source,"source");
         showLocation(dest,"destination");
 
-        GetKeyForLocationUpdate();
+        //GetKeyForLocationUpdate();
 
         locationManager=(LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
@@ -275,6 +275,7 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
                 //driverLat=location.getLatitude();
                 //driverLong=location.getLongitude();
 
+                //GetKeyForLocationUpdate();
 
                 //updateDriverLocation();
 
@@ -291,6 +292,7 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
         }
 
     }
+
 
     synchronized public void GetKeyForLocationUpdate()
     {

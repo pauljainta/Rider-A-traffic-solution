@@ -27,6 +27,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.sql.Timestamp;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class DriverCollectCashActivity extends AppCompatActivity
@@ -48,6 +49,8 @@ public class DriverCollectCashActivity extends AppCompatActivity
     String driverName, userName, userEmail;
 
     String startTime, finishTime;
+
+    String ts;
 
     Context context;
     RequestQueue requestQueue;
@@ -111,6 +114,8 @@ public class DriverCollectCashActivity extends AppCompatActivity
 
         driverFareShow.setText("YOU ARE TO BE PAID TK " + fare);
 
+        ts = String.valueOf(System.currentTimeMillis());
+
         collectCashButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -147,6 +152,8 @@ public class DriverCollectCashActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
+                addHistory();
+
                 Intent intent1 = new Intent(getApplicationContext(), DriverInitialSetLocationActivity.class);
                 startActivity(intent1);
             }
@@ -234,7 +241,7 @@ public class DriverCollectCashActivity extends AppCompatActivity
     {
         try
         {
-            String URL = "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/History.json";
+            String URL = "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/History/" + ts + ".json";
             JSONObject jsonBody = new JSONObject();
 
             jsonBody.put("driverID", Info.driverID);
@@ -247,12 +254,13 @@ public class DriverCollectCashActivity extends AppCompatActivity
             jsonBody.put("startTime", startTime);
             jsonBody.put("finishTime", finishTime);
             jsonBody.put("driver_rating_user", driver_rating_user);
+            jsonBody.put("user_rating_driver", 5);
 
 
 
             final String requestBody = jsonBody.toString();
 
-            StringRequest stringRequest = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {
+            StringRequest stringRequest = new StringRequest(Request.Method.PUT, URL, new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
                     Log.i("VOLLEY", response);

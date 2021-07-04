@@ -84,9 +84,9 @@ public class UserSideJourneyCompleteActivity extends AppCompatActivity
         fare = getIntent().getDoubleExtra("fare", 1);
         email = getIntent().getStringExtra("email");
 
-        fareShowTextView.setText("Your Have Paid TK " + fare);
+        fareShowTextView.setText("You Have Paid TK " + fare);
 
-        GetHistoryInfo();
+        //GetHistoryInfo();
 
         userRatingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener()
         {
@@ -103,31 +103,32 @@ public class UserSideJourneyCompleteActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                if(!checkedHistory)
-                    return;
+                checkedHistory = false;
 
-                updateHistory();
+                GetHistoryInfo();
+
+                Handler handler = new Handler();
+                Runnable runnable = new Runnable()
+                {
+                    @Override
+                    public void run()
+                    {
+                        if(checkedHistory)
+                        {
+                            updateHistory();
+                            return;
+                        }
+                        handler.postDelayed(this, 3000);
+                    }
+                };
+                handler.postDelayed(runnable, 0);
+
+                //updateHistory();
 
                 Intent intent = new Intent(getApplicationContext(), ChooseVehicleActivity.class);
                 startActivity(intent);
             }
         });
-
-        Handler handler = new Handler();
-        Runnable runnable = new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                if(checkedHistory)
-                {
-                    System.out.println(key);
-                    return;
-                }
-                handler.postDelayed(this, 3000);
-            }
-        };
-        handler.postDelayed(runnable, 0);
 
     }
 

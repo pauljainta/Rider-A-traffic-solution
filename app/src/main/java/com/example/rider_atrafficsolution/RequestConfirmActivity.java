@@ -58,6 +58,7 @@ public class RequestConfirmActivity extends FragmentActivity implements OnMapRea
     Context context;
     RequestQueue requestQueue;
     private double duration;
+    private String keyForRequest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +78,7 @@ public class RequestConfirmActivity extends FragmentActivity implements OnMapRea
 
         estimatedFare = intent.getDoubleExtra("fare", 1);
         estimatedFare = Math.round(estimatedFare);
+        System.out.println("estimated fare " + estimatedFare);
 
         duration = intent.getDoubleExtra("duration", 1);
         duration = Math.round(duration);
@@ -93,6 +95,8 @@ public class RequestConfirmActivity extends FragmentActivity implements OnMapRea
             {
                 sendRequest(Info.currentEmail, sourceLat, sourceLong, destLat, destLong, source, dest, estimatedFare, true);
 
+                //GetKeyForRequest();
+
                 Intent intent = new Intent(getApplicationContext(), WaitingActivity.class);
 
                 intent.putExtra("sourceLat", sourceLat);
@@ -100,6 +104,8 @@ public class RequestConfirmActivity extends FragmentActivity implements OnMapRea
                 intent.putExtra("destLat", destLat);
                 intent.putExtra("destLong", destLong);
                 intent.putExtra("type", type);
+                intent.putExtra("key", keyForRequest);
+                intent.putExtra("classID", "confirmRequest");
 
                 startActivity(intent);
             }
@@ -112,6 +118,8 @@ public class RequestConfirmActivity extends FragmentActivity implements OnMapRea
                 .findFragmentById(R.id.requestConfirmMap);
         mapFragment.getMapAsync(this);
     }
+
+
 
     public void showLocation(LatLng latLng,String comment)
     {
@@ -193,7 +201,9 @@ public class RequestConfirmActivity extends FragmentActivity implements OnMapRea
     {
         try
         {
-            String URL = "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/Request.json";
+            keyForRequest = String.valueOf(System.currentTimeMillis());
+
+            String URL = "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/Request/" + keyForRequest + ".json";
             JSONObject jsonBody = new JSONObject();
             jsonBody.put("userEmail", email);
             jsonBody.put("sourceLat", sourceLat);
@@ -204,12 +214,12 @@ public class RequestConfirmActivity extends FragmentActivity implements OnMapRea
             jsonBody.put("dest", dest);
             jsonBody.put("pending", pending);
             jsonBody.put("type", type);
-            jsonBody.put("fare", estimatedFare);
+            jsonBody.put("fare", fare);
 
 
             final String requestBody = jsonBody.toString();
 
-            StringRequest stringRequest = new StringRequest(Request.Method.POST, URL, new Response.Listener<String>() {
+            StringRequest stringRequest = new StringRequest(Request.Method.PUT, URL, new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
                     Log.i("VOLLEY", response);

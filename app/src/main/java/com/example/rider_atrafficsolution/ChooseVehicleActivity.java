@@ -178,6 +178,7 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
             intent.putExtra("destLong", destLong);
             intent.putExtra("type", type);
             intent.putExtra("key", keyForRequest);
+            intent.putExtra("classID", "chooseVehicle");
 
             startActivity(intent);
         }

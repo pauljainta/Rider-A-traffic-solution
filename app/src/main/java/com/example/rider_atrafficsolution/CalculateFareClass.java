@@ -11,11 +11,12 @@ public class CalculateFareClass {
     public static double CalculateFare(double estimated_fare)
     {
 
-        int extra=new Random().nextInt(10)+20;
+        double extra=new Random().nextDouble()+20;
 
         Log.i("extra " , String.valueOf(extra));
 
         Random random=new Random();
+
         int prob=random.nextInt(100);
         if(prob<=20)
         {
