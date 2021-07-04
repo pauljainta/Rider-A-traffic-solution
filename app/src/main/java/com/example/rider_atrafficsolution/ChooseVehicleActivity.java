@@ -94,6 +94,8 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
                 switch (item.getItemId())
                 {
                     case R.id.nav_history:
+                        Intent intent=new Intent(getApplicationContext(),HistoryShowingActivity.class);
+                        startActivity(intent);
                         break;
 
                     case R.id.nav_help:
