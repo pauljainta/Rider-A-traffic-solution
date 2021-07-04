@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.location.LocationListener;
@@ -20,16 +21,11 @@ import android.os.Handler;
 import android.util.Log;
 import android.widget.TextView;
 
-import com.android.volley.AuthFailureError;
-import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.HttpHeaderParser;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -39,12 +35,17 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polygon;
+import com.google.android.gms.maps.model.PolygonOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class UserSideDriverLocationUpdateActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -97,6 +98,13 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
     private boolean done;
 
     boolean checked = false;
+    private boolean retrievedIntermediate;
+    private boolean retrievedIntermediate2;
+    private ArrayList<LatLng> intermediate;
+    private Polyline polyline1;
+    private ArrayList<LatLng> intermediateBetnSrcDrvr;
+    private Polyline polyline2;
+    private Polygon polygon;
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -120,6 +128,11 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
         started = false;
         finished = false;
         done = false;
+
+        retrievedIntermediate = false;
+        retrievedIntermediate2 = false;
+        intermediate = new ArrayList<>();
+        intermediateBetnSrcDrvr = new ArrayList<>();
 
         Intent intent = this.getIntent();
 
@@ -150,6 +163,26 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
         GetKeyForLocationUpdate();
 
         GetRequestInfo();
+
+        GetIntermediateLocationsBetnSrcDst();
+        GetIntermediateLocationsBetnSrcDriver();
+
+        Handler h = new Handler();
+        Runnable r = new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                if(retrievedIntermediate && retrievedIntermediate2)
+                {
+                    update();
+                    return;
+                }
+                h.postDelayed(this, 2000);
+            }
+        };
+        h.postDelayed(r, 0);
+
 
 
         handler = new Handler();
@@ -188,6 +221,24 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
     }
 
 
+    private void update()
+    {
+        if(polyline1 == null)
+            return;
+
+        //System.out.println("intermediate" + intermediate);
+        polyline1 = mMap.addPolyline(new PolylineOptions()
+                .clickable(true).color(Color.RED)
+                .addAll(intermediate));
+
+        if(polyline2 == null)
+            return;
+
+        //System.out.println("intermediate" + intermediate);
+        polyline2 = mMap.addPolyline(new PolylineOptions()
+                .clickable(true).color(Color.BLUE)
+                .addAll(intermediateBetnSrcDrvr));
+    }
 
     public void showLocation(LatLng latLng,String comment)
     {
@@ -254,6 +305,14 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
 //
 //        destLat=23.7561067;
 //        destLong=90.38719609999998;
+
+        polyline1 = mMap.addPolyline(new PolylineOptions()
+                .clickable(true)
+                .addAll(intermediate));
+
+        polyline2 = mMap.addPolyline(new PolylineOptions()
+                .clickable(true)
+                .addAll(intermediateBetnSrcDrvr));
 
         LatLng source = new LatLng(sourceLat, sourceLong);
         LatLng dest = new LatLng(destLat, destLong);
@@ -350,6 +409,9 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
                                 showLocation(driverLatLng,"Driver");
                                 showLocation(new LatLng(sourceLat, sourceLong),"destination");
                                 showLocation(new LatLng(destLat, destLong),"source");
+
+                                if(retrievedIntermediate && retrievedIntermediate2)
+                                    update();
 
                                 //updateMessage();
 
@@ -457,14 +519,115 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
 
 
 
-
-    synchronized public void updateDriverLocation()
+    synchronized public void GetIntermediateLocationsBetnSrcDst()
     {
-        lock.lock();
+        //lock.lock();
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, TestMapsActivity.getMapsApiDirectionsUrl(sourceLat, sourceLong, destLat, destLong), null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response)
+            {
+
+                try {
+                    //Tranform the string into a json object
+
+                    JSONArray legs = response.getJSONArray("routes").getJSONObject(0).getJSONArray("legs");
+                    for (int j = 0; j < legs.length(); j++)
+                    {
+                        JSONObject leg = legs.getJSONObject(j);
 
 
+                        int distance = leg.getJSONObject("distance").getInt("value");
 
-        lock.unlock();
+
+                        JSONArray steps = response.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(j).getJSONArray("steps");
+                        for (int k = 0; k < steps.length(); k++)
+                        {
+                            JSONObject step = steps.getJSONObject(k);
+                            String polyline = step.getJSONObject("polyline").getString("points");
+
+                            List<LatLng> latLngs = TestMapsActivity.decodePoly(polyline);
+
+                            intermediate.addAll(latLngs);
+
+                            System.out.println(latLngs);
+                        }
+                    }
+
+                    retrievedIntermediate = true;
+
+                } catch (JSONException e) {
+
+                    System.out.println("exception from distance matrix");
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
+                Log.d("error: " , error.getMessage());
+            }
+        });
+
+        requestQueue.add(jsonObjectRequest);
+
+        //lock.unlock();
+    }
+
+
+    synchronized public void GetIntermediateLocationsBetnSrcDriver()
+    {
+        //lock.lock();
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, TestMapsActivity.getMapsApiDirectionsUrl(sourceLat, sourceLong, driverLat, driverLong), null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response)
+            {
+
+                try {
+                    //Tranform the string into a json object
+
+                    JSONArray legs = response.getJSONArray("routes").getJSONObject(0).getJSONArray("legs");
+                    for (int j = 0; j < legs.length(); j++)
+                    {
+                        JSONObject leg = legs.getJSONObject(j);
+
+
+                        int distance = leg.getJSONObject("distance").getInt("value");
+
+
+                        JSONArray steps = response.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(j).getJSONArray("steps");
+                        for (int k = 0; k < steps.length(); k++)
+                        {
+                            JSONObject step = steps.getJSONObject(k);
+                            String polyline = step.getJSONObject("polyline").getString("points");
+
+                            List<LatLng> latLngs = TestMapsActivity.decodePoly(polyline);
+
+                            intermediateBetnSrcDrvr.addAll(latLngs);
+
+                            System.out.println(latLngs);
+                        }
+                    }
+
+                    retrievedIntermediate2 = true;
+
+                } catch (JSONException e) {
+
+                    System.out.println("exception from distance matrix");
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
+                Log.d("error: " , error.getMessage());
+            }
+        });
+
+        requestQueue.add(jsonObjectRequest);
+
+        //lock.unlock();
     }
 
 
