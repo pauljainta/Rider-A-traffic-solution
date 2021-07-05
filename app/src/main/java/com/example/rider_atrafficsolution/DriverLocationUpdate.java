@@ -759,7 +759,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
                                 email = jsonObject.getString("userEmail");
                                 started = jsonObject.getBoolean("started");
                                 finished = jsonObject.getBoolean("finished");
-                                fare = jsonObject.getInt("fare");
+                                fare = jsonObject.getDouble("fare");
                                 System.out.println("fare read in driver side " + fare);
 
                                 break;
