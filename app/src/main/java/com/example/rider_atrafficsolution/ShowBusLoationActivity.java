@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -28,10 +29,16 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class ShowBusLoationActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -59,12 +66,18 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
     Boolean isDestinationAlertShown;
 
     LatLng startCounter,endCounter,busLocation;
+    private ArrayList<LatLng> route;
+    boolean [] retrievedIntermediate;
+
+    Polyline[] polyline;
+    ArrayList<ArrayList<LatLng>> intermediate;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_show_bus_loation);
+
 
         context = getBaseContext();
 
@@ -78,6 +91,24 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
         toLat = getIntent().getDoubleExtra("toLat", 1);
         toLong = getIntent().getDoubleExtra("toLong", 1);
         fare = getIntent().getDoubleExtra("fare", 1);
+        route = getIntent().getParcelableArrayListExtra("route");
+
+        retrievedIntermediate = new boolean[route.size()-1];
+        intermediate = new ArrayList<>();
+        polyline = new Polyline[route.size()-1];
+
+        for (int i=0;i<route.size()-1;i++)
+        {
+            intermediate.add(new ArrayList<LatLng>());
+        }
+
+        Arrays.fill(retrievedIntermediate, false);
+
+        for(int i=0;i<route.size()-1;i++)
+        {
+            GetIntermediateLocations(i);
+        }
+
 
         Log.i("map", String.valueOf(fromLat));
         Log.i("map", String.valueOf(fromLong));
@@ -135,6 +166,29 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
     }
 
 
+    private void update()
+    {
+        if(polyline == null)
+            return;
+
+        for(int i=0;i<polyline.length;i++)
+        {
+            if(polyline[i] == null)
+                return;
+        }
+
+        //System.out.println("intermediate" + intermediate);
+
+        for(int i=0;i<polyline.length;i++)
+        {
+            polyline[i] = mMap.addPolyline(new PolylineOptions()
+                    .clickable(true).color(Color.RED)
+                    .addAll(intermediate.get(i)));
+        }
+
+    }
+
+
     public void showLocation(LatLng latLng,String comment)
     {
 
@@ -157,6 +211,12 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
     {
         Log.i("bus map","bus update");
         mMap.clear();
+
+        for(LatLng l : route)
+        {
+            showLocation(l, "stoppage");
+        }
+
         showLocation(startCounter,"Start");
         showLocation(endCounter,"End");
         showLocation(new LatLng(minDistLat, minDistLong), "Bus");
@@ -197,9 +257,15 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
+         mMap = googleMap;
 
 
+        for(int i=0;i<polyline.length;i++)
+        {
+            polyline[i] = mMap.addPolyline(new PolylineOptions()
+                    .clickable(true).color(Color.RED)
+                    .addAll(new ArrayList<LatLng>()));
+        }
 
          startCounter = new LatLng(fromLat, fromLong);
          endCounter = new LatLng(toLat, toLong);
@@ -216,6 +282,16 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
                 Log.i("timer", "updated after 30 seconds");
                 GetCurrentLocation();
                 updateUI();
+
+                for(int i=0;i<route.size()-1;i++)
+                {
+                    if (!retrievedIntermediate[i])
+                        break;
+
+                    update();
+
+                }
+                //update();
 
             }
         };
@@ -295,4 +371,68 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
         // after generating our bitmap we are returning our bitmap.
         return BitmapDescriptorFactory.fromBitmap(bitmap);
     }
+
+
+    synchronized public void GetIntermediateLocations(int i)
+    {
+        //lock.lock();
+
+        double lat1 = route.get(i).latitude;
+        double lon1 = route.get(i).longitude;
+        double lat2 = route.get(i+1).latitude;
+        double lon2 = route.get(i+1).longitude;
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, TestMapsActivity.getMapsApiDirectionsUrl(lat1, lon1, lat2, lon2), null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response)
+            {
+
+                try {
+                    //Tranform the string into a json object
+
+                    JSONArray legs = response.getJSONArray("routes").getJSONObject(0).getJSONArray("legs");
+                    for (int j = 0; j < legs.length(); j++)
+                    {
+                        JSONObject leg = legs.getJSONObject(j);
+
+
+                        int distance = leg.getJSONObject("distance").getInt("value");
+
+
+                        JSONArray steps = response.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(j).getJSONArray("steps");
+                        for (int k = 0; k < steps.length(); k++)
+                        {
+                            JSONObject step = steps.getJSONObject(k);
+                            String polyline = step.getJSONObject("polyline").getString("points");
+
+                            List<LatLng> latLngs = TestMapsActivity.decodePoly(polyline);
+
+                            ArrayList<LatLng> temp = new ArrayList<>(latLngs);
+
+                            intermediate.get(i).addAll(temp);
+
+                            System.out.println(latLngs);
+                        }
+                    }
+
+                    retrievedIntermediate[i] = true;
+
+                } catch (JSONException e) {
+
+                    System.out.println("exception from distance matrix");
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
+                Log.d("error: " , error.getMessage());
+            }
+        });
+
+        requestQueue.add(jsonObjectRequest);
+
+        //lock.unlock();
+    }
+
 }

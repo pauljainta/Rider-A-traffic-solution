@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -13,17 +14,23 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
@@ -63,12 +70,23 @@ public class BusSeatSelection extends AppCompatActivity
     ArrayAdapter<String > countsAdapter;
 
     private RequestQueue requestQueue;
+    private String key;
+    private boolean flag;
+    private ArrayList<String > allRouteLocations;
+    private ArrayList<LatLng> allRouteLatLong;
+    private boolean gotRoute;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bus_seat_selection);
+
+        allRouteLocations = new ArrayList<>();
+        allRouteLatLong = new ArrayList<>();
+        gotRoute = false;
+
+        flag = false;
 
         busfromSpinner=findViewById(R.id.busFromSpinner);
         bustoSpinner=findViewById(R.id.busToSpinner);
@@ -83,9 +101,9 @@ public class BusSeatSelection extends AppCompatActivity
         locations = new ArrayList<String>();
         locations.add(".");
         locations.add("Motijheel");
+        locations.add("Malibag");
         locations.add("Shahbag");
         locations.add("Farmgate");
-        locations.add("Malibag");
         locations.add("Mirpur");
 
         lock = new ReentrantLock();
@@ -237,6 +255,9 @@ public class BusSeatSelection extends AppCompatActivity
 
             hudai();
 
+            addBusJourney();
+
+            GetLatLongForRoute();
 
             Intent intent = new Intent(getApplicationContext(),ShowBusLoationActivity.class);
 
@@ -255,18 +276,50 @@ public class BusSeatSelection extends AppCompatActivity
             double f = Double.parseDouble(fareShowTextView.getText().toString());
             intent.putExtra("fare", f);
 
-            startActivity(intent);
+            Handler h = new Handler();
+            Runnable r = new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    if(flag)
+                    {
+                        intent.putExtra("key", key);
+
+                        return;
+                    }
+                    h.postDelayed(this, 1000);
+                }
+            };
+            h.postDelayed(r, 0);
+
+            Handler h2 = new Handler();
+            Runnable r2 = new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    if(gotRoute)
+                    {
+                        intent.putExtra("route", allRouteLatLong);
+
+                        startActivity(intent);
+
+                        return;
+                    }
+                    h2.postDelayed(this, 1000);
+                }
+            };
+            h2.postDelayed(r2, 0);
+
+
+
         });
     }
 
 
     public void hudai()
     {
-//        Log.i("hudai", String.valueOf(fromLat));
-//        Log.i("hudai", String.valueOf(fromLong));
-//        Log.i("hudai", String.valueOf(toLat));
-//        Log.i("hudai", String.valueOf(toLong));
-//        Log.i("hudai", String.valueOf(h1));
 
         for (String b : buses)
         {
@@ -401,25 +454,33 @@ public class BusSeatSelection extends AppCompatActivity
                     buses.clear();
                     buses.add(".");
 
+                    allRouteLocations.clear();
+
                     for(int i=0;i<array.length();i++)
                     {
-                        List<String> locations = new ArrayList<>();
+                        List<String> route = new ArrayList<>();
                         try
                         {
                             String key = array.getString(i);
-                            locations.add(response.getJSONObject(key).getString("from"));
+                            route.add(response.getJSONObject(key).getString("from"));
                             //Log.i("names", response.getJSONObject(array.getString(i)).getString("from"));
                             String[] splitted = response.getJSONObject(key).getString("intermediate").split(",");
+
                             for(String s : splitted)
                             {
                                 //Log.i("route", s);
-                                locations.add(s);
+                                route.add(s);
                             }
-                            locations.add(response.getJSONObject(key).getString("to"));
+
+                            route.add(response.getJSONObject(key).getString("to"));
+
+
 //                            Log.i("names", array.getString(i));
 
-                            if (locations.contains(from) && locations.contains(to))
+                            if (route.contains(from) && route.contains(to))
                             {
+                                System.out.println(route);
+
                                 String busnos = response.getJSONObject(key).getString("busNo");
 
                                 String [] split = busnos.split(",");
@@ -428,6 +489,10 @@ public class BusSeatSelection extends AppCompatActivity
                                 {
                                     buses.add(s);
                                 }
+
+                                allRouteLocations.addAll(route);
+
+                                break;
                             }
 
 
@@ -552,6 +617,76 @@ public class BusSeatSelection extends AppCompatActivity
 //        Log.i("dist = " , String.valueOf(dist));
     }
 
+    public void GetLatLongForRoute()
+    {
+        lock.lock();
+
+        allRouteLatLong.clear();
+
+        //RequestQueue requestQueue = Volley.newRequestQueue(context);
+        CustomPriorityRequest jsonObjectRequest = new CustomPriorityRequest(Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/CoOrdinates.json", null, new Response.Listener<JSONObject>()
+        {
+            @Override
+            public void onResponse(JSONObject response)
+            {
+                //try
+                {
+                    JSONArray array = response.names();
+
+                    fromLatLong.clear();
+                    toLatLong.clear();
+
+                    for (int i = 0; i < array.length(); i++)
+                    {
+                        try
+                        {
+                            String key = array.getString(i);
+
+                            JSONObject jsonObject = response.getJSONObject(key);
+
+                            String loc = jsonObject.getString("location");
+
+                            for (String l : allRouteLocations)
+                            {
+                                if(loc.equalsIgnoreCase(l))
+                                {
+                                    double lat = jsonObject.getDouble("lat");
+                                    double lon = jsonObject.getDouble("long");
+
+                                    allRouteLatLong.add(new LatLng(lat, lon));
+
+                                    break;
+                                }
+                            }
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    gotRoute = true;
+                }
+            }
+        }, new Response.ErrorListener()
+        {
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
+                Log.d("error: ", error.getMessage());
+            }
+        });
+
+        jsonObjectRequest.setPriority(Request.Priority.NORMAL);
+        requestQueue.add(jsonObjectRequest);
+
+        for (Double d : fromLatLong)
+        {
+            Log.i("d", String.valueOf(d));
+        }
+
+        lock.unlock();
+    }
 
 
     public void GetMethodForCurrentDistance()
@@ -622,6 +757,66 @@ public class BusSeatSelection extends AppCompatActivity
         lock.unlock();
     }
 
+
+    synchronized void addBusJourney()
+    {
+        try
+        {
+            key = String.valueOf(System.currentTimeMillis());
+
+            String URL = "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/BusJourney/" + key + ".json";
+            JSONObject jsonBody = new JSONObject();
+            jsonBody.put("userEmail", Info.currentEmail);
+            jsonBody.put("busID", nearestBusId);
+
+
+
+            final String requestBody = jsonBody.toString();
+
+            StringRequest stringRequest = new StringRequest(Request.Method.PUT, URL, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    Log.i("VOLLEY", response);
+                    flag = true;
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.e("VOLLEY", error.toString());
+                }
+            }) {
+                @Override
+                public String getBodyContentType() {
+                    return "application/json; charset=utf-8";
+                }
+
+                @Override
+                public byte[] getBody() throws AuthFailureError
+                {
+                    try {
+                        return requestBody == null ? null : requestBody.getBytes("utf-8");
+                    } catch (UnsupportedEncodingException uee) {
+                        VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", requestBody, "utf-8");
+                        return null;
+                    }
+                }
+
+                @Override
+                protected Response<String> parseNetworkResponse(NetworkResponse response) {
+                    String responseString = "";
+                    if (response != null) {
+                        responseString = String.valueOf(response.statusCode);
+                        // can get more details such as response.headers
+                    }
+                    return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
+                }
+            };
+
+            requestQueue.add(stringRequest);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
 
 
 

@@ -148,6 +148,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
         driverLat = intent.getDoubleExtra("driverLat", 1);
         driverLong = intent.getDoubleExtra("driverLong", 1);
         type = intent.getStringExtra("type");
+        fare = intent.getDoubleExtra("fare", 1);
         keyForRequest = intent.getStringExtra("key");
         driverID = Integer.parseInt(intent.getStringExtra("driverID"));
 
@@ -270,8 +271,8 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
 
                 accepted = true;
 
-                startedChecked = false;
-                GetRequestInfo();
+                //startedChecked = false;
+                //GetRequestInfo();
 
                 Handler h2 = new Handler();
                 Runnable r2 = new Runnable()
@@ -758,7 +759,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
                                 email = jsonObject.getString("userEmail");
                                 started = jsonObject.getBoolean("started");
                                 finished = jsonObject.getBoolean("finished");
-                                fare = jsonObject.getInt("fare");
+                                fare = jsonObject.getDouble("fare");
                                 System.out.println("fare read in driver side " + fare);
 
                                 break;

@@ -39,6 +39,8 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
     List<LatLng> sourceList;
     List<LatLng> destList;
     List<String > keys;
+    List<Double> fares;
+
     boolean busy;
     boolean checked = false;
     boolean checked1 = false;
@@ -56,6 +58,7 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
     List<Double> latlong;
     //List<String> type;
     String type;
+    private double fare;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -78,6 +81,7 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
         sourceList = new ArrayList<>();
         destList = new ArrayList<>();
         keys = new ArrayList<>();
+        fares = new ArrayList<>();
 
         update();
 
@@ -125,6 +129,7 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
                 intent.putExtra("type", type);
                 intent.putExtra("key", keys.get(position));
                 intent.putExtra("driverID", Info.driverID);
+                intent.putExtra("fare", fares.get(position));
                 Log.i("info.id = ", Info.driverID);
 
                 intent.putExtra("classid","driver");
@@ -168,6 +173,7 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
             intent.putExtra("driverLong", latlong.get(1));
             intent.putExtra("type", type);
             intent.putExtra("key", accepted_key);
+            intent.putExtra("fare", fare);
             intent.putExtra("driverID", Info.driverID);
             Log.i("info.id = ", Info.driverID);
 
@@ -217,6 +223,7 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
                                 accepted_destLat = jsonObject.getDouble("destLat");
                                 accepted_destLong = jsonObject.getDouble("destLong");
                                 accepted_key = key;
+                                fare = jsonObject.getDouble("fare");
 
                                 break;
                             }
@@ -378,11 +385,13 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
                             {
                                 String source = jsonObject.getString("source");
                                 String dest = jsonObject.getString("dest");
+                                double fare = jsonObject.getDouble("fare");
 
                                 requests.add("From: " + source + "\nTo: " + dest);
                                 sourceList.add(new LatLng(sourceLat, sourceLong));
                                 destList.add(new LatLng(destLat, destLong));
                                 keys.add(key);
+                                fares.add(fare);
 
                                 //Log.i("request", requests.get(0));
                             }
