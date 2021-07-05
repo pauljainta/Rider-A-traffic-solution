@@ -211,6 +211,12 @@ public class ShowBusLoationActivity extends FragmentActivity implements OnMapRea
     {
         Log.i("bus map","bus update");
         mMap.clear();
+
+        for(LatLng l : route)
+        {
+            showLocation(l, "stoppage");
+        }
+
         showLocation(startCounter,"Start");
         showLocation(endCounter,"End");
         showLocation(new LatLng(minDistLat, minDistLong), "Bus");
