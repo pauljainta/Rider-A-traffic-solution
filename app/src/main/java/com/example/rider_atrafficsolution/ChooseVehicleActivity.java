@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -98,7 +99,13 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
                         startActivity(intent);
                         break;
 
-                    case R.id.nav_help:
+                    case R.id.nav_contact_us:
+
+                        MakeCall(false);
+
+                        break;
+
+                    case R.id.nav_emergency_call:
                         break;
 
                     case R.id.nav_logout:
@@ -108,6 +115,17 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
                 return true;
             }
         });
+
+    }
+
+    private void MakeCall(Boolean thana) {
+        if(thana==false)
+        {
+            String phone="+8801550072160";
+            Intent intent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", phone, null));
+            startActivity(intent);
+        }
+
 
     }
 
