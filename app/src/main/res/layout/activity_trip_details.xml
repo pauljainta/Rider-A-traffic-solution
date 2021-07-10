@@ -4,17 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#283593"
-    tools:context=".HistoryShowingActivity">
+    tools:context=".TripDetailsActivity">
 
-    <ListView
-        android:id="@+id/histroy_listview"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#FFFFFF"
-        android:backgroundTintMode="multiply"
-        android:divider="@drawable/hb2"
-        android:dividerHeight="150dp"
+    <Button
+        android:id="@+id/balbatton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="184dp"
+        android:layout_marginTop="256dp"
+        android:layout_marginEnd="134dp"
+        android:layout_marginBottom="427dp"
+        android:text="Button"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
