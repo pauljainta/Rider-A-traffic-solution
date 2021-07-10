@@ -1,9 +1,11 @@
 package com.example.rider_atrafficsolution;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -19,7 +22,13 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.EmailAuthProvider;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -49,6 +58,8 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
     private String type;
     private String keyForRequest;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -57,6 +68,8 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
         busChooseButton=findViewById(R.id.busChooseButton);
         bikeChooseButton=findViewById(R.id.bikeChooseButton);
         carChooseButton=findViewById(R.id.carChooseButton);
+
+
 
         lock = new ReentrantLock();
 
@@ -106,6 +119,8 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
                         break;
 
                     case R.id.nav_emergency_call:
+                        MakeCall(true);
+
                         break;
 
                     case R.id.nav_logout:
@@ -124,6 +139,14 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
             String phone="+8801550072160";
             Intent intent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", phone, null));
             startActivity(intent);
+        }
+        else
+        {
+            String phone="999";
+            Intent intent = new Intent(Intent.ACTION_DIAL, Uri.fromParts("tel", phone, null));
+            startActivity(intent);
+
+
         }
 
 
