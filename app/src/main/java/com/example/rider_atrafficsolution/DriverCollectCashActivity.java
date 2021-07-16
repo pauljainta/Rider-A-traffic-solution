@@ -340,6 +340,7 @@ public class DriverCollectCashActivity extends AppCompatActivity
             jsonBody.put("source", source);
             jsonBody.put("dest", dest);
             jsonBody.put("fare", fare);
+            jsonBody.put("type", type);
             jsonBody.put("startTime", startTime);
             jsonBody.put("finishTime", finishTime);
             jsonBody.put("driver_rating_user", driver_rating_user);

@@ -55,6 +55,7 @@ public class UserSideJourneyCompleteActivity extends AppCompatActivity
     String finishTime;
     String startTime;
     String userName;
+    String type;
 
     double fare;
 
@@ -83,6 +84,7 @@ public class UserSideJourneyCompleteActivity extends AppCompatActivity
 
         fare = getIntent().getDoubleExtra("fare", 1);
         email = getIntent().getStringExtra("email");
+        type = getIntent().getStringExtra("type");
 
         fareShowTextView.setText("You Have Paid TK " + fare);
 
@@ -224,6 +226,7 @@ public class UserSideJourneyCompleteActivity extends AppCompatActivity
             jsonBody.put("source", source);
             jsonBody.put("dest", dest);
             jsonBody.put("fare", fare);
+            jsonBody.put("type", type);
             jsonBody.put("startTime", startTime);
             jsonBody.put("finishTime", finishTime);
             jsonBody.put("driver_rating_user", driver_rating_user);

@@ -198,6 +198,7 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
                     Intent intent1 = new Intent(getApplicationContext(), UserSideJourneyCompleteActivity.class);
                     intent1.putExtra("fare", fare);
                     intent1.putExtra("email", email);
+                    intent1.putExtra("type", type);
                     startActivity(intent1);
 
                     return;
@@ -394,12 +395,12 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
                                 {
                                     if(dist < 0.5)
                                     {
-                                        omuk_driver_accept_korse_textview.setText(name + " is here");
+                                        omuk_driver_accept_korse_textview.setText(name + " IS HERE");
                                     }
 
                                     else
                                     {
-                                        omuk_driver_accept_korse_textview.setText(name + " is on his way");
+                                        omuk_driver_accept_korse_textview.setText(name + " IS ON HIS WAY");
                                     }
                                 }
 
@@ -472,13 +473,13 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
 
                                 if(started)
                                 {
-                                    omuk_driver_accept_korse_textview.setText("Your ride is started");
+                                    omuk_driver_accept_korse_textview.setText("YOUR RIDE IS STARTED");
                                 }
 
                                 if(finished)
                                 {
                                     fare = jsonObject.getDouble("fare");
-                                    omuk_driver_accept_korse_textview.setText("Your ride has ended\n" + "Pay TK " + fare);
+                                    omuk_driver_accept_korse_textview.setText("YOUR RIDE HAS ENDED\n" + "PAY TK " + fare);
                                     done = jsonObject.getBoolean("done");
 
                                     System.out.println("done = " + done);
