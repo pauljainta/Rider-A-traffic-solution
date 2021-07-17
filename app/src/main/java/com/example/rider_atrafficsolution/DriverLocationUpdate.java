@@ -23,6 +23,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
@@ -391,7 +392,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
                 }
                 else
                 {
-
+                    Toast.makeText(context, "Please input the correct code", Toast.LENGTH_LONG).show();
                 }
             }
         });

@@ -33,7 +33,12 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -84,6 +89,7 @@ public class MainActivity extends AppCompatActivity  {
 
         context = getBaseContext();
 
+
       //  Intent intent = new Intent(getApplicationContext(), CarBikeSearchActivity.class);
 
 
@@ -98,17 +104,19 @@ public class MainActivity extends AppCompatActivity  {
     }
 
 
-    public void postData(int id, boolean busy, double lat, double longt, String type)
+    public void postData(String code, String email, String validity, int count, double percentage, double max_amount)
     {
         try {
             RequestQueue requestQueue = Volley.newRequestQueue(context);
-            String URL = "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/Driver.json";
+            String URL = "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/Discount.json";
             JSONObject jsonBody = new JSONObject();
-            jsonBody.put("driverID", id);
-            jsonBody.put("busy", busy);
-            jsonBody.put("lat", lat);
-            jsonBody.put("long", longt);
-            jsonBody.put("type", type);
+            jsonBody.put("promoCode", code);
+            jsonBody.put("userEmail", email);
+            jsonBody.put("applied", false);
+            jsonBody.put("validity", validity);
+            jsonBody.put("count", count);
+            jsonBody.put("percentage", percentage);
+            jsonBody.put("max_amount", max_amount);
 
 
             final String requestBody = jsonBody.toString();
