@@ -119,6 +119,8 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
     Polyline polyline2;
     ArrayList<LatLng> intermediate;
     ArrayList<LatLng> intermediate2;
+    private int discount_percentage;
+    private int discount_max;
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -158,6 +160,9 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
         code = intent.getIntExtra("uniqueCode", 1);
         keyForRequest = intent.getStringExtra("key");
         driverID = Integer.parseInt(intent.getStringExtra("driverID"));
+        discount_max = intent.getIntExtra("discount_max", 1);
+        discount_percentage = intent.getIntExtra("discount_percentage", 1);
+
 
         System.out.println("unique code driver side " + code);
 
@@ -238,8 +243,6 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
 
                     return;
                 }
-
-
 
                 routeHandler.postDelayed(this, 3000);
             }
@@ -443,6 +446,9 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
                 System.out.println(fare);
 
                 fare = Math.round(CalculateFareClass.CalculateFare(fare));
+
+                fare = fare - Math.min(discount_max, (fare*discount_percentage)/100.0);
+
                 System.out.println("last fare " + fare);
 
                 updateRequestStatus(true, true);
@@ -482,6 +488,8 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
                 intent1.putExtra("userName", userName);
                 intent1.putExtra("startTime", startTime);
                 intent1.putExtra("finishTime", finishTime);
+                intent1.putExtra("discount_percentage", discount_percentage);
+                intent1.putExtra("discount_max", discount_max);
 
                 thisWindowDone = true;
 
@@ -823,6 +831,8 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
                                 finished = jsonObject.getBoolean("finished");
                                 fare = jsonObject.getDouble("fare");
                                 code = jsonObject.getInt("uniqueCode");
+                                discount_percentage = jsonObject.getInt("discount_percentage");
+                                discount_max = jsonObject.getInt("discount_max");
                                 System.out.println("fare read in driver side " + fare);
 
                                 break;
@@ -993,6 +1003,8 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
             jsonBody.put("uniqueCode", code);
             jsonBody.put("done", false);
             jsonBody.put("fare", fare);
+            jsonBody.put("discount_percentage", discount_percentage);
+            jsonBody.put("discount_max", discount_max);
 
             final String requestBody = jsonBody.toString();
 

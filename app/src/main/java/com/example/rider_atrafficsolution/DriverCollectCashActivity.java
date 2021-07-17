@@ -72,6 +72,8 @@ public class DriverCollectCashActivity extends AppCompatActivity
     String keyForDriverID;
     private boolean checkedHistory;
     private boolean flag2;
+    private int discount_percentage;
+    private int discount_max;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -101,6 +103,8 @@ public class DriverCollectCashActivity extends AppCompatActivity
         userEmail = intent.getStringExtra("userEmail");
         startTime = intent.getStringExtra("startTime");
         finishTime = intent.getStringExtra("finishTime");
+        discount_percentage = intent.getIntExtra("discount_percentage", 1);
+        discount_max = intent.getIntExtra("discount_max", 1);
 
         user_rating_driver = -1;
 
@@ -124,7 +128,6 @@ public class DriverCollectCashActivity extends AppCompatActivity
         driverRatingTextView.setVisibility(View.GONE);
 
         driver_rating_user = 5.0;
-
 
         driverFareShow.setText("YOU ARE TO BE PAID TK " + fare);
 
@@ -279,6 +282,8 @@ public class DriverCollectCashActivity extends AppCompatActivity
             jsonBody.put("fare", fare);
             jsonBody.put("uniqueCode", code);
             jsonBody.put("type", type);
+            jsonBody.put("discount_percentage", discount_percentage);
+            jsonBody.put("discount_max", discount_max);
 
             final String requestBody = jsonBody.toString();
 

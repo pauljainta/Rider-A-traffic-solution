@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
@@ -43,6 +44,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -72,6 +74,15 @@ public class RequestConfirmActivity extends FragmentActivity implements OnMapRea
     private ArrayList<LatLng> intermediate;
     private boolean retrievedIntermediate;
     private Polyline polyline1;
+    private double estimatedFareAfterDiscount;
+    private int max;
+    private int percentage;
+    private String key;
+    private String email;
+    private String validity;
+    private boolean applied;
+    private int count;
+    private String promo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +91,7 @@ public class RequestConfirmActivity extends FragmentActivity implements OnMapRea
         estimatedFareTextView = findViewById(R.id.estimatedFareTextView);
         intermediate = new ArrayList<>();
         retrievedIntermediate = false;
+        key = "empty";
 
         Intent intent = this.getIntent();
 
@@ -103,8 +115,11 @@ public class RequestConfirmActivity extends FragmentActivity implements OnMapRea
         requestQueue = Volley.newRequestQueue(context);
         sendRequestButton = findViewById(R.id.carrequestconfirmbutton);
 
+        sendRequestButton.setVisibility(View.GONE);
+
         uniqueCode = generateUniqueCode();
 
+        GetDiscountInfo();
         GetIntermediateLocations();
 
         Handler h = new Handler();
@@ -131,6 +146,14 @@ public class RequestConfirmActivity extends FragmentActivity implements OnMapRea
             public void onClick(View v)
             {
                 sendRequest(Info.currentEmail, sourceLat, sourceLong, destLat, destLong, source, dest, estimatedFare, true);
+
+                if(!key.equalsIgnoreCase("empty"))
+                {
+                    if(count>0)
+                        count--;
+
+                    updateDiscount();
+                }
 
                 //GetKeyForRequest();
 
@@ -270,6 +293,8 @@ public class RequestConfirmActivity extends FragmentActivity implements OnMapRea
             jsonBody.put("type", type);
             jsonBody.put("fare", fare);
             jsonBody.put("uniqueCode", uniqueCode);
+            jsonBody.put("discount_percentage", percentage);
+            jsonBody.put("discount_max", max);
 
             System.out.println("code sent " + uniqueCode);
 
@@ -319,6 +344,133 @@ public class RequestConfirmActivity extends FragmentActivity implements OnMapRea
             e.printStackTrace();
         }
     }
+
+    public void updateDiscount()
+    {
+        try
+        {
+            String URL = "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/Discount/" + key + ".json";
+            JSONObject jsonBody = new JSONObject();
+
+            jsonBody.put("userEmail", email);
+            jsonBody.put("promoCode", promo);
+            jsonBody.put("validity", validity);
+            jsonBody.put("count", count);
+            jsonBody.put("max_amount", max);
+            jsonBody.put("percentage", percentage);
+            jsonBody.put("applied", true);
+
+
+            final String requestBody = jsonBody.toString();
+
+            StringRequest stringRequest = new StringRequest(Request.Method.PUT, URL, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    Log.i("VOLLEY", response);
+
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.e("VOLLEY", error.toString());
+                }
+            }) {
+                @Override
+                public String getBodyContentType() {
+                    return "application/json; charset=utf-8";
+                }
+
+                @Override
+                public byte[] getBody() throws AuthFailureError
+                {
+                    try {
+                        return requestBody == null ? null : requestBody.getBytes("utf-8");
+                    } catch (UnsupportedEncodingException uee) {
+                        VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", requestBody, "utf-8");
+                        return null;
+                    }
+                }
+
+                @Override
+                protected Response<String> parseNetworkResponse(NetworkResponse response) {
+                    String responseString = "";
+                    if (response != null) {
+                        responseString = String.valueOf(response.statusCode);
+                        // can get more details such as response.headers
+                    }
+                    return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
+                }
+            };
+
+            requestQueue.add(stringRequest);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void GetDiscountInfo()
+    {
+        String url = "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/Discount.json";
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response)
+            {
+                //try
+                {
+                    JSONArray array = response.names();
+
+                    for(int i=0;i<array.length();i++)
+                    {
+                        try
+                        {
+                            String k = array.getString(i);
+
+                            email = response.getJSONObject(k).getString("userEmail");
+                            validity = response.getJSONObject(k).getString("validity");
+                            Timestamp ts = Timestamp.valueOf(validity);
+                            applied = response.getJSONObject(k).getBoolean("applied");
+                            count = response.getJSONObject(k).getInt("count");
+                            promo = response.getJSONObject(k).getString("promoCode");
+
+                            if(email.equalsIgnoreCase(Info.currentEmail) && ts.compareTo(new Timestamp(System.currentTimeMillis()))>0 && applied && count>0)
+                            {
+                                key = k;
+
+                                max = response.getJSONObject(k).getInt("max_amount");
+                                percentage = response.getJSONObject(k).getInt("percentage");
+
+                                estimatedFareAfterDiscount = estimatedFare - Math.min(max, (percentage*estimatedFare)/100.0);
+                                estimatedFareAfterDiscount = Math.round(estimatedFareAfterDiscount);
+
+                                String text = "Estimated Fare "+String.valueOf(estimatedFare) + " TK\n" + "Estimated duration " + duration +" Mins\n";
+                                text += "Fare After Discount " + estimatedFareAfterDiscount + " TK";
+
+                                estimatedFareTextView.setText(text);
+
+                                break;
+                            }
+
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+                sendRequestButton.setVisibility(View.VISIBLE);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
+                Log.d("error: " , error.getMessage());
+            }
+        });
+
+        requestQueue.add(jsonObjectRequest);
+    }
+
 
     synchronized public void GetIntermediateLocations()
     {

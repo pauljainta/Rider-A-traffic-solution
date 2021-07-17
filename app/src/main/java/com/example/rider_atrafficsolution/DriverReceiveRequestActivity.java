@@ -41,6 +41,8 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
     List<LatLng> destList;
     List<String > keys;
     List<Double> fares;
+    List<Integer> percentages;
+    List<Integer> max_discounts;
 
     boolean busy;
     boolean checked = false;
@@ -62,6 +64,8 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
     String type;
     private double fare;
     private ArrayList<Integer> codes;
+    private int discount_percentage;
+    private int discount_max;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -86,6 +90,8 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
         keys = new ArrayList<>();
         fares = new ArrayList<>();
         codes = new ArrayList<>();
+        percentages = new ArrayList<>();
+        max_discounts = new ArrayList<>();
 
         update();
 
@@ -135,6 +141,8 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
                 intent.putExtra("uniqueCode", codes.get(position));
                 intent.putExtra("driverID", Info.driverID);
                 intent.putExtra("fare", fares.get(position));
+                intent.putExtra("discount_percentage", percentages.get(position));
+                intent.putExtra("discount_max", max_discounts.get(position));
                 Log.i("info.id = ", Info.driverID);
 
                 intent.putExtra("classid","driver");
@@ -181,6 +189,8 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
             intent.putExtra("fare", fare);
             intent.putExtra("uniqueCode", code);
             intent.putExtra("driverID", Info.driverID);
+            intent.putExtra("discount_percentage", discount_percentage);
+            intent.putExtra("discount_max", discount_max);
             Log.i("info.id = ", Info.driverID);
 
             intent.putExtra("classid","driver2");
@@ -231,6 +241,7 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
                                 accepted_key = key;
                                 fare = jsonObject.getDouble("fare");
                                 code = jsonObject.getInt("uniqueCode");
+
 
                                 break;
                             }
@@ -395,6 +406,8 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
                                 String dest = jsonObject.getString("dest");
                                 double fare = jsonObject.getDouble("fare");
                                 int uniqueCode = jsonObject.getInt("uniqueCode");
+                                int percent = jsonObject.getInt("discount_percentage");
+                                int max = jsonObject.getInt("discount_max");
 
                                 requests.add("From: " + source + "\nTo: " + dest);
                                 sourceList.add(new LatLng(sourceLat, sourceLong));
@@ -402,6 +415,8 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
                                 keys.add(key);
                                 fares.add(fare);
                                 codes.add(uniqueCode);
+                                percentages.add(percent);
+                                max_discounts.add(max);
 
                                 //Log.i("request", requests.get(0));
                             }

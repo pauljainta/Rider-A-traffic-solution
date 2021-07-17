@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#000000"
     tools:context=".PromoCodeActivity">
 
     <EditText
@@ -13,7 +14,9 @@
         android:layout_marginStart="61dp"
         android:layout_marginTop="161dp"
         android:layout_marginEnd="64dp"
+        android:background="#FFFFFF"
         android:ems="10"
+        android:gravity="center|center_horizontal"
         android:hint="Apply Promo Code Here"
         android:inputType="textPersonName"
         android:textColorHint="#232222"
@@ -29,10 +32,28 @@
         android:layout_marginTop="41dp"
         android:layout_marginEnd="138dp"
         android:layout_marginBottom="401dp"
+        android:background="#00ff00"
         android:text="APPLY"
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/promocodeEditText" />
+
+    <TextView
+        android:id="@+id/alreadyAppliedTextView"
+        android:layout_width="390dp"
+        android:layout_height="293dp"
+        android:background="#000000"
+        android:gravity="center"
+        android:text="Promo Code Already Applied"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.463" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

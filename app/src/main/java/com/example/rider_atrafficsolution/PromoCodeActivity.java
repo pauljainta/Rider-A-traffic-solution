@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
@@ -49,12 +50,19 @@ public class PromoCodeActivity extends AppCompatActivity
     int max_amount;
     int percentage;
 
+    TextView alreadyAppliedTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_promo_code);
+
+        alreadyAppliedTextView = findViewById(R.id.alreadyAppliedTextView);
+        applypromocodeButton=findViewById(R.id.promocodeButton);
+        applypromocodeEditText=findViewById(R.id.promocodeEditText);
+
+        alreadyAppliedTextView.setVisibility(View.GONE);
 
         checked = false;
         alreadyApplied = false;
@@ -63,9 +71,6 @@ public class PromoCodeActivity extends AppCompatActivity
 
         GetDiscountInfo();
 
-
-        applypromocodeButton=findViewById(R.id.promocodeButton);
-        applypromocodeEditText=findViewById(R.id.promocodeEditText);
 
         applypromocodeButton.setOnClickListener(new View.OnClickListener()
         {
@@ -91,6 +96,14 @@ public class PromoCodeActivity extends AppCompatActivity
                         if(key != null)
                         {
                             applyDiscount();
+
+                            applypromocodeButton.setVisibility(View.GONE);
+                            applypromocodeEditText.setVisibility(View.GONE);
+
+                            alreadyAppliedTextView.setVisibility(View.VISIBLE);
+
+                            alreadyAppliedTextView.setText("Promo code applied : " + promo + "\nvalid until : " + validity + "\navailable : " + count + " times\ndsicount : " + percentage +"%\nmaximum : " + max_amount  + " TK");
+
                             return;
                         }
                         handler.postDelayed(this, 2000);
@@ -248,6 +261,18 @@ public class PromoCodeActivity extends AppCompatActivity
                                 alreadyApplied = true;
 
                                 Toast.makeText(PromoCodeActivity.this, "Already promo applied", Toast.LENGTH_SHORT).show();
+
+                                String code = response.getJSONObject(key).getString("promoCode");
+                                int max = response.getJSONObject(key).getInt("max_amount");
+                                int percentage = response.getJSONObject(key).getInt("percentage");
+
+
+                                applypromocodeButton.setVisibility(View.GONE);
+                                applypromocodeEditText.setVisibility(View.GONE);
+
+                                alreadyAppliedTextView.setVisibility(View.VISIBLE);
+
+                                alreadyAppliedTextView.setText("Already promo code applied : " + code + "\nvalid until : " + validity + "\navailable : " + count + " times\ndsicount : " + percentage +"%\nmaximum : " + max  + "TK");
 
                                 break;
                             }
