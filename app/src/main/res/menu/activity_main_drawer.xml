@@ -9,6 +9,10 @@
             android:icon="@drawable/history_icon"
             android:title="Your Trips" />
         <item
+            android:id="@+id/nav_promo_code"
+            android:icon="@drawable/promo_code_icon"
+            android:title="Add Promo Codes" />
+        <item
             android:id="@+id/nav_contact_us"
             android:icon="@drawable/help_icon"
             android:title="Contact us" />

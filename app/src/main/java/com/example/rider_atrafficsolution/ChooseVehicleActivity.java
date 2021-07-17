@@ -123,6 +123,10 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
 
                         break;
 
+                    case R.id.nav_promo_code:
+                        Intent intent2=new Intent(getApplicationContext(),PromoCodeActivity.class);
+                        startActivity(intent2);
+
                     case R.id.nav_logout:
                         break;
 
