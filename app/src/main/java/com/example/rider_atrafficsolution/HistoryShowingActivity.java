@@ -87,6 +87,7 @@ public class HistoryShowingActivity extends AppCompatActivity {
                                 driverRating=response.getJSONObject(key).getDouble("user_rating_driver");
                                 startTime=response.getJSONObject(key).getString("startTime");
                                 finishTime=response.getJSONObject(key).getString("finishTime");
+                                type=response.getJSONObject(key).getString("type");
                                 Log.i("starttime",startTime+"bal");
 
                                 History history=new History();
@@ -96,6 +97,8 @@ public class HistoryShowingActivity extends AppCompatActivity {
                                 history.setFare(fare);
                                 history.setUserRating(userRating);
                                 history.setDriverRating(driverRating);
+                                history.setType(type);
+
                                 if(startTime!=null && finishTime!=null)
                                 {
                                     history.setStartTime(Timestamp.valueOf(startTime));
@@ -197,10 +200,11 @@ public class HistoryShowingActivity extends AppCompatActivity {
                 intent.putExtra("fare",history.getFare());
                 intent.putExtra("driverName",history.getDriverName());
                 intent.putExtra("passengerName",history.getPassengerName());
-                intent.putExtra("startTime",history.getStartTime());
-                intent.putExtra("finishTime",history.getFinishTime());
+                intent.putExtra("startTime",history.getStartTime().toString());
+                intent.putExtra("finishTime",history.getFinishTime().toString());
                 intent.putExtra("userRating",history.getUserRating());
                 intent.putExtra("driverRating",history.getDriverRating());
+                intent.putExtra("type",history.getType());
 
                 startActivity(intent);
 

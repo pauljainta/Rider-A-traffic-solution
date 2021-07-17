@@ -9,7 +9,17 @@ public class History {
    public String dest;
    public String driverName;
    public String passengerName;
-   public double fare;
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public double fare;
+   public String type;
 
 
     public double getFare() {
