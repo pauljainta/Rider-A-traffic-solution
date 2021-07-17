@@ -6,6 +6,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -21,6 +22,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
@@ -87,13 +89,16 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
     String startTime;
     String finishTime;
 
+    int code;
+
     boolean thisWindowDone;
 
     // double estimatedFare;
 
    // TextView estimatedFareTextView;
     Button acceptRequestButton,rejectRequestButton, startRideButton, finishRideButton, proceedButton;
-    Button ridingWithButton;
+    Button ridingWithButton, enterCodeButton;
+    EditText codeEditText;
 
     Context context;
     RequestQueue requestQueue;
@@ -149,8 +154,11 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
         driverLong = intent.getDoubleExtra("driverLong", 1);
         type = intent.getStringExtra("type");
         fare = intent.getDoubleExtra("fare", 1);
+        code = intent.getIntExtra("uniqueCode", 1);
         keyForRequest = intent.getStringExtra("key");
         driverID = Integer.parseInt(intent.getStringExtra("driverID"));
+
+        System.out.println("unique code driver side " + code);
 
         retrievedIntermediate = false;
         retrievedIntermediate2 = false;
@@ -167,6 +175,8 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
         finishRideButton = findViewById(R.id.finishRideButton);
         proceedButton = findViewById(R.id.proceedToPaymentButton);
         ridingWithButton = findViewById(R.id.ridingWith);
+        codeEditText = findViewById(R.id.verificationCodeEditText);
+        enterCodeButton = findViewById(R.id.enterCodeButton);
 
         startRideButton.setVisibility(View.GONE);
         startRideButton.setEnabled(false);
@@ -179,6 +189,9 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
 
         ridingWithButton.setVisibility(View.GONE);
         ridingWithButton.setEnabled(false);
+
+        codeEditText.setVisibility(View.GONE);
+        enterCodeButton.setVisibility(View.GONE);
 
         if (intent.getStringExtra("classid").equalsIgnoreCase("driver2"))
         {
@@ -324,8 +337,20 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
 
                 if(dist < 0.5)
                 {
-                    startRideButton.setVisibility(View.VISIBLE);
-                    startRideButton.setEnabled(true);
+                    //add here
+                    codeEditText.setVisibility(View.VISIBLE);
+                    enterCodeButton.setVisibility(View.VISIBLE);
+                    enterCodeButton.setEnabled(true);
+
+//                    int inputCode = Integer.parseInt(input);
+//
+//                    if(inputCode == code)
+//                    {
+//                        startRideButton.setVisibility(View.VISIBLE);
+//                        startRideButton.setEnabled(true);
+//                    }
+
+
                 }
 
 
@@ -349,6 +374,27 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
             }
         });
 
+        enterCodeButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                int input = Integer.parseInt(codeEditText.getText().toString());
+
+                if(input == code)
+                {
+                    startRideButton.setVisibility(View.VISIBLE);
+                    startRideButton.setEnabled(true);
+
+                    codeEditText.setVisibility(View.GONE);
+                    enterCodeButton.setVisibility(View.GONE);
+                }
+                else
+                {
+
+                }
+            }
+        });
 
 
         startRideButton.setOnClickListener(new View.OnClickListener()
@@ -376,6 +422,8 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
                 h2.postDelayed(r2, 0);
 
                 started = true;
+                codeEditText.setVisibility(View.GONE);
+                enterCodeButton.setVisibility(View.GONE);
                 startRideButton.setVisibility(View.GONE);
                 Log.i("start", "ride started");
 
@@ -425,6 +473,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
                 intent1.putExtra("source", source);
                 intent1.putExtra("type", type);
                 intent1.putExtra("fare", fare);
+                intent1.putExtra("uniqueCode", code);
                 intent1.putExtra("key", keyForRequest);
                 intent1.putExtra("key2", keyForDriverID);
                 intent1.putExtra("driverName", name);
@@ -550,8 +599,18 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
 
                         if(dist < 0.5)
                         {
-                            startRideButton.setVisibility(View.VISIBLE);
-                            startRideButton.setEnabled(true);
+                            codeEditText.setVisibility(View.VISIBLE);
+                            enterCodeButton.setVisibility(View.VISIBLE);
+                            enterCodeButton.setEnabled(true);
+
+//                            String input = codeEditText.getText().toString();
+//                            int inputCode = Integer.parseInt(input);
+//
+//                            if(inputCode == code)
+//                            {
+//                                startRideButton.setVisibility(View.VISIBLE);
+//                                startRideButton.setEnabled(true);
+//                            }
                         }
 
                         else
@@ -564,6 +623,8 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
 
                     else
                     {
+                        codeEditText.setVisibility(View.GONE);
+
                         startRideButton.setVisibility(View.GONE);
                         startRideButton.setEnabled(false);
 
@@ -760,6 +821,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
                                 started = jsonObject.getBoolean("started");
                                 finished = jsonObject.getBoolean("finished");
                                 fare = jsonObject.getDouble("fare");
+                                code = jsonObject.getInt("uniqueCode");
                                 System.out.println("fare read in driver side " + fare);
 
                                 break;
@@ -927,6 +989,7 @@ public class DriverLocationUpdate extends FragmentActivity implements OnMapReady
             jsonBody.put("type", type);
             jsonBody.put("started", started);
             jsonBody.put("finished", finished);
+            jsonBody.put("uniqueCode", code);
             jsonBody.put("done", false);
             jsonBody.put("fare", fare);
 

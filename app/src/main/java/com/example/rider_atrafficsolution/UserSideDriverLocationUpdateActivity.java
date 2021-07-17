@@ -19,6 +19,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -83,6 +84,7 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
    // Button acceptRequestButton,rejectRequestButton;
 
     TextView omuk_driver_accept_korse_textview;
+    TextView omuk_code_generate_hoise;
 
 
     Context context;
@@ -105,6 +107,7 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
     private ArrayList<LatLng> intermediateBetnSrcDrvr;
     private Polyline polyline2;
     private Polygon polygon;
+    private int code;
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -124,6 +127,7 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
         setContentView(R.layout.activity_user_side_driver_location_update);
         //estimatedFareTextView = findViewById(R.id.estimatedFareTextView);
         omuk_driver_accept_korse_textview=findViewById(R.id.omuk_driver_accept_korse_textview);
+        omuk_code_generate_hoise = findViewById(R.id.omuk_code_generate_hoise);
 
         started = false;
         finished = false;
@@ -154,6 +158,7 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
 
 
 
+        omuk_code_generate_hoise.setVisibility(View.GONE);
 
         context = getBaseContext();
         requestQueue = Volley.newRequestQueue(context);
@@ -396,6 +401,13 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
                                     if(dist < 0.5)
                                     {
                                         omuk_driver_accept_korse_textview.setText(name + " IS HERE");
+
+                                       if(code != 0)
+                                       {
+                                           omuk_code_generate_hoise.setText("Verfication Code : " + code);
+                                           omuk_code_generate_hoise.setVisibility(View.VISIBLE);
+                                       }
+
                                     }
 
                                     else
@@ -470,10 +482,13 @@ public class UserSideDriverLocationUpdateActivity extends FragmentActivity imple
                                 email = jsonObject.getString("userEmail");
                                 started = jsonObject.getBoolean("started");
                                 finished = jsonObject.getBoolean("finished");
+                                code = jsonObject.getInt("uniqueCode");
 
                                 if(started)
                                 {
                                     omuk_driver_accept_korse_textview.setText("YOUR RIDE IS STARTED");
+
+                                    omuk_code_generate_hoise.setVisibility(View.GONE);
                                 }
 
                                 if(finished)

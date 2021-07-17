@@ -40,6 +40,17 @@
             android:textColor="#ffffff"
             android:textSize="30sp" />
 
+        <TextView
+            android:id="@+id/omuk_code_generate_hoise"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#000000"
+            android:padding="8dp"
+            android:gravity="center_horizontal|center_vertical"
+            android:text=""
+            android:textColor="#ffffff"
+            android:textSize="30sp" />
+
 <!--        <Button-->
 <!--            android:id="@+id/driver_request_reject_button"-->
 <!--            android:layout_width="match_parent"-->

@@ -25,6 +25,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -50,6 +51,7 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
     double accepted_destLat;
     double accepted_destLong;
     String accepted_key;
+    int code;
 
     Handler handler;
     Runnable r;
@@ -59,6 +61,7 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
     //List<String> type;
     String type;
     private double fare;
+    private ArrayList<Integer> codes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -82,6 +85,7 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
         destList = new ArrayList<>();
         keys = new ArrayList<>();
         fares = new ArrayList<>();
+        codes = new ArrayList<>();
 
         update();
 
@@ -128,6 +132,7 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
                 intent.putExtra("driverLong", latlong.get(1));
                 intent.putExtra("type", type);
                 intent.putExtra("key", keys.get(position));
+                intent.putExtra("uniqueCode", codes.get(position));
                 intent.putExtra("driverID", Info.driverID);
                 intent.putExtra("fare", fares.get(position));
                 Log.i("info.id = ", Info.driverID);
@@ -174,6 +179,7 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
             intent.putExtra("type", type);
             intent.putExtra("key", accepted_key);
             intent.putExtra("fare", fare);
+            intent.putExtra("uniqueCode", code);
             intent.putExtra("driverID", Info.driverID);
             Log.i("info.id = ", Info.driverID);
 
@@ -224,6 +230,7 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
                                 accepted_destLong = jsonObject.getDouble("destLong");
                                 accepted_key = key;
                                 fare = jsonObject.getDouble("fare");
+                                code = jsonObject.getInt("uniqueCode");
 
                                 break;
                             }
@@ -333,6 +340,7 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
                 sourceList.clear();;
                 destList.clear();
                 keys.clear();
+                codes.clear();
 
                 //try
                 {
@@ -386,12 +394,14 @@ public class DriverReceiveRequestActivity extends AppCompatActivity
                                 String source = jsonObject.getString("source");
                                 String dest = jsonObject.getString("dest");
                                 double fare = jsonObject.getDouble("fare");
+                                int uniqueCode = jsonObject.getInt("uniqueCode");
 
                                 requests.add("From: " + source + "\nTo: " + dest);
                                 sourceList.add(new LatLng(sourceLat, sourceLong));
                                 destList.add(new LatLng(destLat, destLong));
                                 keys.add(key);
                                 fares.add(fare);
+                                codes.add(uniqueCode);
 
                                 //Log.i("request", requests.get(0));
                             }

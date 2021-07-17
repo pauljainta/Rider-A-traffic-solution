@@ -55,6 +55,8 @@ public class DriverCollectCashActivity extends AppCompatActivity
 
     String startTime, finishTime;
 
+    int code;
+
     String ts;
 
     Context context;
@@ -91,6 +93,7 @@ public class DriverCollectCashActivity extends AppCompatActivity
         driverLong = intent.getDoubleExtra("driverLong", 1);
         type = intent.getStringExtra("type");
         fare = intent.getDoubleExtra("fare", 1);
+        code = intent.getIntExtra("uniqueCode", 1);
         keyForRequest = intent.getStringExtra("key");
         keyForDriverID = intent.getStringExtra("key2");
         driverName = intent.getStringExtra("driverName");
@@ -274,6 +277,7 @@ public class DriverCollectCashActivity extends AppCompatActivity
             jsonBody.put("finished", true);
             jsonBody.put("done", true);
             jsonBody.put("fare", fare);
+            jsonBody.put("uniqueCode", code);
             jsonBody.put("type", type);
 
             final String requestBody = jsonBody.toString();

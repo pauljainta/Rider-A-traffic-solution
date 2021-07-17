@@ -95,6 +95,30 @@
             android:textColor="#ffffff"
             android:textSize="30sp" />
 
+        <EditText
+            android:id="@+id/verificationCodeEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#ffffff"
+            android:padding="8dp"
+            android:gravity="center_horizontal|center_vertical"
+            android:hint="Enter the code from your passenger"
+            android:textColor="#000000"
+            android:textSize="30sp" />
+
+        <Button
+            android:id="@+id/enterCodeButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#359c5e"
+            android:padding="8dp"
+            android:gravity="center_horizontal|center_vertical"
+            android:text="VERIFY"
+            android:textColor="#ffffff"
+            android:textSize="30sp" />
+
+
+
 
         <!--        <Button-->
 <!--            android:id="@+id/carrequestconfirmbutton"-->

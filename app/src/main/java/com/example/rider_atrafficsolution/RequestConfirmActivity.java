@@ -45,6 +45,7 @@ import org.json.JSONObject;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class RequestConfirmActivity extends FragmentActivity implements OnMapReadyCallback {
 
@@ -59,6 +60,7 @@ public class RequestConfirmActivity extends FragmentActivity implements OnMapRea
     String type;
 
     double estimatedFare;
+    int uniqueCode;
 
     TextView estimatedFareTextView;
     Button sendRequestButton;
@@ -100,6 +102,8 @@ public class RequestConfirmActivity extends FragmentActivity implements OnMapRea
 
         requestQueue = Volley.newRequestQueue(context);
         sendRequestButton = findViewById(R.id.carrequestconfirmbutton);
+
+        uniqueCode = generateUniqueCode();
 
         GetIntermediateLocations();
 
@@ -150,6 +154,12 @@ public class RequestConfirmActivity extends FragmentActivity implements OnMapRea
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.requestConfirmMap);
         mapFragment.getMapAsync(this);
+    }
+
+    public int generateUniqueCode()
+    {
+        Random r = new Random( System.currentTimeMillis() );
+        return ((1 + r.nextInt(2)) * 10000 + r.nextInt(10000));
     }
 
     private void update()
@@ -259,6 +269,9 @@ public class RequestConfirmActivity extends FragmentActivity implements OnMapRea
             jsonBody.put("pending", pending);
             jsonBody.put("type", type);
             jsonBody.put("fare", fare);
+            jsonBody.put("uniqueCode", uniqueCode);
+
+            System.out.println("code sent " + uniqueCode);
 
 
             final String requestBody = jsonBody.toString();
