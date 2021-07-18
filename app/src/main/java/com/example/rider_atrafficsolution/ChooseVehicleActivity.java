@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,6 +35,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.ReentrantLock;
@@ -44,7 +46,7 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
     NavigationView naview;
     TextView username,rating;
     List<String > name;
-    private RequestQueue requestQueue;
+    private RequestQueue requestQueue,requestQueue2;
     private Context context;
     ReentrantLock lock;
 
@@ -57,6 +59,9 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
     boolean checked;
     private String type;
     private String keyForRequest;
+
+    double totalrating,totalratingcount;
+
 
 
 
@@ -85,8 +90,11 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
         context = getBaseContext();
 
         requestQueue = Volley.newRequestQueue(context);
+        requestQueue2=Volley.newRequestQueue(context);
 
         name = new ArrayList<>();
+
+        setAverageRating();
 
         naview.setEnabled(true);
 
@@ -329,6 +337,59 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
         lock.unlock();
     }
 
+    public void setAverageRating()
+    {
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/History.json", null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response)
+            {
+
+                {
+                    JSONArray array = response.names();
+
+
+                    for(int i=0;i<array.length();i++)
+                    {
+                        try
+                        {
+                            String key = array.getString(i);
+
+                            String userEMail = response.getJSONObject(key).getString("userEmail");
+
+                            Log.i("cmail",Info.currentEmail);
+
+                            if(userEMail.equalsIgnoreCase(Info.currentEmail))
+                            {
+                                    totalrating+=response.getJSONObject(key).getDouble("driver_rating_user");
+                                    Log.i("tot",totalrating+"");
+                                    totalratingcount++;
+                                    Log.i("totc",totalratingcount+"");
+                                    double avg=totalrating/totalratingcount;
+                                    avg=Math.round(avg*100.0)/100.0;
+                                    rating.setText(avg+"*");
+                            }
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
+                Log.d("error: " , error.getMessage());
+            }
+        });
+
+
+        requestQueue2.add(jsonObjectRequest);
+
+    }
+
     public void GetMethodForName()
     {
         lock.lock();
@@ -356,6 +417,8 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
                                 //username.setText(n);
                                 Log.i("name", n);
                                 username.setText(n);
+                               // setAverageRating();
+                               // rating.setText(""+(totalrating/totalratingcount)+"*");
 
                                 break;
                             }
