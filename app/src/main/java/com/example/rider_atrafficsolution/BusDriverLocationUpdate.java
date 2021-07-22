@@ -178,10 +178,19 @@ public class BusDriverLocationUpdate extends FragmentActivity implements OnMapRe
 
     public void showLocation(LatLng latLng,String comment)
     {
-        mMap.addMarker(new MarkerOptions().position(latLng).title("Bus")
-                // below line is use to add custom marker on our map.
-                .icon(BitmapFromVector(getApplicationContext(), R.drawable.bus)));                //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latLng.latitude, latLng.longitude), 12.0f));
+        if(comment.equalsIgnoreCase("Bus"))
+        {
+            mMap.addMarker(new MarkerOptions().position(latLng).title("Bus")
+                    // below line is use to add custom marker on our map.
+                    .icon(BitmapFromVector(getApplicationContext(), R.drawable.bus)));                //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latLng.latitude, latLng.longitude), 12.0f));
+        }
+        else
+        {
+            mMap.addMarker(new MarkerOptions().position(latLng).title(comment));               //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latLng.latitude, latLng.longitude), 12.0f));
+        }
+
     }
 
     /**
