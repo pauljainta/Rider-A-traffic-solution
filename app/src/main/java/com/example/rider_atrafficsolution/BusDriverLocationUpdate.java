@@ -1,12 +1,15 @@
 package com.example.rider_atrafficsolution;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -20,6 +23,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
@@ -42,6 +46,12 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.EmailAuthProvider;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -79,6 +89,8 @@ public class BusDriverLocationUpdate extends FragmentActivity implements OnMapRe
     ArrayList<ArrayList<LatLng>> intermediate;
     private boolean gotRoute;
 
+    private AlertDialog.Builder builder;
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -99,6 +111,16 @@ public class BusDriverLocationUpdate extends FragmentActivity implements OnMapRe
         busID = Integer.parseInt(Info.driverID);
 
         keyForLocation = "empty";
+
+        builder = new AlertDialog.Builder(this);
+
+        builder.setMessage("Stop The Bus")
+                .setCancelable(false)
+                .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+
+                    }
+                });
 
         context = getBaseContext();
         requestQueue = Volley.newRequestQueue(context);
@@ -257,6 +279,10 @@ public class BusDriverLocationUpdate extends FragmentActivity implements OnMapRe
 
                         if(dist < 0.5)
                         {
+                            AlertDialog alert = builder.create();
+                            //Setting the title manually
+                            alert.setTitle("Bus Stoppage Nearby");
+                            alert.show();
                             //create alert box here
                         }
 
