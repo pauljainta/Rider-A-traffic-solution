@@ -64,6 +64,7 @@ public class BusSeatSelection extends AppCompatActivity
     public double minDistLat;
     public double minDistLong;
     public int nearestBusId;
+    public String keyForNearestBusID;
 
     ArrayAdapter<String> busAdapter;
     ArrayAdapter<String> locationAdapter;
@@ -233,10 +234,6 @@ public class BusSeatSelection extends AppCompatActivity
 
                 GetMethodForCurrentDistance();
 
-                //timeTextView.setText("");
-
-                //updateTime();
-
                 hudai();
             }
 
@@ -347,6 +344,15 @@ public class BusSeatSelection extends AppCompatActivity
         }
     }
 
+    void updateSeatCounts()
+    {
+        countsAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, counts);
+
+        countsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        seatCountSpinner.setAdapter(countsAdapter);
+    }
+
     public void updateTime()
     {
         if(!distanceList.isEmpty())
@@ -377,6 +383,8 @@ public class BusSeatSelection extends AppCompatActivity
             Log.i("time", String.valueOf(time) + " mins");
 
             timeTextView.setText(String.format("%s mins", String.valueOf(time)));
+
+            GetAvailableSeats();
         }
     }
 
@@ -755,6 +763,69 @@ public class BusSeatSelection extends AppCompatActivity
         requestQueue.add(jsonObjectRequest);
 
         lock.unlock();
+    }
+
+    synchronized void GetAvailableSeats()
+    {
+        CustomPriorityRequest jsonObjectRequest = new CustomPriorityRequest(Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/BusTable.json", null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response)
+            {
+                //try
+                {
+                    JSONArray array = response.names();
+
+                    int busno = Integer.parseInt(whichbuSpinner.getSelectedItem().toString());
+
+                    distanceList.clear();
+                    currentLats.clear();
+                    currentLongs.clear();
+                    busId.clear();
+
+                    for(int i=0;i<array.length();i++)
+                    {
+                        try
+                        {
+                            String key = array.getString(i);
+
+                            int busIdFromJson = response.getJSONObject(key).getInt("busID");
+
+                            if(nearestBusId == busIdFromJson)
+                            {
+                                int seats = response.getJSONObject(key).getInt("availableSeats");
+
+                                int min = Math.min(4, seats);
+
+                                counts.clear();
+                                for(int j=1;j<=min;j++)
+                                {
+                                    counts.add(String.valueOf(j));
+                                }
+
+                                break;
+
+                            }
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    updateSeatCounts();
+
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
+                Log.d("error: " , error.getMessage());
+            }
+        });
+
+        jsonObjectRequest.setPriority(Request.Priority.NORMAL);
+        requestQueue.add(jsonObjectRequest);
     }
 
 

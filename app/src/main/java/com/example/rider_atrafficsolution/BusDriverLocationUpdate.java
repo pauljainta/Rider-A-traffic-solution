@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.location.Address;
 import android.location.Geocoder;
@@ -17,8 +18,20 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -27,7 +40,18 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+import java.net.CookieHandler;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
@@ -38,6 +62,22 @@ public class BusDriverLocationUpdate extends FragmentActivity implements OnMapRe
 
     LocationManager locationManager;
     LocationListener locationListener;
+
+    int availableSeats;
+    int busID;
+    int busNo;
+    double lat;
+    double longt;
+    private RequestQueue requestQueue;
+    Context context;
+    private String keyForLocation;
+    private ArrayList<LatLng> route;
+
+    boolean [] retrievedIntermediate;
+
+    Polyline[] polyline;
+    ArrayList<ArrayList<LatLng>> intermediate;
+    private boolean gotRoute;
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
@@ -55,10 +95,84 @@ public class BusDriverLocationUpdate extends FragmentActivity implements OnMapRe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bus_driver_location_update);
+
+        busID = Integer.parseInt(Info.driverID);
+
+        keyForLocation = "empty";
+
+        context = getBaseContext();
+        requestQueue = Volley.newRequestQueue(context);
+
+        route = new ArrayList<>();
+
+        gotRoute = false;
+
+        GetCurrentLocation();
+
+        GetRoute();
+
+
+
+
+        Handler handler = new Handler();
+        Runnable runnable = new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                if(gotRoute)
+                {
+                    retrievedIntermediate = new boolean[route.size()-1];
+                    intermediate = new ArrayList<>();
+                    polyline = new Polyline[route.size()-1];
+
+                    for (int i=0;i<route.size()-1;i++)
+                    {
+                        intermediate.add(new ArrayList<LatLng>());
+                    }
+
+                    Arrays.fill(retrievedIntermediate, false);
+
+                    for(int i=0;i<route.size()-1;i++)
+                    {
+                        GetIntermediateLocations(i);
+                    }
+
+                    return;
+                }
+
+                handler.postDelayed(this, 2000);
+            }
+        };
+        handler.postDelayed(runnable, 0);
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+    }
+
+
+    private void update()
+    {
+        if(polyline == null)
+            return;
+
+        for(int i=0;i<polyline.length;i++)
+        {
+            if(polyline[i] == null)
+                return;
+        }
+
+        //System.out.println("intermediate" + intermediate);
+
+        for(int i=0;i<polyline.length;i++)
+        {
+            polyline[i] = mMap.addPolyline(new PolylineOptions()
+                    .clickable(true).color(Color.RED)
+                    .addAll(intermediate.get(i)));
+        }
+
     }
 
 
@@ -83,12 +197,52 @@ public class BusDriverLocationUpdate extends FragmentActivity implements OnMapRe
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
+        Handler handler =new Handler();
+        final Runnable r = new Runnable() {
+            public void run() {
+                handler.postDelayed(this, 2000);
+
+                for(int i=0;i<route.size()-1;i++)
+                {
+                    if (!retrievedIntermediate[i])
+                        break;
+
+                    for(int j=0;j<polyline.length;j++)
+                    {
+                        polyline[j] = mMap.addPolyline(new PolylineOptions()
+                                .clickable(true).color(Color.RED)
+                                .addAll(new ArrayList<LatLng>()));
+                    }
+
+                    for(LatLng l : route)
+                    {
+                        showLocation(l, "stoppage");
+                    }
+
+                    update();
+
+                }
+                //update();
+
+            }
+        };
+        handler.postDelayed(r, 0000);
+
         locationManager=(LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 
         locationListener=new LocationListener() {
             @Override
             public void onLocationChanged(@NonNull Location location) {
 
+                if(!keyForLocation.equalsIgnoreCase("empty"))
+                {
+                    lat = location.getLatitude();
+                    longt = location.getLongitude();
+
+                    updateDriverLocation();
+                }
+
+                mMap.clear();
                 LatLng latLng=new LatLng(location.getLatitude(),location.getLongitude());
                 showLocation(latLng,"Bus");
 
@@ -101,10 +255,244 @@ public class BusDriverLocationUpdate extends FragmentActivity implements OnMapRe
         }
         else
         {
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,0,locationListener);
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,0,10,locationListener);
 
         }
     }
+
+
+    synchronized void GetCurrentLocation()
+    {
+        CustomPriorityRequest jsonObjectRequest = new CustomPriorityRequest(com.android.volley.Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/BusTable.json", null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response)
+            {
+                //try
+                {
+                    JSONArray array = response.names();
+
+                    for(int i=0;i<array.length();i++)
+                    {
+                        try
+                        {
+                            String key = array.getString(i);
+
+                            int busIdFromJson = response.getJSONObject(key).getInt("busID");
+
+                            if(busID == busIdFromJson)
+                            {
+                                availableSeats = response.getJSONObject(key).getInt("availableSeats");
+                                busNo = response.getJSONObject(key).getInt("busNo");
+                                lat = response.getJSONObject(key).getDouble("lat");
+                                longt = response.getJSONObject(key).getDouble("long");
+
+                                keyForLocation = key;
+
+                                showLocation(new LatLng(lat, longt), "Bus");
+
+                                break;
+
+                            }
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
+                Log.d("error: " , error.getMessage());
+            }
+        });
+
+        jsonObjectRequest.setPriority(Request.Priority.NORMAL);
+        requestQueue.add(jsonObjectRequest);
+    }
+
+    synchronized public void updateDriverLocation()
+    {
+        try
+        {
+            String URL = "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/BusTable/" + keyForLocation + ".json";
+            JSONObject jsonBody = new JSONObject();
+
+            jsonBody.put("availableSeats", availableSeats);
+            jsonBody.put("busID", busID);
+            jsonBody.put("busNo", busNo);
+            jsonBody.put("lat", lat);
+            jsonBody.put("long", longt);
+
+
+            final String requestBody = jsonBody.toString();
+
+            StringRequest stringRequest = new StringRequest(Request.Method.PUT, URL, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    Log.i("VOLLEY", response);
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.e("VOLLEY", error.toString());
+                }
+            }) {
+                @Override
+                public String getBodyContentType() {
+                    return "application/json; charset=utf-8";
+                }
+
+                @Override
+                public byte[] getBody() throws AuthFailureError
+                {
+                    try {
+                        return requestBody == null ? null : requestBody.getBytes("utf-8");
+                    } catch (UnsupportedEncodingException uee) {
+                        VolleyLog.wtf("Unsupported Encoding while trying to get the bytes of %s using %s", requestBody, "utf-8");
+                        return null;
+                    }
+                }
+
+                @Override
+                protected Response<String> parseNetworkResponse(NetworkResponse response) {
+                    String responseString = "";
+                    if (response != null) {
+                        responseString = String.valueOf(response.statusCode);
+                        // can get more details such as response.headers
+                    }
+                    return Response.success(responseString, HttpHeaderParser.parseCacheHeaders(response));
+                }
+            };
+
+            requestQueue.add(stringRequest);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+
+
+
+
+
+    synchronized public void GetIntermediateLocations(int i)
+    {
+        //lock.lock();
+
+        double lat1 = route.get(i).latitude;
+        double lon1 = route.get(i).longitude;
+        double lat2 = route.get(i+1).latitude;
+        double lon2 = route.get(i+1).longitude;
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, TestMapsActivity.getMapsApiDirectionsUrl(lat1, lon1, lat2, lon2), null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response)
+            {
+
+                try {
+                    //Tranform the string into a json object
+
+                    JSONArray legs = response.getJSONArray("routes").getJSONObject(0).getJSONArray("legs");
+                    for (int j = 0; j < legs.length(); j++)
+                    {
+                        JSONObject leg = legs.getJSONObject(j);
+
+
+                        int distance = leg.getJSONObject("distance").getInt("value");
+
+
+                        JSONArray steps = response.getJSONArray("routes").getJSONObject(0).getJSONArray("legs").getJSONObject(j).getJSONArray("steps");
+                        for (int k = 0; k < steps.length(); k++)
+                        {
+                            JSONObject step = steps.getJSONObject(k);
+                            String polyline = step.getJSONObject("polyline").getString("points");
+
+                            List<LatLng> latLngs = TestMapsActivity.decodePoly(polyline);
+
+                            ArrayList<LatLng> temp = new ArrayList<>(latLngs);
+
+                            intermediate.get(i).addAll(temp);
+
+                            System.out.println(latLngs);
+                        }
+                    }
+
+                    retrievedIntermediate[i] = true;
+
+                } catch (JSONException e) {
+
+                    System.out.println("exception from distance matrix");
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
+                Log.d("error: " , error.getMessage());
+            }
+        });
+
+        requestQueue.add(jsonObjectRequest);
+
+        //lock.unlock();
+    }
+
+
+
+
+    public void GetRoute()
+    {
+        CustomPriorityRequest jsonObjectRequest = new CustomPriorityRequest(com.android.volley.Request.Method.GET, "https://rider-a-traffic-solution-default-rtdb.firebaseio.com/CoOrdinates.json", null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response)
+            {
+                //try
+                {
+                    JSONArray array = response.names();
+
+                    for(int i=0;i<array.length();i++)
+                    {
+                        try
+                        {
+                            String key = array.getString(i);
+
+                            double lt = response.getJSONObject(key).getDouble("lat");
+                            double ln = response.getJSONObject(key).getDouble("long");
+                            String name = response.getJSONObject(key).getString("location");
+
+
+                            route.add(new LatLng(lt, ln));
+                        }
+                        catch (JSONException e)
+                        {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+                gotRoute = true;
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error)
+            {
+                Log.d("error: " , error.getMessage());
+            }
+        });
+
+        jsonObjectRequest.setPriority(Request.Priority.NORMAL);
+        requestQueue.add(jsonObjectRequest);
+    }
+
+
+
+
+
 
 
     private BitmapDescriptor BitmapFromVector(Context context, int vectorResId) {
