@@ -87,6 +87,7 @@ public class HistoryShowingActivity extends AppCompatActivity {
                                 driverRating=response.getJSONObject(key).getDouble("user_rating_driver");
                                 startTime=response.getJSONObject(key).getString("startTime");
                                 finishTime=response.getJSONObject(key).getString("finishTime");
+
                                 type=response.getJSONObject(key).getString("type");
                                 Log.i("starttime",startTime+"bal");
 
@@ -135,7 +136,7 @@ public class HistoryShowingActivity extends AppCompatActivity {
 
                                 //historyArrayList.add(history.toString());
 
-                                arrayAdapter=new ArrayAdapter<String>(context, android.R.layout.simple_gallery_item,historyArrayList);
+                                arrayAdapter=new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1,historyArrayList);
                                 historyListview.setAdapter(arrayAdapter);
 
 
@@ -186,7 +187,7 @@ public class HistoryShowingActivity extends AppCompatActivity {
 
 
 
-        arrayAdapter=new ArrayAdapter<String>(this, android.R.layout.simple_gallery_item,historyArrayList);
+        arrayAdapter=new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1,historyArrayList);
         historyListview.setAdapter(arrayAdapter);
 
 

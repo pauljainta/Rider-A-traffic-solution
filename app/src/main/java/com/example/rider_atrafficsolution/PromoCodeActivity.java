@@ -102,7 +102,7 @@ public class PromoCodeActivity extends AppCompatActivity
 
                             alreadyAppliedTextView.setVisibility(View.VISIBLE);
 
-                            alreadyAppliedTextView.setText("Promo code applied : " + promo + "\nvalid until : " + validity + "\navailable : " + count + " times\ndsicount : " + percentage +"%\nmaximum : " + max_amount  + " TK");
+                            alreadyAppliedTextView.setText("Promo code applied : " + promo + "\n\nvalid until : " + validity + "\n\navailable : " + count + " times\n\ndiscount : " + percentage +"%\n\nmaximum : " + max_amount  + " TK");
 
                             return;
                         }
@@ -272,7 +272,7 @@ public class PromoCodeActivity extends AppCompatActivity
 
                                 alreadyAppliedTextView.setVisibility(View.VISIBLE);
 
-                                alreadyAppliedTextView.setText("Already promo code applied : " + code + "\nvalid until : " + validity + "\navailable : " + count + " times\ndsicount : " + percentage +"%\nmaximum : " + max  + "TK");
+                                alreadyAppliedTextView.setText("Already promo code applied : " + code + "\n\nvalid until : " + validity + "\n\navailable : " + count + " times\n\ndsicount : " + percentage +"%\n\nmaximum : " + max  + "TK");
 
                                 break;
                             }

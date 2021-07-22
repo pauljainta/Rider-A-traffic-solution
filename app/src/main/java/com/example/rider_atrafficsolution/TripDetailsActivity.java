@@ -22,7 +22,7 @@ public class TripDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trip_details);
 
-       timestampTextview=findViewById(R.id.tripdetailsTimeStampTextView);
+        timestampTextview=findViewById(R.id.tripdetailsTimeStampTextView);
         tripFaretextView=findViewById(R.id.tripFareTextView);
         detailsTextview=findViewById(R.id.detailstextview);
 
@@ -33,6 +33,8 @@ public class TripDetailsActivity extends AppCompatActivity {
         passengerName=intent.getStringExtra("passengerName");
         startTime=intent.getStringExtra("startTime");
         finishTime=intent.getStringExtra("finishTime");
+        System.out.println("finish time in history " + finishTime);
+
         type=intent.getStringExtra("type");
 
         fare=intent.getDoubleExtra("fare",0);
@@ -40,12 +42,12 @@ public class TripDetailsActivity extends AppCompatActivity {
         userRating=intent.getDoubleExtra("userRating",0);
         driverRating=intent.getDoubleExtra("driverRating",0);
 
-       timestampTextview.setText(startTime+"\n"+finishTime);
+       timestampTextview.setText("Start Time: " + startTime + "\n\nFinish Time: " + finishTime);
 
-        tripFaretextView.setText("BDT:"+fare);
+        tripFaretextView.setText("BDT: "+fare);
 
-        String details="Journey From "+source+" to "+dest+" by "+type+"\n"+
-                "Driver "+driverName+" rated you "+userRating+"/5"+"\n"
+        String details="From "+source+"\nTo "+dest+"\nBy "+type+"\n"+
+                "Driver "+driverName+"\nYou were rated "+userRating+"/5"+"\n"
                 +"You rated him "+driverRating+"/5"+"\n";
         detailsTextview.setText(details);
 
