@@ -188,7 +188,7 @@ public class BusDriverLocationUpdate extends FragmentActivity implements OnMapRe
         else
         {
             mMap.addMarker(new MarkerOptions().position(latLng).title(comment));               //mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latLng.latitude, latLng.longitude), 12.0f));
+            //mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(latLng.latitude, latLng.longitude), 12.0f));
         }
 
     }
@@ -228,6 +228,7 @@ public class BusDriverLocationUpdate extends FragmentActivity implements OnMapRe
                         showLocation(l, "stoppage");
                     }
 
+
                     update();
 
                 }
@@ -247,6 +248,20 @@ public class BusDriverLocationUpdate extends FragmentActivity implements OnMapRe
                 {
                     lat = location.getLatitude();
                     longt = location.getLongitude();
+
+                    for(int j=0;j<route.size()-1;j++)
+                    {
+                        LatLng ll = route.get(j);
+
+                        double dist = new Util().getDistanceFromLatLonInKm(lat, longt, ll.latitude, ll.longitude);
+
+                        if(dist < 0.5)
+                        {
+                            //create alert box here
+                        }
+
+                    }
+
 
                     updateDriverLocation();
                 }
