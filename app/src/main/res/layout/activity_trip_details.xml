@@ -4,29 +4,33 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000"
+    android:background="#EAE7E7"
     tools:context=".TripDetailsActivity">
 
     <TextView
         android:id="@+id/tripdetailsTextview"
         android:layout_width="179dp"
         android:layout_height="63dp"
+        android:fontFamily="casual"
+        android:gravity="center"
         android:text="Trip Details"
-        android:textColor="#FFFFFF"
+        android:textColor="#000000"
         android:textSize="24sp"
-        android:textStyle="bold"
+        android:textStyle="bold|italic"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.163"
+        app:layout_constraintHorizontal_bias="0.538"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.046" />
+        app:layout_constraintVertical_bias="0.044" />
 
     <TextView
-        android:id="@+id/tripdetailsTimeStampTextView"
+        android:id="@+id/sourceDestTextView"
         android:layout_width="315dp"
         android:layout_height="187dp"
-        android:textColor="#FFFFFF"
+        android:fontFamily="monospace"
+        android:gravity="center"
+        android:textColor="#000000"
         android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -37,22 +41,25 @@
 
     <TextView
         android:id="@+id/tripFareTextView"
-        android:layout_width="315dp"
-        android:layout_height="80dp"
-        android:textColor="#FFFFFF"
+        android:layout_width="192dp"
+        android:layout_height="76dp"
+        android:fontFamily="monospace"
+        android:gravity="center_vertical"
+        android:textColor="#000000"
         android:textSize="28sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.364"
+        app:layout_constraintHorizontal_bias="0.159"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.545" />
+        app:layout_constraintVertical_bias="0.546" />
 
     <TextView
         android:id="@+id/detailstextview"
         android:layout_width="346dp"
         android:layout_height="209dp"
-        android:textColor="#FFFFFF"
+        android:fontFamily="monospace"
+        android:textColor="#000000"
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -60,5 +67,21 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.888" />
+
+    <TextView
+        android:id="@+id/typeTextView"
+        android:layout_width="124dp"
+        android:layout_height="75dp"
+        android:fontFamily="monospace"
+        android:gravity="center_vertical"
+        android:text="TextView"
+        android:textColor="#000000"
+        android:textSize="28sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.895"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.547" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

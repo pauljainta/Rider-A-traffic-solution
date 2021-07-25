@@ -112,9 +112,6 @@ public class HistoryShowingActivity extends AppCompatActivity {
                                 histories.sort(new TimestampSorter());
 
 
-
-
-
 //                                String history2=startTime+" "+finishTime+" Journey From "+source+" to "+dest+ "\n"+
 //                                        "Fare:"+fare+" TK\n"+
 //                                        "Driver "+driverName+" rated you "+userRating+"\n"+

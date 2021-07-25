@@ -271,7 +271,7 @@ public class BusDriverLocationUpdate extends FragmentActivity implements OnMapRe
                     lat = location.getLatitude();
                     longt = location.getLongitude();
 
-                    for(int j=0;j<route.size()-1;j++)
+                    for(int j=0;j<route.size();j++)
                     {
                         LatLng ll = route.get(j);
 

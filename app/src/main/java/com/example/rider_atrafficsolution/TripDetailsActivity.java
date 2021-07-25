@@ -8,7 +8,7 @@ import android.widget.TextView;
 
 public class TripDetailsActivity extends AppCompatActivity {
 
-    TextView timestampTextview,tripFaretextView,detailsTextview;
+    TextView sourceDestTextView,tripFaretextView,detailsTextview, typeTextView;
 
     String source,dest,driverName,passengerName,type;
 
@@ -22,9 +22,10 @@ public class TripDetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_trip_details);
 
-        timestampTextview=findViewById(R.id.tripdetailsTimeStampTextView);
-        tripFaretextView=findViewById(R.id.tripFareTextView);
-        detailsTextview=findViewById(R.id.detailstextview);
+        sourceDestTextView = findViewById(R.id.sourceDestTextView);
+        tripFaretextView = findViewById(R.id.tripFareTextView);
+        detailsTextview = findViewById(R.id.detailstextview);
+        typeTextView = findViewById(R.id.typeTextView);
 
         Intent intent=getIntent();
         source=intent.getStringExtra("source");
@@ -42,15 +43,20 @@ public class TripDetailsActivity extends AppCompatActivity {
         userRating=intent.getDoubleExtra("userRating",0);
         driverRating=intent.getDoubleExtra("driverRating",0);
 
-       timestampTextview.setText("Start Time: " + startTime + "\n\nFinish Time: " + finishTime);
+//        timestampTextview.setText("Start Time: " + startTime + "\n\nFinish Time: " + finishTime);
+        sourceDestTextView.setText(source + "\nTO\n" + dest);
 
-        tripFaretextView.setText("BDT: "+fare);
+        tripFaretextView.setText("BDT "+fare);
 
-        String details="From "+source+"\nTo "+dest+"\nBy "+type+"\n"+
-                "Driver "+driverName+"\nYou were rated "+userRating+"/5"+"\n"
+        typeTextView.setText(type.toUpperCase());
+
+        String details = "Start: " + startTime +"\nFinish: " + finishTime +
+                "\n\nDriver "+driverName+"\nYou were rated "+userRating+"/5"+"\n"
                 +"You rated him "+driverRating+"/5"+"\n";
         detailsTextview.setText(details);
 
+        //zulfiqar9726@gmail.com
+        //123456
 
 
 
