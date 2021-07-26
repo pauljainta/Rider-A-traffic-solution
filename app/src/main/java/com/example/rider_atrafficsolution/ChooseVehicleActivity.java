@@ -136,6 +136,8 @@ public class ChooseVehicleActivity extends AppCompatActivity implements View.OnC
                         startActivity(intent2);
 
                     case R.id.nav_logout:
+                        Intent intent3=new Intent(getApplicationContext(),MainActivity.class);
+                        startActivity(intent3);
                         break;
 
                 }
